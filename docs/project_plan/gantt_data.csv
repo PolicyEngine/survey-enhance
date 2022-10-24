@@ -1,19 +1,10 @@
-Task,Category,Complete in week,Duration
-Literature review,Literature,3,1
-Implementation: gradient descent,Calibration,4,1
-Implementation: percentile adjustment (status quo),Calibration,4,1
-Benchmark gradient descent against percentile adjustment on unseen targets,Calibration,5,1
-Write up validation results and conclusions for calibration,Calibration,5,2
-Implementation: random forest imputation,Imputation,7,1
-Implementation: random forest distribution imputation,Imputation,8,1
-Implementation: matching,Imputation,9,1
-Benchmark random forest models against matching via holdout columns,Imputation,9,1
-Write up validation results and conclusions for imputation,Imputation,10,1
-Gather calibration data for the FRS,Application,11,2
-Recalibrate the FRS,Application,13,1
-"Impute the FRS with the LCFS, WAS (possibly others)",Application,13,1
-Document special case for imputation/calibration combination: SPI imputation,Application,14,1
-Impute the FRS with the SPI,Application,15,1
-Benchmark the enhanced FRS against the original on unseen targets,Application,16,1
-Write up FRS enhancement process and performance,Application,17,1
-Review final report,Review,18,1
+Task,"Complete in week",Duration,
+1,4,2,
+2,6,1,
+3,7,2,
+4,9,2,
+5,11,2,
+6,13,2,
+7,15,2,
+8,17,2,
+9,19,1,
