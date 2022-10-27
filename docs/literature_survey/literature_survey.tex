@@ -76,7 +76,7 @@ Gradient descent is a technique for finding parameters which minimise a loss fun
 
 Several variations of gradient descent have emerged over the years which achieve more efficient training procedures: stochastic gradient descent steps in the direction of an \emph{estimate} of the gradient using individual training examples, rather than loading the full dataset.\cite{sgd} Mini-batch gradient descent represents a compromise between batch (full-dataset) and stochastic gradient descent, by iterating parameters using fixed-size subsets of the training data.\cite{mini_batch}
 
-As well as gradient calculation methods, optimisation algorithms have revealed significant accuracy and efficiency improvements by defining behaviours for hyper-parameters such as the learning rate (the velocity at which parameters follow the gradient). These include Adam,\cite{adam} AdaGrad,\cite{adagrad} and RMSProp (unpublished).
+As well as gradient calculation methods, optimisation algorithms have revealed significant accuracy and efficiency improvements by defining behaviours for hyper-parameters such as the learning rate (the velocity at which parameters follow the gradient). These include Adam,\cite{adam} AdaGrad,\cite{adagrad} and RMSProp.
 
 Gradient descent could feasibly be applied to survey accuracy problems, since it requires only a loss function that is differentiable with respect to the parameters being optimised. In the context of survey accuracy, a loss function could be defined as the squared errors of individual aggregate statistics between official sources, and a survey, which would be continuously differentiable over the weights of individual household records.
 
@@ -91,6 +91,10 @@ There are several reasons why random forest models might outperform neural netwo
 \section{Conclusion}
 
 Current methods of enhancing surveys are largely effective at improving the accuracy of survey data on narrowly-defined subdomains (such as high-income analysis), but rely on explicit assumptions and are often not completely successful at bringing household surveys to the same level of accuracy as administrative data, especially at the low end of the income spectrum. Machine learning techniques such as random forest model imputation and gradient descent have shown promise in adjacent fields to public policy analysis, and could serve as more generalisable and effective replacements for the existing survey improvement methods.
+
+The body of research on current methods for improving survey data is useful for examining how effective specific approaches were in improving a survey's answer to a narrow domain (for example, how adjusting income values improved the Gini index of income inequality), but there is little research on how each of the current methods, and any of the machine learning methods presented here, affects the overall picture of accuracy for a survey data. The reason for this is that many accuracy goals are orthogonal to each other: for example, improving the coverage of high taxable incomes might improve a survey's estimate of total income tax liabilities, but if it achieves this by overestimating employment income compared to dividend income, then a survey's estimates of payroll and dividend tax liabilities might each separately be reduced.
+
+An implementation a general survey accuracy loss function that takes into account all (or as many as is feasibly possible in the scope of this project) of these accuracy targets, as well as implementations of both current and potential methods of data manipulation, would allow for a more comprehensive comparison of the effectiveness of each method.
 
 \bibliography{../references.bib}
 \bibliographystyle{plain}
