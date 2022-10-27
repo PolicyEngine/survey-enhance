@@ -84,7 +84,9 @@ Gradient descent could feasibly be applied to survey accuracy problems, since it
 
 Random forest models are a type of ensemble learning technique, which combine the predictions of multiple decision trees to produce a more accurate prediction than any individual tree.\cite{random_forests} The decision trees are trained on a subset of the training data, and the predictions of each tree are combined using a voting system. Although its introduction is far less recent than more modern innovations in the field of neural networks (for example, artificial neural network variants\cite{anns} or transformers\cite{transformers}), random forest models have shown consistently high accuracy across a wide range of domains, remaining competitive with the most recent techniques.
 
-Random forest models have been applied (to a limited extent) in the context of policy analysis, and have shown superior performance in prediction tasks to logit and other model types.\cite{ecb}
+This type of model has been applied (to a limited extent) in the context of policy analysis, and have shown superior performance in prediction tasks to logit and other model types.\cite{ecb}
+
+There are several reasons why random forest models might outperform neural networks in predicting survey microdata values from other attributes (for example, predicting employment income from demographic variables), but the most natural reason is that tax-benefit law, which heavily influences financial decisions, is more similar in structure to a random forest than a neural network. For example, in \cite{cg_bunching} the authors found that capital gains variables are `unnaturally' distributed in order to respond to incentives set by particular tax law parameters.
 
 \section{Conclusion}
 
