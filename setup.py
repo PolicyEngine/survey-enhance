@@ -7,5 +7,8 @@ setup(
     install_requires=[
         "numpy",
         "pandas",
+        "microdf_python",
+        "torch",
+        "policyengine_core",
     ],
 )
