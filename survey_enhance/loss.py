@@ -39,6 +39,12 @@ class LossCategory(torch.nn.Module):
     
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
         raise NotImplementedError(f"Loss category {self.__class__.__name__} does not implement an evaluation method.")
+
+    def collect_comparison_log(self) -> pd.DataFrame:
+        df = pd.DataFrame(self.comparison_log, columns=["epoch", "name", "y_true", "y_pred"])
+        for subloss in self.sublosses:
+            df = df.append(subloss.collect_comparison_log())
+        return df
     
     def evaluate(self, household_weights: torch.Tensor, dataset: Dataset) -> torch.Tensor:
         if self.static_dataset and self.comparisons is not None:
@@ -54,8 +60,8 @@ class LossCategory(torch.nn.Module):
             y_pred_array = torch.Tensor(y_pred_array.astype(float))
             y_pred = torch.sum(y_pred_array * household_weights)
             loss += torch.abs(y_true - y_pred) ** 2
-            print(f"Epoch {self.epoch}: {name} loss: {loss}")
             self.comparison_log.append((self.epoch, name, y_true, float(y_pred)))
+        self.epoch += 1
         return loss
     
     def forward(self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False) -> torch.Tensor:

@@ -8,7 +8,7 @@ from typing import Iterable, Tuple, List
 
 class CountryLevelProgram(LossCategory):
     weight = 1
-    static_dataset = False
+    static_dataset = True
     variable: str
 
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:

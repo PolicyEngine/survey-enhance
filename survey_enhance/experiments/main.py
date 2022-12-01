@@ -46,6 +46,7 @@ PERSON_COLUMNS = [
 
 BENUNIT_COLUMNS = [
     "benunit_id",
+    "household_id",
     "child_benefit",
     "child_tax_credit",
     "working_tax_credit",
@@ -97,20 +98,14 @@ frs_household_df = frs_simulation.calculate_dataframe(HOUSEHOLD_COLUMNS, period=
 for personal_variable in PERSON_COLUMNS:
     # Add a participants column to the household dataframe, if numeric
     if "float" in str(frs_person_df[personal_variable].dtype) or "int" in str(frs_person_df[personal_variable].dtype):
-        frs_household_df[f"{personal_variable}_participants"] = (
-            frs_person_df.groupby("person_household_id")[personal_variable]
-            .sum()
-            .astype("int")
-        )
+        frs_person_df[f"{personal_variable}_participants"] = frs_person_df[personal_variable] > 0
+        frs_household_df[f"{personal_variable}_participants"] = frs_person_df.groupby("person_household_id")[f"{personal_variable}_participants"].transform("sum")
 
 for benunit_variable in BENUNIT_COLUMNS:
     # Add a participants column to the household dataframe, if numeric
     if "float" in str(frs_benunit_df[benunit_variable].dtype) or "int" in str(frs_benunit_df[benunit_variable].dtype):
-        frs_household_df[f"{benunit_variable}_participants"] = (
-            frs_benunit_df.groupby("benunit_id")[benunit_variable]
-            .sum()
-            .astype("int")
-        )
+        frs_benunit_df[f"{benunit_variable}_participants"] = frs_benunit_df[benunit_variable] > 0
+        frs_household_df[f"{benunit_variable}_participants"] = frs_benunit_df.groupby("household_id")[f"{benunit_variable}_participants"].transform("sum")
 
 from survey_enhance.experiments.loss.loss import Loss
 from survey_enhance.loss import Dataset
@@ -139,26 +134,4 @@ loss = Loss(dataset, calibration_parameters)
 print(loss(household_weights, dataset))
 print(loss(household_weights * 0, dataset))
 
-import pandas as pd
-
-epochs = []
-names = []
-y_true = []
-y_pred = []
-
-for epoch, name, y_t, y_p in loss.comparison_log:
-    epochs.append(epoch)
-    names.append(name)
-    y_true.append(y_t)
-    y_pred.append(y_p)
-
-comparison_df = pd.DataFrame(
-    {
-        "epoch": epochs,
-        "name": names,
-        "y_true": y_true,
-        "y_pred": y_pred,
-    }
-)
-
-comparison_df.to_csv("comparison.csv")
+loss.collect_comparison_log().to_csv("comparison_log.csv")
