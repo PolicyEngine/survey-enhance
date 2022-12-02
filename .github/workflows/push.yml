@@ -13,6 +13,7 @@ jobs:
           args: ". -l 79 --check"
   docs:
     name: Build documentation
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
