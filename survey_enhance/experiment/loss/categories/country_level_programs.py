@@ -1,6 +1,6 @@
 from survey_enhance.loss import LossCategory, Dataset
 from survey_enhance.dataset import sum_by_household
-from policyengine_uk.tools.simulation import Microsimulation
+from policyengine_core.parameters import ParameterNodeAtInstant
 import torch
 import numpy as np
 from policyengine_core.parameters import ParameterNode, Parameter
@@ -112,8 +112,8 @@ class CountryLevelProgram(LossCategory):
     static_dataset = False
     variable: str
 
-    def forward(self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False) -> torch.Tensor:
-        print(f"Intervening on {self.variable}")
+    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None):
+        super().__init__(dataset, calibration_parameters, weight)
         parameter = self.calibration_parameters.programs._children[
             self.variable
         ]
@@ -156,10 +156,6 @@ class CountryLevelProgram(LossCategory):
                 participant_loss,
             )
         ])
-
-        print("Normal forward")
-        
-        super().forward(household_weights, dataset, initial_run)
 
 
 class IncomeSupport(CountryLevelProgram):
