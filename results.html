@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Literature survey" href="literature_survey/literature_survey.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Literature survey" href="literature_survey/literature_survey.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>Survey-Enhance documentation</title>
+        <title>Results - Survey-Enhance documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
@@ -128,7 +128,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Survey-Enhance documentation</div></a>
+      <a href="index.html"><div class="brand">Survey-Enhance documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
   <span class="sidebar-brand-text">Survey-Enhance documentation</span>
@@ -159,9 +159,9 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="literature_survey/literature_survey.html">Literature survey</a></li>
-<li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Results</a></li>
 </ul>
 
 </div>
@@ -196,9 +196,52 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="survey-enhance">
-<h1>Survey-Enhance<a class="headerlink" href="#survey-enhance" title="Permalink to this headline">#</a></h1>
-<div class="toctree-wrapper compound">
+          <section class="tex2jax_ignore mathjax_ignore" id="results">
+<h1>Results<a class="headerlink" href="#results" title="Permalink to this headline">#</a></h1>
+<p>TL;DR: What are the effects of different microdata adjustment methods on the accuracy of the microdata in reproducing official statistics? Findings (on the UK Family Resources Survey 2018/19) in the table below.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+import warnings
+warnings.filterwarnings(&#39;ignore&#39;)
+warnings.simplefilter(action=&#39;ignore&#39;)
+
+df = pd.DataFrame({
+    &quot;Adjustment&quot;: [&quot;None&quot;, &quot;Percentile matching (all)&quot;, &quot;Percentile matching (dividends only)&quot;],
+    &quot;Loss&quot;: [1., 1.039242148399353, 0.9986706972122192],
+})
+
+df[&quot;Accuracy improvement&quot;] = [f&quot;{x:+.2%}&quot; for x in (df[&quot;Loss&quot;].iloc[0] - df[&quot;Loss&quot;]) / df[&quot;Loss&quot;].iloc[0]]
+df.sort_values(&quot;Loss&quot;).drop(columns=[&quot;Loss&quot;]).style.hide(subset=None, level=None, names=False)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_eba66">
+  <thead>
+    <tr>
+      <th id="T_eba66_level0_col0" class="col_heading level0 col0" >Adjustment</th>
+      <th id="T_eba66_level0_col1" class="col_heading level0 col1" >Accuracy improvement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_eba66_row0_col0" class="data row0 col0" >Percentile matching (dividends only)</td>
+      <td id="T_eba66_row0_col1" class="data row0 col1" >+0.13%</td>
+    </tr>
+    <tr>
+      <td id="T_eba66_row1_col0" class="data row1 col0" >None</td>
+      <td id="T_eba66_row1_col1" class="data row1 col1" >+0.00%</td>
+    </tr>
+    <tr>
+      <td id="T_eba66_row2_col0" class="data row2 col0" >Percentile matching (all)</td>
+      <td id="T_eba66_row2_col1" class="data row2 col1" >-3.92%</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 </div>
 </section>
 
@@ -226,16 +269,18 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="literature_survey/literature_survey.html">
+          
+          <a class="prev-page" href="literature_survey/literature_survey.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
-                  <span>Next</span>
+                  <span>Previous</span>
                 </div>
+                
                 <div class="title">Literature survey</div>
+                
               </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
