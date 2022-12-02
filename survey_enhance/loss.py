@@ -61,7 +61,7 @@ class LossCategory(torch.nn.Module):
         if self.initial_loss_value is None and not initial_run:
             self.initial_loss_value = self.forward(household_weights, dataset, initial_run=True)
         
-        loss = torch.tensor(0.)
+        loss = torch.tensor(1.) # To avoid division by zero
 
         try:
             self_loss = self.evaluate(household_weights, dataset)

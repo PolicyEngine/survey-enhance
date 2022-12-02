@@ -6,8 +6,7 @@ import numpy as np
 from policyengine_core.parameters import ParameterNode, Parameter
 from typing import Iterable, Tuple, List
 
-
-class CountryLevelProgram(LossCategory):
+class CountryLevelProgramBudgetaryImpact(LossCategory):
     weight = 1
     static_dataset = False
     variable: str
@@ -54,7 +53,25 @@ class CountryLevelProgram(LossCategory):
                     f"{self.variable}_budgetary_impact_{single_country}"
                 ]
 
-        # Participants
+        comparisons = []
+        for name, value, target in zip(names, pred, targets):
+            comparisons += [(name, value, target)]
+        return comparisons
+
+class CountryLevelProgramParticipants(LossCategory):
+    weight = 1
+    static_dataset = False
+    variable: str
+
+    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+        countries = dataset.household_df.country
+        pred = []
+        targets = []
+        names = []
+
+        parameter = self.calibration_parameters.programs._children[
+            self.variable
+        ]
 
         if "participants" in parameter._children:
             values = dataset.household_df[f"{self.variable}_participants"]
@@ -89,6 +106,57 @@ class CountryLevelProgram(LossCategory):
         for name, value, target in zip(names, pred, targets):
             comparisons += [(name, value, target)]
         return comparisons
+
+class CountryLevelProgram(LossCategory):
+    weight = None
+    static_dataset = False
+    variable: str
+
+    def forward(self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False) -> torch.Tensor:
+        parameter = self.calibration_parameters.programs._children[
+            self.variable
+        ]
+
+        # Budgetary impacts
+
+        if "UNITED_KINGDOM" in parameter.budgetary_impact._children:
+            self.weight = parameter.budgetary_impact._children["UNITED_KINGDOM"]
+        if self.weight is None and "GREAT_BRITAIN" in parameter.budgetary_impact._children:
+            self.weight = parameter.budgetary_impact._children["GREAT_BRITAIN"]
+
+        for single_country in (
+            "ENGLAND",
+            "WALES",
+            "SCOTLAND",
+            "NORTHERN_IRELAND",
+        ):
+            if self.weight is None and single_country in parameter.budgetary_impact._children:
+                self.weight = parameter.budgetary_impact._children[single_country]
+
+        if self.weight is None:
+            raise ValueError(f"I tried to ensure that {self.variable} is weighted by its budgetary impact, but I couldn't find a budgetary impact for it.")
+
+        budgetary_impact_loss = type(
+            f"{self.variable}_budgetary_impact",
+            (CountryLevelProgramBudgetaryImpact,),
+            {"variable": self.variable},
+        )
+
+        participant_loss = type(
+            f"{self.variable}_participants",
+            (CountryLevelProgramParticipants,),
+            {"variable": self.variable},
+        )
+        
+        self.sublosses = torch.nn.ModuleList([
+            subcategory(dataset, self.calibration_parameters)
+            for subcategory in (
+                budgetary_impact_loss,
+                participant_loss,
+            )
+        ])
+        
+        super().forward(household_weights, dataset, initial_run)
 
 
 class IncomeSupport(CountryLevelProgram):

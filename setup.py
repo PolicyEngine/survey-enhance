@@ -11,4 +11,10 @@ setup(
         "torch",
         "policyengine_core",
     ],
+    extras_require={
+        "dev": [
+            "black",
+            "jupyter-book",
+        ],
+    },
 )
