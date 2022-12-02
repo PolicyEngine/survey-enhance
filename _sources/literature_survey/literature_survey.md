@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Over the last few decade, there has been extensive research into the
+Over the last few decades, there has been extensive research into the
 accuracy of household surveys for estimating socioeconomic and
 policy-related indicators, as well as methods of improving survey
 accuracy. Most of these studies have focussed on one particular
@@ -317,7 +317,7 @@ this project) of these accuracy targets, as well as implementations of
 both current and potential methods of data manipulation, would allow for
 a more comprehensive comparison of the effectiveness of each method.
 
-[^1]: Previously, the DWP had not published its research underlying the methodology of the SPI adjustment
+[^1]: Previously, the DWP had not published its research underlying the methodology of the SPI adjustment.
 
 [^2]: Employers can count some in-kind benefits as payment towards the minimum wage, and there are other legal exceptions.
 
