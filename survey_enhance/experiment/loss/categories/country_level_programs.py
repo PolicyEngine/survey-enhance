@@ -112,8 +112,8 @@ class CountryLevelProgram(LossCategory):
     static_dataset = False
     variable: str
 
-    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None):
-        super().__init__(dataset, calibration_parameters, weight)
+    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None, ancestor: "LossCategory" = None):
+        super().__init__(dataset, calibration_parameters, weight, ancestor)
         parameter = self.calibration_parameters.programs._children[
             self.variable
         ]
@@ -140,13 +140,13 @@ class CountryLevelProgram(LossCategory):
         budgetary_impact_loss = type(
             f"{self.variable}_budgetary_impact",
             (CountryLevelProgramBudgetaryImpact,),
-            {"variable": self.variable},
+            {"variable": self.variable, "ancestor": self.ancestor},
         )
 
         participant_loss = type(
             f"{self.variable}_participants",
             (CountryLevelProgramParticipants,),
-            {"variable": self.variable},
+            {"variable": self.variable, "ancestor": self.ancestor},
         )
         
         self.sublosses = torch.nn.ModuleList([

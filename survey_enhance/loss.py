@@ -11,21 +11,27 @@ class LossCategory(torch.nn.Module):
     subcategories: List[Type["LossCategory"]] = []
     static_dataset = False
 
-    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None):
+    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None, ancestor: "LossCategory" = None):
         super().__init__()
         if weight is not None:
             self.weight = weight
         
         self.dataset = dataset
         self.calibration_parameters = calibration_parameters
-        self.epoch = 0
         self.comparison_log = []
         self.initial_loss_value = None
 
         self.comparisons = None
 
+        if ancestor is None:
+            self.ancestor = self
+        else:
+            self.ancestor = ancestor
+        
+        self.epoch = 0
+
         self.sublosses = torch.nn.ModuleList([
-            subcategory(dataset, calibration_parameters)
+            subcategory(dataset, calibration_parameters, ancestor=self.ancestor)
             for subcategory in self.subcategories
         ])
     
@@ -53,13 +59,15 @@ class LossCategory(torch.nn.Module):
             y_pred = torch.sum(y_pred_array * household_weights)
             loss_addition = torch.abs(y_true - y_pred) ** 2
             loss += loss_addition
-            self.comparison_log.append((self.epoch, name, y_true, float(y_pred), float(loss_addition)))
-        self.epoch += 1
+            self.comparison_log.append((self.ancestor.epoch, name, y_true, float(y_pred), float(loss_addition)))
         return loss
     
     def forward(self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False) -> torch.Tensor:
         if self.initial_loss_value is None and not initial_run:
             self.initial_loss_value = self.forward(household_weights, dataset, initial_run=True)
+
+        if not initial_run:
+            self.epoch += 1
         
         loss = torch.tensor(1.) # To avoid division by zero
 
@@ -76,7 +84,7 @@ class LossCategory(torch.nn.Module):
         for subloss in self.sublosses:
             subcategory_loss = subloss(household_weights, dataset) / total_subloss_weight
             self.comparison_log.append(
-                (self.epoch, subloss.__class__.__name__, 0, 0, float(subcategory_loss))
+                (self.ancestor.epoch, subloss.__class__.__name__, 0, 0, float(subcategory_loss))
             )
             loss += subcategory_loss
         
