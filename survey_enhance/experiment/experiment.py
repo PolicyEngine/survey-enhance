@@ -34,10 +34,16 @@ for variable in VARIABLES_TO_ADJUST:
 
 percentile_adjusted_dataset = create_frs_dataset(percentile_adjusted_frs_person_df)
 
+dividend_only_percentile_adjusted_dataset = create_frs_dataset(
+    percentile_adjusted_frs_person_df[["dividend_income"]]
+)
+
 loss = Loss(dataset, calibration_parameters)
 
 frs_loss = loss(household_weights, dataset)
 percentile_adjusted_loss = loss(household_weights, percentile_adjusted_dataset)
+dividend_only_percentile_adjusted_loss = loss(household_weights, dividend_only_percentile_adjusted_dataset)
 
 print(f"FRS loss: {frs_loss}")
 print(f"Percentile adjusted loss: {percentile_adjusted_loss}")
+print(f"Dividend only percentile adjusted loss: {dividend_only_percentile_adjusted_loss}")

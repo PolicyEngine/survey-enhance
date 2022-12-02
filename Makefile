@@ -7,4 +7,5 @@ install:
 all: install format
 
 documentation:
+	jb clean docs
 	jb build docs
