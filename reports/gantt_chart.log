@@ -1,0 +1,87 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/client.py", line 1204, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/asyncio/base_events.py", line 647, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/client.py", line 663, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import plotly.express as px
+import pandas as pd
+import datetime
+
+df = pd.read_csv("gantt_data.csv")
+
+df["Start week"] = df["Complete in week"] - 1
+df["Complete by week"] = df["Complete in week"] + df["Duration"] - 1
+
+# Weeks are numbered from 1, where 1 is 2022/10/04.
+df["Start date"] = df["Start week"].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
+df["Complete date"] = df["Complete by week"].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
+
+df["Task number"] = df.index + 1
+fig = px.timeline(
+    df,
+    x_start="Start date",
+    x_end="Complete date",
+    y="Task number",
+    text="Complete by week"
+)
+fig.update_yaxes(autorange="reversed")
+fig.update_layout(
+    yaxis_tickvals=list(range(1, len(df) + 1)),
+)
+fig.update_traces(textfont_color="white", textangle=0)
+fig.update_layout(width=800, height=600)
+
+import plotly.io as pio
+
+pio.full_figure_for_development(fig, warn=False)
+fig.write_image("gantt_chart.pdf",engine="kaleido")
+fig
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+Cell [0;32mIn[1], line 31[0m
+[1;32m     27[0m fig[38;5;241m.[39mupdate_layout(width[38;5;241m=[39m[38;5;241m800[39m, height[38;5;241m=[39m[38;5;241m600[39m)
+[1;32m     29[0m [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mio[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpio[39;00m
+[0;32m---> 31[0m [43mpio[49m[38;5;241;43m.[39;49m[43mfull_figure_for_development[49m[43m([49m[43mfig[49m[43m,[49m[43m [49m[43mwarn[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m)[49m
+[1;32m     32[0m fig[38;5;241m.[39mwrite_image([38;5;124m"[39m[38;5;124mgantt_chart.pdf[39m[38;5;124m"[39m,engine[38;5;241m=[39m[38;5;124m"[39m[38;5;124mkaleido[39m[38;5;124m"[39m)
+[1;32m     33[0m fig
+
+File [0;32m/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/plotly/io/_kaleido.py:328[0m, in [0;36mfull_figure_for_development[0;34m(fig, warn, as_dict)[0m
+[1;32m    326[0m     [38;5;66;03m# Raise informative error message if Kaleido is not installed[39;00m
+[1;32m    327[0m     [38;5;28;01mif[39;00m scope [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[0;32m--> 328[0m         [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    329[0m             [38;5;124;03m"""[39;00m
+[1;32m    330[0m [38;5;124;03mFull figure generation requires the kaleido package,[39;00m
+[1;32m    331[0m [38;5;124;03mwhich can be installed using pip:[39;00m
+[1;32m    332[0m [38;5;124;03m    $ pip install -U kaleido[39;00m
+[1;32m    333[0m [38;5;124;03m"""[39;00m
+[1;32m    334[0m         )
+[1;32m    336[0m     [38;5;28;01mif[39;00m warn:
+[1;32m    337[0m         [38;5;28;01mimport[39;00m [38;5;21;01mwarnings[39;00m
+
+[0;31mValueError[0m: 
+Full figure generation requires the kaleido package,
+which can be installed using pip:
+    $ pip install -U kaleido
+
+ValueError: 
+Full figure generation requires the kaleido package,
+which can be installed using pip:
+    $ pip install -U kaleido
+
+

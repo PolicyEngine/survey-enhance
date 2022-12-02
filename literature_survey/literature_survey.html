@@ -1,0 +1,714 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Survey-Enhance" href="../index.html" />
+
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+        <title>Literature survey - Survey-Enhance documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Survey-Enhance documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Survey-Enhance documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Literature survey</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="literature-survey">
+<h1>Literature survey<a class="headerlink" href="#literature-survey" title="Permalink to this headline">#</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">#</a></h2>
+<p>Over the last few decade, there has been extensive research into the
+accuracy of household surveys for estimating socioeconomic and
+policy-related indicators, as well as methods of improving survey
+accuracy. Most of these studies have focussed on one particular
+mechanism by which surveys introduce inaccuracy (for example, by
+omitting top incomes or under-sampling low incomes), and examine a
+method of improving surveys which tackles this particular flaw. This
+literature survey aims to provide a comprehensive overview of the state
+of the art in improving survey accuracy, while also examining how and if
+these individual advancements complement each other.</p>
+</section>
+<section id="current-approaches-in-economic-surveys">
+<h2>Current approaches in economic surveys<a class="headerlink" href="#current-approaches-in-economic-surveys" title="Permalink to this headline">#</a></h2>
+<p>It is well known that household surveys produce inconsistent results to
+other data sources, such as administrative databases. Given the nature
+of how surveys are conducted (households must first consent to an
+interview, and secondarily must answer truthfully to questions asked),
+this inaccuracy can be introduced either by sampling error or
+measurement error (likely both, to some extent). Over the last few
+decades, household surveys have become the dominant tool in measuring
+and projecting economic impacts of policy changes, and as such, there
+has been a great deal of research into improving survey accuracy.</p>
+<section id="under-coverage-of-high-incomes">
+<h3>Under-coverage of high incomes<a class="headerlink" href="#under-coverage-of-high-incomes" title="Permalink to this headline">#</a></h3>
+<p>The Department for Work and Pensions is required by law to report on
+poverty and inequality metrics every year, and in meeting this
+requirement, it publishes a household-level dataset of disposable
+incomes, termed the Households Below Average Income (HBAI) dataset.<span id="id1">[<a class="reference internal" href="#id32" title="DWP. Households below average income (hbai) statistics. GOV.UK, 1992. URL: https://www.gov.uk/government/collections/households-below-average-income-hbai--2.">DWP, 1992</a>]</span>
+Since 1992, it has applied an adjustment to the disposable incomes of a
+subset of the dataset in order to make the coverage of top incomes more
+comparable with that of HMRC’s Survey of Personal Incomes (SPI) dataset
+– this adjustment termed the ‘SPI adjustment’. In <span id="id2">[<a class="reference internal" href="#id29" title="Richard V. Burkhauser, Nicolas Hérault, Stephen P. Jenkins, and Roger Wilkins. Survey under-coverage of top incomes and estimation of inequality: what is the role of the uk's spi adjustment? Fiscal Studies, 39(2):213-240, 2018. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/1475-5890.12158, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1475-5890.12158, doi:https://doi.org/10.1111/1475-5890.12158.">Burkhauser, Hérault, Jenkins, and Wilkins, 2018</a>]</span>, the authors examine
+the methodology of this adjustment, as well as its performance against
+its original goals.</p>
+<p>The authors document<a class="footnote-reference brackets" href="#id49" id="id3">1</a> the steps of the SPI adjustment, which involve
+first identifying a set of ‘rich’ households. The definition of rich
+applies a condition that a household’s income must be above a certain
+threshold, where separate thresholds are used for pensioner and
+non-pensioner households. The target used to set thresholds is generally
+to ensure that around 0.5% of records are altered, varying by year. The
+HBAI ‘rich’ households are then modified by replacing gross incomes (an
+income measure which the SPI also contains) with the average values for
+records in the same group in the SPI. Finally, the survey weights are
+recalculated: in the original survey, weights are solved by matching
+administrative statistics on population sizes; under the SPI adjustment,
+population sizes of the ‘rich’ groups are included in the set of
+statistical targets to hit. The authors find that the SPI adjustment has
+been successful in improving the coverage of top incomes in the HBAI
+dataset, but raise a number of issues:</p>
+<section id="income-decomposition">
+<h4>Income decomposition<a class="headerlink" href="#income-decomposition" title="Permalink to this headline">#</a></h4>
+<p>The SPI adjustment is applied to a singular income variable, but the FRS
+contains a number of components. Modifying gross income, but not
+modifying employment income, savings income, etc. breaks the link
+between these variables, which prevents researchers from conducting
+decomposition analyses.</p>
+</section>
+<section id="stratification">
+<h4>Stratification<a class="headerlink" href="#stratification" title="Permalink to this headline">#</a></h4>
+<p>There is no obvious justification for separate thresholds for pensioners
+and non-pensioners (and further, between households in Great Britain and
+Northern Ireland). The authors suggest these stratification choices were
+made in order to minimise methodological changes over time, for example
+as the survey expanded to Northern Ireland.</p>
+</section>
+<section id="spi-lag">
+<h4>SPI lag<a class="headerlink" href="#spi-lag" title="Permalink to this headline">#</a></h4>
+<p>The Survey of Personal Incomes is not routinely available at the same
+time as the Family Resources Survey (from which the HBAI microdata is
+derived). Therefore the SPI adjustment is applied to the HBAI dataset
+using a lagged SPI dataset, which may introduce additional inaccuracy.</p>
+</section>
+</section>
+<section id="adjustments-using-administrative-tax-data">
+<h3>Adjustments using administrative tax data<a class="headerlink" href="#adjustments-using-administrative-tax-data" title="Permalink to this headline">#</a></h3>
+<p>For the 2019 edition of the Households Below Average Income series, the
+ONS published details of the methodology used to tune the dataset with the SPI in <span id="id4">[<a class="reference internal" href="#id31" title="Richard Tonkin, Dominic Webber, Ozer Beha, Martin Shine, and Callum Clark. Top income adjustment in effects of taxes and benefits data: methodology. ONS, 2020. URL: https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/compendium/economicreview/february2020/topincomeadjustmentineffectsoftaxesandbenefitsdatamethodology.">Tonkin, Webber, Beha, Shine, and Clark, 2020</a>]</span>. They respond to some of the concerns raised by <span id="id5">[<a class="reference internal" href="#id29" title="Richard V. Burkhauser, Nicolas Hérault, Stephen P. Jenkins, and Roger Wilkins. Survey under-coverage of top incomes and estimation of inequality: what is the role of the uk's spi adjustment? Fiscal Studies, 39(2):213-240, 2018. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/1475-5890.12158, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1475-5890.12158, doi:https://doi.org/10.1111/1475-5890.12158.">Burkhauser, Hérault, Jenkins, and Wilkins, 2018</a>]</span>:</p>
+<section id="pensioner-stratification">
+<h4>Pensioner stratification<a class="headerlink" href="#pensioner-stratification" title="Permalink to this headline">#</a></h4>
+<p>The authors show that high-income pensioners and non-pensioners are both
+under-represented in their respective populations but comparing the
+ratios of incomes at different quantiles, finding that a common
+threshold for both groups would fail to ensure that pensioners (who have
+lower income, on average) are sufficiently affected by the SPI
+adjustment.</p>
+</section>
+<section id="choice-of-income-threshold">
+<h4>Choice of income threshold<a class="headerlink" href="#choice-of-income-threshold" title="Permalink to this headline">#</a></h4>
+<p>The authors discuss possible justifications for a particular income
+threshold, mostly based on the quantile at which divergence between the
+FRS and SPI ‘became an issue’. However, the choice to use a binary
+variable (rather than, for example, phasing in an SPI adjustment) here
+is arbitrary, and the authors do not address the reasons why this choice
+was made.</p>
+</section>
+<section id="id6">
+<h4>SPI lag<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h4>
+<p>The authors acknowledge the issue of using SPI projections, rather than
+actual outturn data, and examine the size of this effect. They find that
+revising recent survey releases with the actual SPI data later released
+changed the Gini coefficient of income inequality estimates by around
+0.2 percentage points. This is considered to be small and therefore
+recommend against the need for the ONS to re-publish statistics when
+current SPI data becomes available.</p>
+</section>
+</section>
+<section id="capital-income-imputation">
+<h3>Capital income imputation<a class="headerlink" href="#capital-income-imputation" title="Permalink to this headline">#</a></h3>
+<p>The issue of income decomposition remained largely untackled until <span id="id7">[<a class="reference internal" href="#id28" title="Tahnee Christelle Ooms. Correcting the underestimation of capital incomes in inequality indicators: with an application to the uk, 1997–2016. Social Indicators Research, 157(3):929–953, 2021. URL: https://doi.org/10.1007/s11205-021-02644-4, doi:10.1007/s11205-021-02644-4.">Ooms, 2021</a>]</span>, in
+which the authors attempt to improve the reporting of a specific
+component of gross income which is more severely under-reported in the
+FRS than others: capital income. They first establish that income
+under-reporting is mostly due to this particular category by comparing
+individual income sources between the FRS and SPI, finding that the
+aggregates of non-capital income are around 100% of the totals for the
+SPI, while capital income is only around 40% as represented.</p>
+<p>The authors present a novel observation about the instances where
+capital income is under-reported: the capital share of income in
+individuals is far less represented in the FRS than in the SPI
+(specifically, the number of individuals with a ‘high capital share’),
+rather than simply a lack of high-capital-income individuals. They
+introduce a new method to correct for this under-capture: adjust the
+weights of high-capital-share individuals in order to match the totals
+in SPI data.</p>
+<p>The authors find that the new method is largely successful at correcting
+for under-capture of capital income, and increases the Gini coefficient
+of FRS data by between 2 and 5 percentage points (applying the
+methodology to historical FRS data releases). However, they do not
+measure the changes to how well the FRS ranks against other aspects of
+the SPI.</p>
+</section>
+<section id="under-coverage-of-very-low-incomes">
+<h3>Under-coverage of very low incomes<a class="headerlink" href="#under-coverage-of-very-low-incomes" title="Permalink to this headline">#</a></h3>
+<p>In <span id="id8">[<a class="reference internal" href="#id30" title="Mike Brewer, Ben Etheridge, and Cormac O'Dea. Why are households that report the lowest incomes so well-off? The Economic Journal, 127(605):F24-F49, 2017. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/ecoj.12334, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/ecoj.12334, doi:https://doi.org/10.1111/ecoj.12334.">Brewer, Etheridge, and O'Dea, 2017</a>]</span>, the authors examine the other end of the income spectrum, finding
+that very low-income households tend to spend much more than moderately
+low-income households in the Living Cost and Food Survey (a household
+survey with similar administration to the FRS). The authors report a
+variety of evidence that income at the low end is misreported in the
+survey:</p>
+<section id="missing-benefit-spending">
+<h4>Missing benefit spending<a class="headerlink" href="#missing-benefit-spending" title="Permalink to this headline">#</a></h4>
+<p>By comparing total reported receipt of benefits by recipients with
+aggregate spending figures published by the DWP and HMRC, the authors
+find that the FRS and LCFS consistently under-report benefit income by
+around 5%, and that this figure has become worse over the last decade,
+rising from 2.5% in 2000.</p>
+</section>
+<section id="sub-minimum-wage-reporting">
+<h4>Sub-minimum wage reporting<a class="headerlink" href="#sub-minimum-wage-reporting" title="Permalink to this headline">#</a></h4>
+<p>In the LCFS, individuals report both hours worked and annual earnings,
+enabling researchers to calculate the implied hourly wage. For 10.5% of
+individuals in 2009, this was below the legal minimum wage. Although
+this does not guarantee a breach of employment law,<a class="footnote-reference brackets" href="#id50" id="id9">2</a> the proportion
+is substantial and implies that either earnings are under-reported or
+hours worked are over-reported.</p>
+</section>
+<section id="high-spending-ratios">
+<h4>High spending ratios<a class="headerlink" href="#high-spending-ratios" title="Permalink to this headline">#</a></h4>
+<p>The authors use a model of consumption smoothing to determine whether
+the overly high spending (compared to income) for low-income households
+can be explained by lifetime consumption smoothing, but find that this
+is not the case.</p>
+</section>
+</section>
+<section id="linking-data-directly-to-administrative-data">
+<h3>Linking data directly to administrative data<a class="headerlink" href="#linking-data-directly-to-administrative-data" title="Permalink to this headline">#</a></h3>
+<p>All of the previously covered research into survey inaccuracy has
+identified a common question: how much of the survey error is due to
+non-response bias, and how much is due to measurement error? In <span id="id10">[<a class="reference internal" href="#id27" title="Stephen McKay. Evaluating approaches to Family Resources Survey data linking. URL: https://www.gov.uk/government/publications/family-resources-survey-data-linking-wp110.">McKay, n.d.</a>]</span>, the
+authors attempt to quantify the measurement error of the FRS by linking
+individual households with data from the DWP’s administrative records,
+using non-public identifiers. The process of linking is not perfect:
+respondents are asked for permission to link their survey data with
+administrative data, and some (around 30%) refuse. However, for each
+benefit, the authors were able to find the percentage of reporting
+adults for whom a link to an administrative data record could be
+identified, the percentage of reporting adults recipients for whom no
+link could be found, and the percentage of adults represented only by
+administrative data.</p>
+<p>The authors find that these splits vary significantly by benefit:
+recipient data on the State Pension (SP) is highly accurate in the FRS
+(96% of SP reported recipients were represented by the FRS, 1% were only
+on the FRS and not on administrative datasets, and 3% were only on
+administrative datasets). At the same time, around 62% of adults on the
+FRS who reported receiving Severe Disablement Allowance could not be
+identified in administrative data. There are multiple possible reasons
+for this, and they vary by benefit: the recipient population is often
+confused or mistaken when answering questions about their benefits, and
+this is more acute for age- or disability-related benefits. This appears
+to provide additional evidence that measurement error is significant, at
+least at the low-income subset of the surveys.</p>
+</section>
+<section id="linear-programming">
+<h3>Linear programming<a class="headerlink" href="#linear-programming" title="Permalink to this headline">#</a></h3>
+<p>Linear programming, a mathematical technique for solving linearly
+constrained optimisation problems, is commonly used to determine survey
+weight values, where the criteria are defined maximum deviations from
+top-level demographic statistics. In <span id="id11">[<a class="reference internal" href="#id45" title="Charles Lound and Peter Broad. Initial review of the family resources survey weighting scheme. Office for National Statistics, 06 2013.">Lound and Broad, 2013</a>]</span>, linear programming methods are
+used to determine the optimal weights for the Family Resources Survey,
+according to limits on how far apart the FRS aggregates can be from
+national and regional population estimates. In both of <span id="id12">[<a class="reference internal" href="#id46" title="Tax Policy Center. Tax model documentation. TPC, 09 2022. URL: https://www.taxpolicycenter.org/resources/brief-description-tax-model.">Center, 2022</a>]</span> and <span id="id13">[<a class="reference internal" href="#id47" title="Policy Simulation Library. Tax-data model documentation. GitHub, 2020. URL: https://github.com/pslmodels/taxdata.">Library, 2020</a>]</span>, tax models
+apply a linear programming algorithm to solve for weight adjustments
+satisfying a combination of tax statistic deviation constraints, and
+weight adjustment magnitude limits.</p>
+</section>
+</section>
+<section id="applicable-machine-learning-techniques">
+<h2>Applicable machine learning techniques<a class="headerlink" href="#applicable-machine-learning-techniques" title="Permalink to this headline">#</a></h2>
+<p>There are several reasons why machine learning techniques are
+well-suited to the task of survey imputation. The most fundamental
+justification is in its context-agnostic nature: machine learning
+approaches do not require assumptions specific to the field they are
+applied in, unlike the current approaches to survey accuracy improvement
+(for example, the percentile adjustment methodology in <span id="id14">[<a class="reference internal" href="#id31" title="Richard Tonkin, Dominic Webber, Ozer Beha, Martin Shine, and Callum Clark. Top income adjustment in effects of taxes and benefits data: methodology. ONS, 2020. URL: https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/compendium/economicreview/february2020/topincomeadjustmentineffectsoftaxesandbenefitsdatamethodology.">Tonkin, Webber, Beha, Shine, and Clark, 2020</a>]</span>, which
+explicitly partitions households into ‘rich’ and ‘non-rich’ using
+arguably arbitrary definitions). In other domains, for example image
+classificaion, a move away from prescriptive methods towards loss
+function minimisation has seen substantially improved accuracy and
+robustness.<span id="id15">[<a class="reference internal" href="#id34" title="Dengsheng Lu. A survey of image classification methods and techniques for improving classification performance. International Journal of Remote Sensing, 28:823 - 870, 03 2007. doi:10.1080/01431160600746456.">Lu, 2007</a>]</span></p>
+<section id="gradient-descent">
+<h3>Gradient descent<a class="headerlink" href="#gradient-descent" title="Permalink to this headline">#</a></h3>
+<p>Gradient descent is a technique for finding parameters which minimise a
+loss function, by iteratively updating the parameters in the direction
+of the steepest negative gradient.<span id="id16">[<a class="reference internal" href="#id35" title="P. Baldi. Gradient descent learning algorithm overview: a general dynamical systems perspective. IEEE Transactions on Neural Networks, 6(1):182-195, 1995. doi:10.1109/72.363438.">Baldi, 1995</a>]</span> This is a highly common technique in
+machine learning, and is used in a variety of contexts, most notably as
+the foundation for training artificial neural networks. It relies on no
+domain-specific assumptions other than those present in the definition
+of the loss function, enabling it to be applied to a wide range of
+problems.</p>
+<p>Several variations of gradient descent have emerged over the years which
+achieve more efficient training procedures: stochastic gradient descent
+steps in the direction of an <em>estimate</em> of the gradient using individual
+training examples, rather than loading the full dataset.<span id="id17">[<a class="reference internal" href="#id36" title="Yeming Wen, Kevin Luk, Maxime Gazeau, Guodong Zhang, Harris Chan, and Jimmy Ba. An empirical study of stochastic gradient descent with structured covariance noise. In Silvia Chiappa and Roberto Calandra, editors, Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics, volume 108 of Proceedings of Machine Learning Research, 3621–3631. PMLR, 26–28 Aug 2020. URL: https://proceedings.mlr.press/v108/wen20a.html.">Wen, Luk, Gazeau, Zhang, Chan, and Ba, 2020</a>]</span> Mini-batch
+gradient descent represents a compromise between batch (full-dataset)
+and stochastic gradient descent, by iterating parameters using
+fixed-size subsets of the training data.<span id="id18">[<a class="reference internal" href="#id37" title="Sarit Khirirat, Hamid Reza Feyzmahdavian, and Mikael Johansson. Mini-batch gradient descent: faster convergence under data sparsity. In 2017 IEEE 56th Annual Conference on Decision and Control (CDC), volume, 2880-2887. 2017. doi:10.1109/CDC.2017.8264077.">Khirirat, Feyzmahdavian, and Johansson, 2017</a>]</span></p>
+<p>As well as gradient calculation methods, optimisation algorithms have
+revealed significant accuracy and efficiency improvements by defining
+behaviours for hyper-parameters such as the learning rate (the velocity
+at which parameters follow the gradient). These include Adam,<span id="id19">[<a class="reference internal" href="#id38" title="Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings. 2015. URL: http://arxiv.org/abs/1412.6980.">Kingma and Ba, 2015</a>]</span> AdaGrad,<span id="id20">[<a class="reference internal" href="#id39" title="John Duchi, Elad Hazan, and Yoram Singer. Adaptive subgradient methods for online learning and stochastic optimization. Journal of Machine Learning Research, 12(61):2121–2159, 2011. URL: http://jmlr.org/papers/v12/duchi11a.html.">Duchi, Hazan, and Singer, 2011</a>]</span>
+and RMSProp.</p>
+<p>Gradient descent could feasibly be applied to survey accuracy problems,
+since it requires only a loss function that is differentiable with
+respect to the parameters being optimised. In the context of survey
+accuracy, a loss function could be defined as the squared errors of
+individual aggregate statistics between official sources, and a survey,
+which would be continuously differentiable over the weights of
+individual household records.</p>
+</section>
+<section id="random-forest-models">
+<h3>Random forest models<a class="headerlink" href="#random-forest-models" title="Permalink to this headline">#</a></h3>
+<p>Random forest models are a type of ensemble learning technique, which
+combine the predictions of multiple decision trees to produce a more
+accurate prediction than any individual tree.<span id="id21">[<a class="reference internal" href="#id40" title="Leo Breiman. Random forests. Machine Learning, 45(1):5–32, 2001. URL: https://doi.org/10.1023/A:1010933404324, doi:10.1023/A:1010933404324.">Breiman, 2001</a>]</span> The decision trees are
+trained on a subset of the training data, and the predictions of each
+tree are combined using a voting system. Although its introduction is
+far less recent than more modern innovations in the field of neural
+networks (for example, artificial neural network variants<span id="id22">[<a class="reference internal" href="#id41" title="Wolfgang Schöllhorn and Jörg Jäger. A survey on various applications of artificial neural networks in selected fields of healthcare. Neural Networks in Healthcare: Potential and Challenges, pages 20-58, 01 2006. doi:10.4018/978-1-59140-848-2.ch002.">Schöllhorn and Jäger, 2006</a>]</span> or
+transformers<span id="id23">[<a class="reference internal" href="#id42" title="Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In I. Guyon, U. Von Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, Advances in Neural Information Processing Systems, volume 30. Curran Associates, Inc., 2017. URL: https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf.">Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin, 2017</a>]</span>), random forest models have shown consistently high
+accuracy across a wide range of domains, remaining competitive with the
+most recent techniques.</p>
+<p>This type of model has been applied (to a limited extent) in the context
+of policy analysis, and have shown superior performance in prediction
+tasks to logit and other model types.<span id="id24">[<a class="reference internal" href="#id43" title="Barbara Jarmulska. Random forest versus logit models: which offers better early warning of fiscal stress? European Central Bank Working Papers, 05 2020. URL: https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp2408~aa6b05aed7.en.pdf?9551c7c6e8e8fdbd35e5512b5afcf097.">Jarmulska, 2020</a>]</span></p>
+<p>There are several reasons why random forest models might outperform
+neural networks in predicting survey microdata values from other
+attributes (for example, predicting employment income from demographic
+variables), but the most natural reason is that tax-benefit law, which
+heavily influences financial decisions, is more similar in structure to
+a random forest than a neural network. For example, in <span id="id25">[<a class="reference internal" href="#id48" title="Tim Dowd and Robert McClelland. The bunching of capital gains realizations. National Tax Journal, 72(2):323-358, 2019. URL: https://doi.org/10.17310/ntj.2019.2.02, arXiv:https://doi.org/10.17310/ntj.2019.2.02, doi:10.17310/ntj.2019.2.02.">Dowd and McClelland, 2019</a>]</span> the authors
+found that capital gains variables are ‘unnaturally’ distributed in
+order to respond to incentives set by particular tax law parameters.</p>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">#</a></h2>
+<p>Current methods of enhancing surveys are largely effective at improving
+the accuracy of survey data on narrowly-defined subdomains (such as
+high-income analysis), but rely on explicit assumptions and are often
+not completely successful at bringing household surveys to the same
+level of accuracy as administrative data, especially at the low end of
+the income spectrum. Machine learning techniques such as random forest
+model imputation and gradient descent have shown promise in adjacent
+fields to public policy analysis, and could serve as more generalisable
+and effective replacements for the existing survey improvement methods.</p>
+<p>The body of research on current methods for improving survey data is
+useful for examining how effective specific approaches were in improving
+a survey’s answer to a narrow domain (for example, how adjusting income
+values improved the Gini index of income inequality), but there is
+little research on how each of the current methods, and any of the
+machine learning methods presented here, affects the overall picture of
+accuracy for a survey data. The reason for this is that many accuracy
+goals are orthogonal to each other: for example, improving the coverage
+of high taxable incomes might improve a survey’s estimate of total
+income tax liabilities, but if it achieves this by overestimating
+employment income compared to dividend income, then a survey’s estimates
+of payroll and dividend tax liabilities might each separately be
+reduced.</p>
+<p>An implementation a general survey accuracy loss function that takes
+into account all (or as many as is feasibly possible in the scope of
+this project) of these accuracy targets, as well as implementations of
+both current and potential methods of data manipulation, would allow for
+a more comprehensive comparison of the effectiveness of each method.</p>
+<div class="docutils container" id="id26">
+<dl class="citation">
+<dt class="label" id="id32"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>DWP. Households below average income (hbai) statistics. <em>GOV.UK</em>, 1992. URL: <a class="reference external" href="https://www.gov.uk/government/collections/households-below-average-income-hbai--2">https://www.gov.uk/government/collections/households-below-average-income-hbai--2</a>.</p>
+</dd>
+<dt class="label" id="id29"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id5">2</a>)</span></dt>
+<dd><p>Richard V. Burkhauser, Nicolas Hérault, Stephen P. Jenkins, and Roger Wilkins. Survey under-coverage of top incomes and estimation of inequality: what is the role of the uk's spi adjustment? <em>Fiscal Studies</em>, 39(2):213–240, 2018. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1475-5890.12158">https://onlinelibrary.wiley.com/doi/abs/10.1111/1475-5890.12158</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1475-5890.12158">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1475-5890.12158</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/1475-5890.12158">doi:https://doi.org/10.1111/1475-5890.12158</a>.</p>
+</dd>
+<dt class="label" id="id31"><span class="brackets">3</span><span class="fn-backref">(<a href="#id4">1</a>,<a href="#id14">2</a>)</span></dt>
+<dd><p>Richard Tonkin, Dominic Webber, Ozer Beha, Martin Shine, and Callum Clark. Top income adjustment in effects of taxes and benefits data: methodology. <em>ONS</em>, 2020. URL: <a class="reference external" href="https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/compendium/economicreview/february2020/topincomeadjustmentineffectsoftaxesandbenefitsdatamethodology">https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/compendium/economicreview/february2020/topincomeadjustmentineffectsoftaxesandbenefitsdatamethodology</a>.</p>
+</dd>
+<dt class="label" id="id28"><span class="brackets"><a class="fn-backref" href="#id7">4</a></span></dt>
+<dd><p>Tahnee Christelle Ooms. Correcting the underestimation of capital incomes in inequality indicators: with an application to the uk, 1997–2016. <em>Social Indicators Research</em>, 157(3):929–953, 2021. URL: <a class="reference external" href="https://doi.org/10.1007/s11205-021-02644-4">https://doi.org/10.1007/s11205-021-02644-4</a>, <a class="reference external" href="https://doi.org/10.1007/s11205-021-02644-4">doi:10.1007/s11205-021-02644-4</a>.</p>
+</dd>
+<dt class="label" id="id30"><span class="brackets"><a class="fn-backref" href="#id8">5</a></span></dt>
+<dd><p>Mike Brewer, Ben Etheridge, and Cormac O'Dea. Why are households that report the lowest incomes so well-off? <em>The Economic Journal</em>, 127(605):F24–F49, 2017. URL: <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/ecoj.12334">https://onlinelibrary.wiley.com/doi/abs/10.1111/ecoj.12334</a>, <a class="reference external" href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/ecoj.12334">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/ecoj.12334</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1111/ecoj.12334">doi:https://doi.org/10.1111/ecoj.12334</a>.</p>
+</dd>
+<dt class="label" id="id27"><span class="brackets"><a class="fn-backref" href="#id10">6</a></span></dt>
+<dd><p>Stephen McKay. Evaluating approaches to Family Resources Survey data linking. URL: <a class="reference external" href="https://www.gov.uk/government/publications/family-resources-survey-data-linking-wp110">https://www.gov.uk/government/publications/family-resources-survey-data-linking-wp110</a>.</p>
+</dd>
+<dt class="label" id="id45"><span class="brackets"><a class="fn-backref" href="#id11">7</a></span></dt>
+<dd><p>Charles Lound and Peter Broad. Initial review of the family resources survey weighting scheme. <em>Office for National Statistics</em>, 06 2013.</p>
+</dd>
+<dt class="label" id="id46"><span class="brackets"><a class="fn-backref" href="#id12">8</a></span></dt>
+<dd><p>Tax Policy Center. Tax model documentation. <em>TPC</em>, 09 2022. URL: <a class="reference external" href="https://www.taxpolicycenter.org/resources/brief-description-tax-model">https://www.taxpolicycenter.org/resources/brief-description-tax-model</a>.</p>
+</dd>
+<dt class="label" id="id47"><span class="brackets"><a class="fn-backref" href="#id13">9</a></span></dt>
+<dd><p>Policy Simulation Library. Tax-data model documentation. <em>GitHub</em>, 2020. URL: <a class="reference external" href="https://github.com/pslmodels/taxdata">https://github.com/pslmodels/taxdata</a>.</p>
+</dd>
+<dt class="label" id="id34"><span class="brackets"><a class="fn-backref" href="#id15">10</a></span></dt>
+<dd><p>Dengsheng Lu. A survey of image classification methods and techniques for improving classification performance. <em>International Journal of Remote Sensing</em>, 28:823 – 870, 03 2007. <a class="reference external" href="https://doi.org/10.1080/01431160600746456">doi:10.1080/01431160600746456</a>.</p>
+</dd>
+<dt class="label" id="id35"><span class="brackets"><a class="fn-backref" href="#id16">11</a></span></dt>
+<dd><p>P. Baldi. Gradient descent learning algorithm overview: a general dynamical systems perspective. <em>IEEE Transactions on Neural Networks</em>, 6(1):182–195, 1995. <a class="reference external" href="https://doi.org/10.1109/72.363438">doi:10.1109/72.363438</a>.</p>
+</dd>
+<dt class="label" id="id36"><span class="brackets"><a class="fn-backref" href="#id17">12</a></span></dt>
+<dd><p>Yeming Wen, Kevin Luk, Maxime Gazeau, Guodong Zhang, Harris Chan, and Jimmy Ba. An empirical study of stochastic gradient descent with structured covariance noise. In Silvia Chiappa and Roberto Calandra, editors, <em>Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics</em>, volume 108 of Proceedings of Machine Learning Research, 3621–3631. PMLR, 26–28 Aug 2020. URL: <a class="reference external" href="https://proceedings.mlr.press/v108/wen20a.html">https://proceedings.mlr.press/v108/wen20a.html</a>.</p>
+</dd>
+<dt class="label" id="id37"><span class="brackets"><a class="fn-backref" href="#id18">13</a></span></dt>
+<dd><p>Sarit Khirirat, Hamid Reza Feyzmahdavian, and Mikael Johansson. Mini-batch gradient descent: faster convergence under data sparsity. In <em>2017 IEEE 56th Annual Conference on Decision and Control (CDC)</em>, volume, 2880–2887. 2017. <a class="reference external" href="https://doi.org/10.1109/CDC.2017.8264077">doi:10.1109/CDC.2017.8264077</a>.</p>
+</dd>
+<dt class="label" id="id38"><span class="brackets"><a class="fn-backref" href="#id19">14</a></span></dt>
+<dd><p>Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, <em>3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings</em>. 2015. URL: <a class="reference external" href="http://arxiv.org/abs/1412.6980">http://arxiv.org/abs/1412.6980</a>.</p>
+</dd>
+<dt class="label" id="id39"><span class="brackets"><a class="fn-backref" href="#id20">15</a></span></dt>
+<dd><p>John Duchi, Elad Hazan, and Yoram Singer. Adaptive subgradient methods for online learning and stochastic optimization. <em>Journal of Machine Learning Research</em>, 12(61):2121–2159, 2011. URL: <a class="reference external" href="http://jmlr.org/papers/v12/duchi11a.html">http://jmlr.org/papers/v12/duchi11a.html</a>.</p>
+</dd>
+<dt class="label" id="id40"><span class="brackets"><a class="fn-backref" href="#id21">16</a></span></dt>
+<dd><p>Leo Breiman. Random forests. <em>Machine Learning</em>, 45(1):5–32, 2001. URL: <a class="reference external" href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a>, <a class="reference external" href="https://doi.org/10.1023/A:1010933404324">doi:10.1023/A:1010933404324</a>.</p>
+</dd>
+<dt class="label" id="id41"><span class="brackets"><a class="fn-backref" href="#id22">17</a></span></dt>
+<dd><p>Wolfgang Schöllhorn and Jörg Jäger. A survey on various applications of artificial neural networks in selected fields of healthcare. <em>Neural Networks in Healthcare: Potential and Challenges</em>, pages 20–58, 01 2006. <a class="reference external" href="https://doi.org/10.4018/978-1-59140-848-2.ch002">doi:10.4018/978-1-59140-848-2.ch002</a>.</p>
+</dd>
+<dt class="label" id="id42"><span class="brackets"><a class="fn-backref" href="#id23">18</a></span></dt>
+<dd><p>Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In I. Guyon, U. Von Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, and R. Garnett, editors, <em>Advances in Neural Information Processing Systems</em>, volume 30. Curran Associates, Inc., 2017. URL: <a class="reference external" href="https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf">https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf</a>.</p>
+</dd>
+<dt class="label" id="id43"><span class="brackets"><a class="fn-backref" href="#id24">19</a></span></dt>
+<dd><p>Barbara Jarmulska. Random forest versus logit models: which offers better early warning of fiscal stress? <em>European Central Bank Working Papers</em>, 05 2020. URL: <a class="reference external" href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp2408~aa6b05aed7.en.pdf?9551c7c6e8e8fdbd35e5512b5afcf097">https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp2408~aa6b05aed7.en.pdf?9551c7c6e8e8fdbd35e5512b5afcf097</a>.</p>
+</dd>
+<dt class="label" id="id48"><span class="brackets"><a class="fn-backref" href="#id25">20</a></span></dt>
+<dd><p>Tim Dowd and Robert McClelland. The bunching of capital gains realizations. <em>National Tax Journal</em>, 72(2):323–358, 2019. URL: <a class="reference external" href="https://doi.org/10.17310/ntj.2019.2.02">https://doi.org/10.17310/ntj.2019.2.02</a>, <a class="reference external" href="https://arxiv.org/abs/https://doi.org/10.17310/ntj.2019.2.02">arXiv:https://doi.org/10.17310/ntj.2019.2.02</a>, <a class="reference external" href="https://doi.org/10.17310/ntj.2019.2.02">doi:10.17310/ntj.2019.2.02</a>.</p>
+</dd>
+</dl>
+</div>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="id49"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>Previously, the DWP had not published its research underlying the methodology of the SPI adjustment</p>
+</dd>
+<dt class="label" id="id50"><span class="brackets"><a class="fn-backref" href="#id9">2</a></span></dt>
+<dd><p>Employers can count some in-kind benefits as payment towards the minimum wage, and there are other legal exceptions.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./literature_survey"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="../index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Literature survey</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#current-approaches-in-economic-surveys">Current approaches in economic surveys</a><ul>
+<li><a class="reference internal" href="#under-coverage-of-high-incomes">Under-coverage of high incomes</a><ul>
+<li><a class="reference internal" href="#income-decomposition">Income decomposition</a></li>
+<li><a class="reference internal" href="#stratification">Stratification</a></li>
+<li><a class="reference internal" href="#spi-lag">SPI lag</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adjustments-using-administrative-tax-data">Adjustments using administrative tax data</a><ul>
+<li><a class="reference internal" href="#pensioner-stratification">Pensioner stratification</a></li>
+<li><a class="reference internal" href="#choice-of-income-threshold">Choice of income threshold</a></li>
+<li><a class="reference internal" href="#id6">SPI lag</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capital-income-imputation">Capital income imputation</a></li>
+<li><a class="reference internal" href="#under-coverage-of-very-low-incomes">Under-coverage of very low incomes</a><ul>
+<li><a class="reference internal" href="#missing-benefit-spending">Missing benefit spending</a></li>
+<li><a class="reference internal" href="#sub-minimum-wage-reporting">Sub-minimum wage reporting</a></li>
+<li><a class="reference internal" href="#high-spending-ratios">High spending ratios</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linking-data-directly-to-administrative-data">Linking data directly to administrative data</a></li>
+<li><a class="reference internal" href="#linear-programming">Linear programming</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#applicable-machine-learning-techniques">Applicable machine learning techniques</a><ul>
+<li><a class="reference internal" href="#gradient-descent">Gradient descent</a></li>
+<li><a class="reference internal" href="#random-forest-models">Random forest models</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    </body>
+</html>
