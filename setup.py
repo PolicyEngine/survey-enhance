@@ -18,6 +18,7 @@ setup(
             "sphinx>=4.5.0,<5",
             "sphinx-argparse>=0.3.2,<1",
             "sphinx-math-dollar>=1.2.1,<2",
+            "furo<2023",
         ],
     },
 )

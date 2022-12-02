@@ -70,7 +70,8 @@ class LossCategory(torch.nn.Module):
             pass
         
         if any(subloss.weight is None for subloss in self.sublosses):
-            raise ValueError(f"Loss category {self.__class__.__name__} has sublosses with no weight. These are: {'\n  - '.join([subloss.__class__.__name__ for subloss in self.sublosses if subloss.weight is None])}")
+            sublosses_str = "\n  - " + '\n  - '.join([subloss.__class__.__name__ for subloss in self.sublosses if subloss.weight is None])
+            raise ValueError(f"Loss category {self.__class__.__name__} has sublosses with no weight. These are: {sublosses_str}")
         total_subloss_weight = sum(subloss.weight for subloss in self.sublosses)
         for subloss in self.sublosses:
             subcategory_loss = subloss(household_weights, dataset) / total_subloss_weight

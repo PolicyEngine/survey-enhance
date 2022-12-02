@@ -113,6 +113,7 @@ class CountryLevelProgram(LossCategory):
     variable: str
 
     def forward(self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False) -> torch.Tensor:
+        print(f"Intervening on {self.variable}")
         parameter = self.calibration_parameters.programs._children[
             self.variable
         ]
@@ -155,6 +156,8 @@ class CountryLevelProgram(LossCategory):
                 participant_loss,
             )
         ])
+
+        print("Normal forward")
         
         super().forward(household_weights, dataset, initial_run)
 
