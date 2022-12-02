@@ -5,7 +5,7 @@ import numpy as np
 
 class Households(LossCategory):
     weight = 1
-    static_dataset = True
+    static_dataset = False
 
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
         region_ct_band_parameter = (

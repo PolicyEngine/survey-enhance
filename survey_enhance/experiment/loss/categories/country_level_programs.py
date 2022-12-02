@@ -1,4 +1,5 @@
 from survey_enhance.loss import LossCategory, Dataset
+from survey_enhance.dataset import sum_by_household
 from policyengine_uk.tools.simulation import Microsimulation
 import torch
 import numpy as np
@@ -8,7 +9,7 @@ from typing import Iterable, Tuple, List
 
 class CountryLevelProgram(LossCategory):
     weight = 1
-    static_dataset = True
+    static_dataset = False
     variable: str
 
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
@@ -161,6 +162,104 @@ class SavingsInterestIncome(CountryLevelProgram):
 class DividendIncome(CountryLevelProgram):
     variable = "dividend_income"
 
+class IncomeTax(LossCategory):
+    weight = 1
+    static_dataset = False
+
+    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+        income_tax = dataset.person_df.income_tax
+        total_income = dataset.person_df.adjusted_net_income
+        countries = dataset.household_df.country
+        household_income_tax = dataset.household_df.income_tax
+
+        it = self.calibration_parameters.programs.income_tax
+
+        comparisons = []
+
+        # Revenue by country
+
+        for country in ("ENGLAND", "WALES", "NORTHERN_IRELAND", "SCOTLAND"):
+            comparisons += [
+                (
+                    f"income_tax_{country}",
+                    household_income_tax * (countries == country),
+                    it.budgetary_impact.by_country._children[country],
+                )
+            ]
+
+        comparisons += [
+            (
+                "income_tax_UNITED_KINGDOM",
+                household_income_tax,
+                it.budgetary_impact.by_country._children["UNITED_KINGDOM"],
+            )
+        ]
+
+        # Revenue by income band
+
+        scale = it.budgetary_impact.by_income
+
+        for i in range(len(scale.thresholds)):
+            lower_threshold = scale.thresholds[i]
+            upper_threshold = (
+                scale.thresholds[i + 1]
+                if i < len(scale.thresholds) - 1
+                else np.inf
+            )
+
+            income_is_in_band = (total_income >= lower_threshold) * (
+                total_income < upper_threshold
+            )
+            household_values = sum_by_household(
+                income_tax * income_is_in_band, dataset,
+            )
+
+            amount = scale.amounts[i]
+            comparisons += [
+                (
+                    f"income_tax_by_income_{i}",
+                    household_values,
+                    amount,
+                )
+            ]
+
+        # Taxpayers by country and income band
+
+        tax_band = dataset.person_df.tax_band
+        tax_band = np.select(
+            [
+                tax_band == "STARTER",
+                tax_band == "INTERMEDIATE",
+                True,
+            ],
+            [
+                "BASIC",
+                "BASIC",
+                tax_band,
+            ],
+        )
+
+        person_country = dataset.household_df.country
+
+        for country in ("ENGLAND", "WALES", "NORTHERN_IRELAND", "SCOTLAND"):
+            for band in ("BASIC", "HIGHER", "ADDITIONAL"):
+                comparisons += [
+                    (
+                        f"income_tax_payers_{country}_{band}",
+                        sum_by_household(
+                            (income_tax > 0)
+                            * (person_country == country)
+                            * (tax_band == band),
+                            dataset
+                        ),
+                        it.participants.by_country_and_band._children[
+                            country
+                        ]._children[band],
+                    )
+                ]
+        
+        return comparisons
+
 country_level_programs = [
     UniversalCredit,
     ChildBenefit,
@@ -180,4 +279,5 @@ country_level_programs = [
     SavingsInterestIncome,
     PropertyIncome,
     DividendIncome,
+    IncomeTax,
 ]

@@ -3,16 +3,8 @@ import pandas as pd
 from policyengine_core.parameters import ParameterNodeAtInstant
 from typing import List, Type, Tuple
 import numpy as np
+from survey_enhance.dataset import Dataset
 
-class Dataset:
-    person_df: pd.DataFrame
-    benunit_df: pd.DataFrame
-    household_df: pd.DataFrame
-
-    def __init__(self, person_df: pd.DataFrame, benunit_df: pd.DataFrame, household_df: pd.DataFrame):
-        self.person_df = person_df
-        self.benunit_df = benunit_df
-        self.household_df = household_df
 
 class LossCategory(torch.nn.Module):
     weight: float = 1.
@@ -41,7 +33,7 @@ class LossCategory(torch.nn.Module):
         raise NotImplementedError(f"Loss category {self.__class__.__name__} does not implement an evaluation method.")
 
     def collect_comparison_log(self) -> pd.DataFrame:
-        df = pd.DataFrame(self.comparison_log, columns=["epoch", "name", "y_true", "y_pred"])
+        df = pd.DataFrame(self.comparison_log, columns=["epoch", "name", "y_true", "y_pred", "loss"])
         for subloss in self.sublosses:
             df = df.append(subloss.collect_comparison_log())
         return df
@@ -59,8 +51,9 @@ class LossCategory(torch.nn.Module):
             # y_pred_array needs to be a weighted sum with household_weights
             y_pred_array = torch.Tensor(y_pred_array.astype(float))
             y_pred = torch.sum(y_pred_array * household_weights)
-            loss += torch.abs(y_true - y_pred) ** 2
-            self.comparison_log.append((self.epoch, name, y_true, float(y_pred)))
+            loss_addition = torch.abs(y_true - y_pred) ** 2
+            loss += loss_addition
+            self.comparison_log.append((self.epoch, name, y_true, float(y_pred), float(loss_addition)))
         self.epoch += 1
         return loss
     
@@ -71,18 +64,20 @@ class LossCategory(torch.nn.Module):
         loss = torch.tensor(0.)
 
         try:
-            subcategory_loss = self.evaluate(household_weights, dataset)
-            loss += subcategory_loss
+            self_loss = self.evaluate(household_weights, dataset)
+            loss += self_loss
         except NotImplementedError:
             pass
 
+        total_subloss_weight = sum(subloss.weight for subloss in self.sublosses)
         for subloss in self.sublosses:
-            loss += subloss(household_weights, dataset) * subloss.weight
+            subcategory_loss = subloss(household_weights, dataset) / total_subloss_weight
+            self.comparison_log.append(
+                (self.epoch, subloss.__class__.__name__, 0, 0, float(subcategory_loss))
+            )
+            loss += subcategory_loss
         
         if initial_run:
             return loss
         else:
-            return (loss - self.initial_loss_value) * self.weight
-
-def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:
-    return pd.Series(values).groupby(dataset.person_df.person_household_id).sum().values
+            return (loss / self.initial_loss_value) * self.weight

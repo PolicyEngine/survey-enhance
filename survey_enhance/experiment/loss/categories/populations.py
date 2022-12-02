@@ -1,11 +1,12 @@
-from survey_enhance.loss import LossCategory, Dataset, sum_by_household
+from survey_enhance.loss import LossCategory
+from survey_enhance.dataset import Dataset, sum_by_household
 import torch
 from typing import List, Tuple
 import numpy as np
 
 class Populations(LossCategory):
     weight = 1
-    static_dataset = True
+    static_dataset = False
 
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
         comparisons = []
