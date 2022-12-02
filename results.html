@@ -222,36 +222,43 @@ df = pd.DataFrame({
 })
 
 df[&quot;Accuracy improvement&quot;] = [f&quot;{x:+.2%}&quot; if x != 0 else f&quot;{x:.2%}&quot; for x in (df[&quot;Loss&quot;].iloc[0] - df[&quot;Loss&quot;]) / df[&quot;Loss&quot;].iloc[0]]
-df.sort_values(&quot;Loss&quot;).drop(columns=[&quot;Loss&quot;]).style.hide(subset=None, level=None, names=False)
+df = df.sort_values(&quot;Loss&quot;).drop(columns=[&quot;Loss&quot;])
+
+# Hide the index and embolden the &quot;None&quot; row.
+
+df.style.hide_index().set_properties(**{&#39;font-weight&#39;: &#39;bold&#39;}, subset=pd.IndexSlice[[0], :])
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><style type="text/css">
+#T_d1dd3_row1_col0, #T_d1dd3_row1_col1 {
+  font-weight: bold;
+}
 </style>
-<table id="T_7a2d0">
+<table id="T_d1dd3">
   <thead>
     <tr>
-      <th id="T_7a2d0_level0_col0" class="col_heading level0 col0" >Adjustment</th>
-      <th id="T_7a2d0_level0_col1" class="col_heading level0 col1" >Accuracy improvement</th>
+      <th id="T_d1dd3_level0_col0" class="col_heading level0 col0" >Adjustment</th>
+      <th id="T_d1dd3_level0_col1" class="col_heading level0 col1" >Accuracy improvement</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_7a2d0_row0_col0" class="data row0 col0" >Percentile matching (dividends only)</td>
-      <td id="T_7a2d0_row0_col1" class="data row0 col1" >+0.13%</td>
+      <td id="T_d1dd3_row0_col0" class="data row0 col0" >Percentile matching (dividends only)</td>
+      <td id="T_d1dd3_row0_col1" class="data row0 col1" >+0.13%</td>
     </tr>
     <tr>
-      <td id="T_7a2d0_row1_col0" class="data row1 col0" >None</td>
-      <td id="T_7a2d0_row1_col1" class="data row1 col1" >0.00%</td>
+      <td id="T_d1dd3_row1_col0" class="data row1 col0" >None</td>
+      <td id="T_d1dd3_row1_col1" class="data row1 col1" >0.00%</td>
     </tr>
     <tr>
-      <td id="T_7a2d0_row2_col0" class="data row2 col0" >Percentile matching (pensioner/non-pensioner split)</td>
-      <td id="T_7a2d0_row2_col1" class="data row2 col1" >-0.90%</td>
+      <td id="T_d1dd3_row2_col0" class="data row2 col0" >Percentile matching (pensioner/non-pensioner split)</td>
+      <td id="T_d1dd3_row2_col1" class="data row2 col1" >-0.90%</td>
     </tr>
     <tr>
-      <td id="T_7a2d0_row3_col0" class="data row3 col0" >Percentile matching (all)</td>
-      <td id="T_7a2d0_row3_col1" class="data row3 col1" >-3.92%</td>
+      <td id="T_d1dd3_row3_col0" class="data row3 col0" >Percentile matching (all)</td>
+      <td id="T_d1dd3_row3_col1" class="data row3 col1" >-3.92%</td>
     </tr>
   </tbody>
 </table>
