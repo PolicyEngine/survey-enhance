@@ -31,6 +31,7 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
                 parameter.budgetary_impact._children["UNITED_KINGDOM"]
             ]
             names += [f"{self.variable}_budgetary_impact_UNITED_KINGDOM"]
+        
         if "GREAT_BRITAIN" in parameter.budgetary_impact._children:
             pred += [values * (countries != "NORTHERN_IRELAND")]
             targets += [
@@ -112,8 +113,11 @@ class CountryLevelProgram(LossCategory):
     static_dataset = False
     variable: str
 
-    def __init__(self, dataset: Dataset, calibration_parameters: ParameterNodeAtInstant, weight: float = None, ancestor: "LossCategory" = None):
-        super().__init__(dataset, calibration_parameters, weight, ancestor)
+    def __init__(self, 
+        *args,
+        **kwargs
+    ):
+        super().__init__(*args, **kwargs)
         parameter = self.calibration_parameters.programs._children[
             self.variable
         ]
@@ -137,20 +141,38 @@ class CountryLevelProgram(LossCategory):
         if self.weight is None:
             raise ValueError(f"I tried to ensure that {self.variable} is weighted by its budgetary impact, but I couldn't find a budgetary impact for it.")
 
+        self.weight /= 1e9
+
         budgetary_impact_loss = type(
             f"{self.variable}_budgetary_impact",
             (CountryLevelProgramBudgetaryImpact,),
-            {"variable": self.variable, "ancestor": self.ancestor},
+            {
+                "variable": self.variable, 
+                "ancestor": self.ancestor, 
+                "calibration_parameters": self.calibration_parameters,
+                "static_dataset": self.static_dataset,
+                "comparison_white_list": self.comparison_white_list,
+                "comparison_black_list": self.comparison_black_list,
+                "name": self.name,
+            },
         )
-
+        
         participant_loss = type(
             f"{self.variable}_participants",
             (CountryLevelProgramParticipants,),
-            {"variable": self.variable, "ancestor": self.ancestor},
+            {
+                "variable": self.variable, 
+                "ancestor": self.ancestor, 
+                "calibration_parameters": self.calibration_parameters,
+                "static_dataset": self.static_dataset,
+                "comparison_white_list": self.comparison_white_list,
+                "comparison_black_list": self.comparison_black_list,
+                "name": self.name,
+            },
         )
         
         self.sublosses = torch.nn.ModuleList([
-            subcategory(dataset, self.calibration_parameters)
+            subcategory(self.dataset, self.calibration_parameters, ancestor=self.ancestor, static_dataset=self.static_dataset, comparison_white_list=self.comparison_white_list, comparison_black_list=self.comparison_black_list)
             for subcategory in (
                 budgetary_impact_loss,
                 participant_loss,
@@ -231,7 +253,7 @@ class DividendIncome(CountryLevelProgram):
 
 class IncomeTax(LossCategory):
     weight = 1
-    static_dataset = False
+    static_dataset = True
 
     def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
         income_tax = dataset.person_df.income_tax

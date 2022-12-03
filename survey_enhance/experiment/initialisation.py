@@ -16,7 +16,7 @@ calibration_parameters = calibration_parameters("2022-01-01").calibration
 
 import torch
 
-household_weights = torch.Tensor(dataset.household_df.household_weight)
+household_weights = torch.tensor(dataset.household_df.household_weight.values, requires_grad=True)
 
 loss = Loss(dataset, calibration_parameters)
 

@@ -49,6 +49,7 @@ def create_frs_dataset(
         "region",
         "country",
         "adjusted_net_income",
+        "employment_status",
     ]
 
     BENUNIT_COLUMNS = [
@@ -118,6 +119,11 @@ def create_frs_dataset(
         if "float" in str(frs_benunit_df[benunit_variable].dtype) or "int" in str(frs_benunit_df[benunit_variable].dtype):
             frs_benunit_df[f"{benunit_variable}_participants"] = frs_benunit_df[benunit_variable] > 0
             frs_household_df[f"{benunit_variable}_participants"] = frs_benunit_df.groupby("household_id")[f"{benunit_variable}_participants"].transform("sum")
+
+    for household_variable in HOUSEHOLD_COLUMNS:
+        # Add a participants column to the household dataframe, if numeric
+        if ("float" in str(frs_household_df[household_variable].dtype) or "int" in str(frs_household_df[household_variable].dtype)) and "_participants" not in household_variable:
+            frs_household_df[f"{household_variable}_participants"] = frs_household_df[household_variable] > 0
 
     return Dataset(
         person_df=frs_person_df,
