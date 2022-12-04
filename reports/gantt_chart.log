@@ -27,8 +27,20 @@ df["Start week"] = df["Complete in week"] - 1
 df["Complete by week"] = df["Complete in week"] + df["Duration"] - 1
 
 # Weeks are numbered from 1, where 1 is 2022/10/04.
-df["Start date"] = df["Start week"].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
-df["Complete date"] = df["Complete by week"].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
+df["Start date"] = (
+    df["Start week"]
+    .apply(
+        lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)
+    )
+    .astype(str)
+)
+df["Complete date"] = (
+    df["Complete by week"]
+    .apply(
+        lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)
+    )
+    .astype(str)
+)
 
 df["Task number"] = df.index + 1
 fig = px.timeline(
@@ -36,7 +48,7 @@ fig = px.timeline(
     x_start="Start date",
     x_end="Complete date",
     y="Task number",
-    text="Complete by week"
+    text="Complete by week",
 )
 fig.update_yaxes(autorange="reversed")
 fig.update_layout(
@@ -48,18 +60,18 @@ fig.update_layout(width=800, height=600)
 import plotly.io as pio
 
 pio.full_figure_for_development(fig, warn=False)
-fig.write_image("gantt_chart.pdf",engine="kaleido")
+fig.write_image("gantt_chart.pdf", engine="kaleido")
 fig
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mValueError[0m                                Traceback (most recent call last)
-Cell [0;32mIn[1], line 31[0m
-[1;32m     27[0m fig[38;5;241m.[39mupdate_layout(width[38;5;241m=[39m[38;5;241m800[39m, height[38;5;241m=[39m[38;5;241m600[39m)
-[1;32m     29[0m [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mio[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpio[39;00m
-[0;32m---> 31[0m [43mpio[49m[38;5;241;43m.[39;49m[43mfull_figure_for_development[49m[43m([49m[43mfig[49m[43m,[49m[43m [49m[43mwarn[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m)[49m
-[1;32m     32[0m fig[38;5;241m.[39mwrite_image([38;5;124m"[39m[38;5;124mgantt_chart.pdf[39m[38;5;124m"[39m,engine[38;5;241m=[39m[38;5;124m"[39m[38;5;124mkaleido[39m[38;5;124m"[39m)
-[1;32m     33[0m fig
+Cell [0;32mIn[1], line 43[0m
+[1;32m     39[0m fig[38;5;241m.[39mupdate_layout(width[38;5;241m=[39m[38;5;241m800[39m, height[38;5;241m=[39m[38;5;241m600[39m)
+[1;32m     41[0m [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mio[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpio[39;00m
+[0;32m---> 43[0m [43mpio[49m[38;5;241;43m.[39;49m[43mfull_figure_for_development[49m[43m([49m[43mfig[49m[43m,[49m[43m [49m[43mwarn[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m)[49m
+[1;32m     44[0m fig[38;5;241m.[39mwrite_image([38;5;124m"[39m[38;5;124mgantt_chart.pdf[39m[38;5;124m"[39m, engine[38;5;241m=[39m[38;5;124m"[39m[38;5;124mkaleido[39m[38;5;124m"[39m)
+[1;32m     45[0m fig
 
 File [0;32m/opt/hostedtoolcache/Python/3.9.15/x64/lib/python3.9/site-packages/plotly/io/_kaleido.py:328[0m, in [0;36mfull_figure_for_development[0;34m(fig, warn, as_dict)[0m
 [1;32m    326[0m     [38;5;66;03m# Raise informative error message if Kaleido is not installed[39;00m

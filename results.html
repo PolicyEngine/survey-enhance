@@ -203,62 +203,74 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
 import warnings
-warnings.filterwarnings(&#39;ignore&#39;)
-warnings.simplefilter(action=&#39;ignore&#39;)
 
-df = pd.DataFrame({
-    &quot;Adjustment&quot;: [
-        &quot;None&quot;, 
-        &quot;Percentile matching (all)&quot;, 
-        &quot;Percentile matching (pensioner/non-pensioner split)&quot;,
-        &quot;Percentile matching (dividends only)&quot;
-    ],
-    &quot;Loss&quot;: [
-        1., 
-        1.039242148399353, 
-        1.0089750289916992,
-        0.9986706972122192
-    ],
-})
+warnings.filterwarnings(&quot;ignore&quot;)
+warnings.simplefilter(action=&quot;ignore&quot;)
 
-df[&quot;Accuracy improvement&quot;] = [f&quot;{x:+.2%}&quot; if x != 0 else f&quot;{x:.2%}&quot; for x in (df[&quot;Loss&quot;].iloc[0] - df[&quot;Loss&quot;]) / df[&quot;Loss&quot;].iloc[0]]
+df = pd.DataFrame(
+    {
+        &quot;Adjustment&quot;: [
+            &quot;None&quot;,
+            &quot;Percentile matching (all)&quot;,
+            &quot;Percentile matching (pensioner/non-pensioner split)&quot;,
+            &quot;Percentile matching (dividends only)&quot;,
+            &quot;Gradient descent-based reweighting&quot;,
+        ],
+        &quot;Loss&quot;: [
+            1.0,
+            1.039242148399353,
+            1.0089750289916992,
+            0.9986706972122192,
+            0.40872600000000003,
+        ],
+    }
+)
+
+df[&quot;Loss change&quot;] = [
+    f&quot;{x:+.2%}&quot; if x != 0 else f&quot;{x:.2%}&quot;
+    for x in (df[&quot;Loss&quot;] / df[&quot;Loss&quot;].iloc[0]) - 1
+]
 df = df.sort_values(&quot;Loss&quot;).drop(columns=[&quot;Loss&quot;])
 
-# Hide the index and embolden the &quot;None&quot; row.
-
-df.style.hide_index().set_properties(**{&#39;font-weight&#39;: &#39;bold&#39;}, subset=pd.IndexSlice[[0], :])
+df.style.hide_index().set_properties(
+    **{&quot;font-weight&quot;: &quot;bold&quot;}, subset=pd.IndexSlice[[0], :]
+)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><style type="text/css">
-#T_40b11_row1_col0, #T_40b11_row1_col1 {
+#T_7879f_row2_col0, #T_7879f_row2_col1 {
   font-weight: bold;
 }
 </style>
-<table id="T_40b11">
+<table id="T_7879f">
   <thead>
     <tr>
-      <th id="T_40b11_level0_col0" class="col_heading level0 col0" >Adjustment</th>
-      <th id="T_40b11_level0_col1" class="col_heading level0 col1" >Accuracy improvement</th>
+      <th id="T_7879f_level0_col0" class="col_heading level0 col0" >Adjustment</th>
+      <th id="T_7879f_level0_col1" class="col_heading level0 col1" >Loss change</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_40b11_row0_col0" class="data row0 col0" >Percentile matching (dividends only)</td>
-      <td id="T_40b11_row0_col1" class="data row0 col1" >+0.13%</td>
+      <td id="T_7879f_row0_col0" class="data row0 col0" >Gradient descent-based reweighting</td>
+      <td id="T_7879f_row0_col1" class="data row0 col1" >-59.13%</td>
     </tr>
     <tr>
-      <td id="T_40b11_row1_col0" class="data row1 col0" >None</td>
-      <td id="T_40b11_row1_col1" class="data row1 col1" >0.00%</td>
+      <td id="T_7879f_row1_col0" class="data row1 col0" >Percentile matching (dividends only)</td>
+      <td id="T_7879f_row1_col1" class="data row1 col1" >-0.13%</td>
     </tr>
     <tr>
-      <td id="T_40b11_row2_col0" class="data row2 col0" >Percentile matching (pensioner/non-pensioner split)</td>
-      <td id="T_40b11_row2_col1" class="data row2 col1" >-0.90%</td>
+      <td id="T_7879f_row2_col0" class="data row2 col0" >None</td>
+      <td id="T_7879f_row2_col1" class="data row2 col1" >0.00%</td>
     </tr>
     <tr>
-      <td id="T_40b11_row3_col0" class="data row3 col0" >Percentile matching (all)</td>
-      <td id="T_40b11_row3_col1" class="data row3 col1" >-3.92%</td>
+      <td id="T_7879f_row3_col0" class="data row3 col0" >Percentile matching (pensioner/non-pensioner split)</td>
+      <td id="T_7879f_row3_col1" class="data row3 col1" >+0.90%</td>
+    </tr>
+    <tr>
+      <td id="T_7879f_row4_col0" class="data row4 col0" >Percentile matching (all)</td>
+      <td id="T_7879f_row4_col1" class="data row4 col1" >+3.92%</td>
     </tr>
   </tbody>
 </table>

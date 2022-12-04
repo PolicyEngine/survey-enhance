@@ -208,8 +208,20 @@ df[&quot;Start week&quot;] = df[&quot;Complete in week&quot;] - 1
 df[&quot;Complete by week&quot;] = df[&quot;Complete in week&quot;] + df[&quot;Duration&quot;] - 1
 
 # Weeks are numbered from 1, where 1 is 2022/10/04.
-df[&quot;Start date&quot;] = df[&quot;Start week&quot;].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
-df[&quot;Complete date&quot;] = df[&quot;Complete by week&quot;].apply(lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)).astype(str)
+df[&quot;Start date&quot;] = (
+    df[&quot;Start week&quot;]
+    .apply(
+        lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)
+    )
+    .astype(str)
+)
+df[&quot;Complete date&quot;] = (
+    df[&quot;Complete by week&quot;]
+    .apply(
+        lambda x: datetime.datetime(2022, 10, 4) + datetime.timedelta(weeks=x)
+    )
+    .astype(str)
+)
 
 df[&quot;Task number&quot;] = df.index + 1
 fig = px.timeline(
@@ -217,7 +229,7 @@ fig = px.timeline(
     x_start=&quot;Start date&quot;,
     x_end=&quot;Complete date&quot;,
     y=&quot;Task number&quot;,
-    text=&quot;Complete by week&quot;
+    text=&quot;Complete by week&quot;,
 )
 fig.update_yaxes(autorange=&quot;reversed&quot;)
 fig.update_layout(
@@ -229,7 +241,7 @@ fig.update_layout(width=800, height=600)
 import plotly.io as pio
 
 pio.full_figure_for_development(fig, warn=False)
-fig.write_image(&quot;gantt_chart.pdf&quot;,engine=&quot;kaleido&quot;)
+fig.write_image(&quot;gantt_chart.pdf&quot;, engine=&quot;kaleido&quot;)
 fig
 </pre></div>
 </div>
