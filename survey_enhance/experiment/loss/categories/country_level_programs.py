@@ -365,7 +365,7 @@ class IncomeTax(LossCategory):
             ],
         )
 
-        person_country = dataset.household_df.country
+        person_country = dataset.person_df.country
 
         for country in ("ENGLAND", "WALES", "NORTHERN_IRELAND", "SCOTLAND"):
             for band in ("BASIC", "HIGHER", "ADDITIONAL"):

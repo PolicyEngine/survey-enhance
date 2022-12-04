@@ -1,15 +1,17 @@
-from survey_enhance.experiment.initialisation import (
+from survey_enhance.experiment.dataset import (
     dataset,
     calibration_parameters,
-    Loss,
     create_frs_dataset,
-    household_weights,
 )
-from survey_enhance.reweight import LossCategory
-from survey_enhance.experiment.loss.loss import Programs
 from typing import Type
+from survey_enhance.experiment.loss.loss import Loss
+import torch
+from torch import optim
+import numpy as np
+import pandas as pd
 
 loss = Loss(dataset, calibration_parameters, static_dataset=True)
+household_weights = torch.tensor(dataset.household_df.household_weight.values)
 
 initial_loss = loss(household_weights, dataset)
 
@@ -17,11 +19,6 @@ NUM_HOLDOUT_SETS = 10
 holdout_sets = loss.create_holdout_sets(
     dataset, NUM_HOLDOUT_SETS, exclude_by_name="Demographics"
 )
-
-import torch
-from torch import optim
-import numpy as np
-import pandas as pd
 
 torch.autograd.set_grad_enabled(True)
 

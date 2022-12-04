@@ -1,12 +1,13 @@
-from survey_enhance.experiment.initialisation import (
+from survey_enhance.experiment.dataset import (
     dataset,
     calibration_parameters,
-    Loss,
     create_frs_dataset,
-    household_weights,
 )
+from survey_enhance.experiment.loss.loss import Loss
+import torch
 
 initial_loss = Loss(dataset, calibration_parameters)
+household_weights = torch.tensor(dataset.household_df.household_weight.values)
 
 from survey_enhance.percentile_matching import (
     match_percentiles_df,
