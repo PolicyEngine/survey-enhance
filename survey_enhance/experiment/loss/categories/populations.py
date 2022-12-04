@@ -1,14 +1,17 @@
-from survey_enhance.loss import LossCategory
-from survey_enhance.dataset import Dataset, sum_by_household
+from survey_enhance.reweight import LossCategory
+from survey_enhance.experiment.dataset import Dataset, sum_by_household
 import torch
 from typing import List, Tuple
 import numpy as np
+
 
 class Populations(LossCategory):
     weight = 1
     static_dataset = False
 
-    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
         comparisons = []
         age = dataset.person_df.age
         sex = dataset.person_df.gender
@@ -64,7 +67,8 @@ class Populations(LossCategory):
                 (
                     f"{lower_age}_{lower_age + 10}",
                     sum_by_household(
-                        meets_age_criteria, dataset,
+                        meets_age_criteria,
+                        dataset,
                     ),
                     age_population,
                 )

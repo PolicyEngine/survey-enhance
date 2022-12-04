@@ -1,17 +1,21 @@
-from survey_enhance.loss import LossCategory, Dataset
-from survey_enhance.dataset import sum_by_household
+from survey_enhance.reweight import LossCategory, Dataset
+from survey_enhance.experiment.dataset import sum_by_household
 from policyengine_core.parameters import ParameterNodeAtInstant
 import torch
 import numpy as np
 from policyengine_core.parameters import ParameterNode, Parameter
 from typing import Iterable, Tuple, List
 
+
 class CountryLevelProgramBudgetaryImpact(LossCategory):
     weight = 1
     static_dataset = False
     variable: str
+    taxpayer_only = False
 
-    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
         countries = dataset.household_df.country
         pred = []
         targets = []
@@ -21,22 +25,24 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
             self.variable
         ]
 
-        values = dataset.household_df[self.variable].values
+        if self.taxpayer_only:
+            is_taxpayer = dataset.household_df.income_tax_participants.values
+            personal_values = dataset.person_df[self.variable].values
+            personal_values = personal_values[is_taxpayer]
+            values = sum_by_household(personal_values, dataset)
+        else:
+            values = dataset.household_df[self.variable].values
 
         # Budgetary impacts
 
         if "UNITED_KINGDOM" in parameter.budgetary_impact._children:
             pred += [values]
-            targets += [
-                parameter.budgetary_impact._children["UNITED_KINGDOM"]
-            ]
+            targets += [parameter.budgetary_impact._children["UNITED_KINGDOM"]]
             names += [f"{self.variable}_budgetary_impact_UNITED_KINGDOM"]
-        
+
         if "GREAT_BRITAIN" in parameter.budgetary_impact._children:
             pred += [values * (countries != "NORTHERN_IRELAND")]
-            targets += [
-                parameter.budgetary_impact._children["GREAT_BRITAIN"]
-            ]
+            targets += [parameter.budgetary_impact._children["GREAT_BRITAIN"]]
             names += [f"{self.variable}_budgetary_impact_GREAT_BRITAIN"]
 
         for single_country in (
@@ -50,21 +56,23 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
                 targets += [
                     parameter.budgetary_impact._children[single_country]
                 ]
-                names += [
-                    f"{self.variable}_budgetary_impact_{single_country}"
-                ]
+                names += [f"{self.variable}_budgetary_impact_{single_country}"]
 
         comparisons = []
         for name, value, target in zip(names, pred, targets):
             comparisons += [(name, value, target)]
         return comparisons
 
+
 class CountryLevelProgramParticipants(LossCategory):
     weight = 1
     static_dataset = False
     variable: str
+    taxpayer_only = False
 
-    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
         countries = dataset.household_df.country
         pred = []
         targets = []
@@ -75,13 +83,21 @@ class CountryLevelProgramParticipants(LossCategory):
         ]
 
         if "participants" in parameter._children:
-            values = dataset.household_df[f"{self.variable}_participants"]
+            if self.taxpayer_only:
+                is_taxpayer = (
+                    dataset.household_df.income_tax_participants.values
+                )
+                personal_values = dataset.person_df[self.variable].values
+                personal_values = personal_values[is_taxpayer]
+                values = sum_by_household(personal_values > 0, dataset)
+            else:
+                values = dataset.household_df[
+                    self.variable + "_participants"
+                ].values
 
             if "UNITED_KINGDOM" in parameter.participants._children:
                 pred += [values]
-                targets += [
-                    parameter.participants._children["UNITED_KINGDOM"]
-                ]
+                targets += [parameter.participants._children["UNITED_KINGDOM"]]
                 names += [f"{self.variable}_participants_UNITED_KINGDOM"]
             if "GREAT_BRITAIN" in parameter.participants._children:
                 pred += [values * (countries != "NORTHERN_IRELAND")]
@@ -99,24 +115,21 @@ class CountryLevelProgramParticipants(LossCategory):
                     targets += [
                         parameter.participants._children[single_country]
                     ]
-                    names += [
-                        f"{self.variable}_participants_{single_country}"
-                    ]
-        
+                    names += [f"{self.variable}_participants_{single_country}"]
+
         comparisons = []
         for name, value, target in zip(names, pred, targets):
             comparisons += [(name, value, target)]
         return comparisons
 
+
 class CountryLevelProgram(LossCategory):
     weight = None
     static_dataset = False
     variable: str
+    taxpayer_only = False
 
-    def __init__(self, 
-        *args,
-        **kwargs
-    ):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         parameter = self.calibration_parameters.programs._children[
             self.variable
@@ -125,8 +138,13 @@ class CountryLevelProgram(LossCategory):
         # Budgetary impacts
 
         if "UNITED_KINGDOM" in parameter.budgetary_impact._children:
-            self.weight = parameter.budgetary_impact._children["UNITED_KINGDOM"]
-        if self.weight is None and "GREAT_BRITAIN" in parameter.budgetary_impact._children:
+            self.weight = parameter.budgetary_impact._children[
+                "UNITED_KINGDOM"
+            ]
+        if (
+            self.weight is None
+            and "GREAT_BRITAIN" in parameter.budgetary_impact._children
+        ):
             self.weight = parameter.budgetary_impact._children["GREAT_BRITAIN"]
 
         for single_country in (
@@ -135,49 +153,57 @@ class CountryLevelProgram(LossCategory):
             "SCOTLAND",
             "NORTHERN_IRELAND",
         ):
-            if self.weight is None and single_country in parameter.budgetary_impact._children:
-                self.weight = parameter.budgetary_impact._children[single_country]
+            if (
+                self.weight is None
+                and single_country in parameter.budgetary_impact._children
+            ):
+                self.weight = parameter.budgetary_impact._children[
+                    single_country
+                ]
 
         if self.weight is None:
-            raise ValueError(f"I tried to ensure that {self.variable} is weighted by its budgetary impact, but I couldn't find a budgetary impact for it.")
+            raise ValueError(
+                f"I tried to ensure that {self.variable} is weighted by its budgetary impact, but I couldn't find a budgetary impact for it."
+            )
 
         self.weight /= 1e9
 
-        budgetary_impact_loss = type(
+        init_kwargs = {
+            "dataset": self.dataset,
+            "calibration_parameters": self.calibration_parameters,
+            "ancestor": self.ancestor,
+            "static_dataset": self.static_dataset,
+            "comparison_white_list": self.comparison_white_list,
+            "comparison_black_list": self.comparison_black_list,
+            "name": self.name,
+        }
+
+        budgetary_impact_loss_type = type(
             f"{self.variable}_budgetary_impact",
             (CountryLevelProgramBudgetaryImpact,),
             {
-                "variable": self.variable, 
-                "ancestor": self.ancestor, 
-                "calibration_parameters": self.calibration_parameters,
-                "static_dataset": self.static_dataset,
-                "comparison_white_list": self.comparison_white_list,
-                "comparison_black_list": self.comparison_black_list,
-                "name": self.name,
+                "variable": self.variable,
+                "taxpayer_only": self.taxpayer_only,
             },
         )
-        
-        participant_loss = type(
+        budgetary_impact_loss = budgetary_impact_loss_type(**init_kwargs)
+
+        participant_loss_type = type(
             f"{self.variable}_participants",
             (CountryLevelProgramParticipants,),
             {
-                "variable": self.variable, 
-                "ancestor": self.ancestor, 
-                "calibration_parameters": self.calibration_parameters,
-                "static_dataset": self.static_dataset,
-                "comparison_white_list": self.comparison_white_list,
-                "comparison_black_list": self.comparison_black_list,
-                "name": self.name,
+                "variable": self.variable,
+                "taxpayer_only": self.taxpayer_only,
             },
         )
-        
-        self.sublosses = torch.nn.ModuleList([
-            subcategory(self.dataset, self.calibration_parameters, ancestor=self.ancestor, static_dataset=self.static_dataset, comparison_white_list=self.comparison_white_list, comparison_black_list=self.comparison_black_list)
-            for subcategory in (
+        participant_loss = participant_loss_type(**init_kwargs)
+
+        self.sublosses = torch.nn.ModuleList(
+            [
                 budgetary_impact_loss,
                 participant_loss,
-            )
-        ])
+            ]
+        )
 
 
 class IncomeSupport(CountryLevelProgram):
@@ -210,6 +236,7 @@ class StatePension(CountryLevelProgram):
 
 class TotalNI(CountryLevelProgram):
     variable = "total_NI"
+    taxpayers_only = True
 
 
 class JSAIncome(CountryLevelProgram):
@@ -230,32 +257,41 @@ class ESAIncome(CountryLevelProgram):
 
 class EmploymentIncome(CountryLevelProgram):
     variable = "employment_income"
+    taxpayers_only = True
 
 
 class SelfEmploymentIncome(CountryLevelProgram):
     variable = "self_employment_income"
+    taxpayers_only = True
 
 
 class PensionIncome(CountryLevelProgram):
     variable = "pension_income"
+    taxpayers_only = True
 
 
 class PropertyIncome(CountryLevelProgram):
     variable = "property_income"
+    taxpayers_only = True
 
 
 class SavingsInterestIncome(CountryLevelProgram):
     variable = "savings_interest_income"
+    taxpayers_only = True
 
 
 class DividendIncome(CountryLevelProgram):
     variable = "dividend_income"
+    taxpayers_only = True
+
 
 class IncomeTax(LossCategory):
     weight = 1
     static_dataset = True
 
-    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
         income_tax = dataset.person_df.income_tax
         total_income = dataset.person_df.adjusted_net_income
         countries = dataset.household_df.country
@@ -300,7 +336,8 @@ class IncomeTax(LossCategory):
                 total_income < upper_threshold
             )
             household_values = sum_by_household(
-                income_tax * income_is_in_band, dataset,
+                income_tax * income_is_in_band,
+                dataset,
             )
 
             amount = scale.amounts[i]
@@ -339,15 +376,16 @@ class IncomeTax(LossCategory):
                             (income_tax > 0)
                             * (person_country == country)
                             * (tax_band == band),
-                            dataset
+                            dataset,
                         ),
                         it.participants.by_country_and_band._children[
                             country
                         ]._children[band],
                     )
                 ]
-        
+
         return comparisons
+
 
 country_level_programs = [
     UniversalCredit,

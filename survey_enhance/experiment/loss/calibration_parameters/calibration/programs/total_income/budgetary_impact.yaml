@@ -1,8 +1,4 @@
 description: Total income by country, among taxpayers.
-metadata:
-  uprating:
-    parameter: calibration.uprating.earnings
-  propagate_metadata_to_children: true
 ENGLAND:
   2019-01-01: 992_000_000_000
 WALES:
@@ -15,6 +11,9 @@ UNITED_KINGDOM:
   2019-01-01: 1_160_000_000_000
 metadata:
   unit: currency-GBP
+  uprating:
+    parameter: calibration.uprating.earnings
+  propagate_metadata_to_children: true
   period: year
   reference:
     - title: Profit, employment and pension income | National Statistics | Table 3.11

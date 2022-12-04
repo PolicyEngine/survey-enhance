@@ -4,7 +4,6 @@ metadata:
   reference:
     - title: Annual Survey of Hours and Earnings (ASHE)
       href: https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2022
-metadata:
   uprating:
     parameter: calibration.uprating.earnings
   propagate_metadata_to_children: true

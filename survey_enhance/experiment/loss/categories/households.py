@@ -1,13 +1,16 @@
-from survey_enhance.loss import LossCategory, Dataset
+from survey_enhance.reweight import LossCategory, Dataset
 import torch
 from typing import List, Tuple
 import numpy as np
+
 
 class Households(LossCategory):
     weight = 1
     static_dataset = False
 
-    def get_comparisons(self, dataset: Dataset) -> List[Tuple[str, float, torch.Tensor]]:
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
         region_ct_band_parameter = (
             self.calibration_parameters.demographics.households.by_region_by_council_tax_band
         )
@@ -18,6 +21,7 @@ class Households(LossCategory):
 
         ct_band = dataset.household_df.council_tax_band
         region = dataset.household_df.region
+        country = dataset.household_df.country
 
         # Region - CT band
 
@@ -80,7 +84,7 @@ class Households(LossCategory):
                     (
                         f"{target_region}_{target_tenure_type}",
                         (tenure_type == target_tenure_type)
-                        & (region == target_region),
+                        & (country == target_region),
                         actual_population * region_tenure_adjustment,
                     )
                 )
@@ -89,7 +93,7 @@ class Households(LossCategory):
             comparisons += [
                 (
                     f"households.{target_region}",
-                    region == target_region,
+                    country == target_region,
                     regional_population * region_tenure_adjustment,
                 )
             ]

@@ -6,6 +6,7 @@ import pandas as pd
 from typing import List
 import numpy as np
 
+
 def match_percentiles_df(
     target_df: pd.DataFrame,
     source_df: pd.DataFrame,
@@ -29,10 +30,14 @@ def match_percentiles_df(
 
     for column in target_df.columns:
         target_df[column] = match_percentiles(
-            target_df[column], source_df[column], percentile_threshold, num_groups
+            target_df[column],
+            source_df[column],
+            percentile_threshold,
+            num_groups,
         )
-    
+
     return target_df
+
 
 def match_percentiles(
     targets: pd.Series,
@@ -48,13 +53,15 @@ def match_percentiles(
         sources: The Series to match the percentiles to.
         percentile_threshold: Don't adjust data for percentiles below this threshold.
         num_groups: The number of percentile groups to split the data into.
-    
+
     Returns:
         A Series with the same index as target_df, but with the adjusted values.
     """
     targets = targets.copy()
 
-    percentile_boundaries = np.linspace(percentile_threshold, 1, num_groups + 1)
+    percentile_boundaries = np.linspace(
+        percentile_threshold, 1, num_groups + 1
+    )
     lower_percentiles = percentile_boundaries[:-1]
     upper_percentiles = percentile_boundaries[1:]
 
@@ -71,5 +78,5 @@ def match_percentiles(
         target_in_range = (targets >= lower_target) & (targets <= upper_target)
         source_in_range = (sources >= lower_source) & (sources <= upper_source)
 
-        targets[target_in_range] = sources[source_in_range].mean()    
+        targets[target_in_range] = sources[source_in_range].mean()
     return targets
