@@ -3,7 +3,7 @@ import pandas as pd
 from policyengine_core.parameters import ParameterNodeAtInstant, ParameterNode
 from typing import List, Type, Tuple
 import numpy as np
-from survey_enhance.dataset import Dataset
+from survey_enhance.survey import Dataset
 from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 import datetime

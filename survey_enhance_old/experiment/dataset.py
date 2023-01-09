@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from survey_enhance.dataset import Dataset as GenericDataset
+from survey_enhance.survey import Dataset as GenericDataset
 from pathlib import Path
 from policyengine_core.parameters import ParameterNode, uprate_parameters
 from typing import Dict, Any
