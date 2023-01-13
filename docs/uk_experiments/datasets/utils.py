@@ -5,9 +5,7 @@ from survey_enhance.survey import Survey
 import pickle
 
 
-def sum_to_entity(
-    values: pd.Series, foreign_key: pd.Series, primary_key
-) -> pd.Series:
+def sum_to_entity(values: pd.Series, foreign_key: pd.Series, primary_key) -> pd.Series:
     """Sums values by joining foreign and primary keys.
 
     Args:
@@ -21,9 +19,7 @@ def sum_to_entity(
     return values.groupby(foreign_key).sum().reindex(primary_key).fillna(0)
 
 
-def categorical(
-    values: pd.Series, default: int, left: list, right: list
-) -> pd.Series:
+def categorical(values: pd.Series, default: int, left: list, right: list) -> pd.Series:
     """Maps a categorical input to an output using given left and right arrays.
 
     Args:
@@ -35,15 +31,10 @@ def categorical(
     Returns:
         pd.Series: The mapped values.
     """
-    return (
-        values.fillna(default)
-        .map({i: j for i, j in zip(left, right)})
-    )
+    return values.fillna(default).map({i: j for i, j in zip(left, right)})
 
 
-def sum_from_positive_fields(
-    table: pd.DataFrame, fields: List[str]
-) -> np.array:
+def sum_from_positive_fields(table: pd.DataFrame, fields: List[str]) -> np.array:
     """Sum from fields in table, ignoring negative values.
 
     Args:
@@ -53,9 +44,7 @@ def sum_from_positive_fields(
     Returns:
         np.array
     """
-    return np.where(
-        table[fields].sum(axis=1) > 0, table[fields].sum(axis=1), 0
-    )
+    return np.where(table[fields].sum(axis=1) > 0, table[fields].sum(axis=1), 0)
 
 
 def sum_positive_variables(variables: List[str]) -> np.array:
@@ -70,9 +59,7 @@ def sum_positive_variables(variables: List[str]) -> np.array:
     return sum([np.where(variable > 0, variable, 0) for variable in variables])
 
 
-def fill_with_mean(
-    table: pd.DataFrame, code: str, amount: str, multiplier: float = 52
-) -> np.array:
+def fill_with_mean(table: pd.DataFrame, code: str, amount: str, multiplier: float = 52) -> np.array:
     """Fills missing values in a table with the mean of the column.
 
     Args:
@@ -99,7 +86,7 @@ def concatenate_two_surveys(primary_tables: Dict[str, pd.DataFrame], secondary_t
         primary_tables (Dict[str, pd.DataFrame]): The first survey.
         secondary_tables (Dict[str, pd.DataFrame]): The second survey.
     """
-    
+
     new_tables = {}
 
     for table_name, table in primary_tables.items():
@@ -113,8 +100,9 @@ def concatenate_two_surveys(primary_tables: Dict[str, pd.DataFrame], secondary_t
             new_tables[table_name] = pd.concat([table, other_table])
         else:
             new_tables[table_name] = table
-    
+
     return new_tables
+
 
 def concatenate_surveys(surveys: List[Survey]) -> Survey:
     """

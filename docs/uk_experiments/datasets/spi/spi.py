@@ -4,44 +4,7 @@ from pandas import DataFrame
 from pathlib import Path
 import numpy as np
 from typing import Type, Dict
-
-
-class RawSPI(Survey):
-    """A `Survey` instance for the Family Resources Survey."""
-
-    name = "raw_spi"
-    label = "Survey of Personal Incomes"
-
-    main_table_name = "put1920uk"
-
-    def generate(self, tab_folder: Path):
-        """Generate the survey data from the original TAB files.
-
-        Args:
-            tab_folder (Path): The folder containing the original TAB files.
-        """
-
-        if isinstance(tab_folder, str):
-            tab_folder = Path(tab_folder)
-
-        # Load the data
-        tables = {}
-        tab_file = tab_folder / f"{self.main_table_name}.tab"
-        table_name = "main"
-        tables[table_name] = pd.read_csv(
-            tab_file,
-            sep="\t",
-            low_memory=False,
-        ).apply(pd.to_numeric, errors="coerce")
-
-        # Save the data
-        self.save(tables)
-
-class RawSPI_2019_20(RawSPI):
-    name = "raw_spi_2019_20"
-    label = "Survey of Personal Incomes 2019-20 (raw)"
-    
-    main_table_name = "put1920uk"
+from .raw_spi import RawSPI, RawSPI_2019_20
 
 
 class SPI_2019_20(Survey):
@@ -82,7 +45,7 @@ def extend_spi_main_table(main: DataFrame) -> DataFrame:
     """
 
     from policyengine_uk import Microsimulation
-    from frs import FRS_2019_20
+    from ..frs import FRS_2019_20
 
     sim = Microsimulation(dataset=FRS_2019_20(), dataset_year=2019)
 
@@ -111,14 +74,9 @@ def extend_spi_main_table(main: DataFrame) -> DataFrame:
         household_weight="FACT",
     )
 
-    in_frs_and_not_spi = (
-        sim.calc("total_income").rank(pct=True)
-        < 1 - population_in_spi_percentage
-    ).values
+    in_frs_and_not_spi = (sim.calc("total_income").rank(pct=True) < 1 - population_in_spi_percentage).values
 
-    missing_spi = pd.DataFrame(sim.df(list(RENAMES)))[in_frs_and_not_spi].rename(
-        columns=RENAMES
-    )
+    missing_spi = pd.DataFrame(sim.df(list(RENAMES)))[in_frs_and_not_spi].rename(columns=RENAMES)
 
     LOWER = np.array([0, 16, 25, 35, 45, 55, 65, 75])
     UPPER = np.array([16, 25, 35, 45, 55, 65, 75, 80])
@@ -140,13 +98,9 @@ def extend_spi_main_table(main: DataFrame) -> DataFrame:
     age = sim.calc("age")[in_frs_and_not_spi]
     missing_spi["AGERANGE"] = 0
     for lower, upper, code in zip(LOWER, UPPER, CODE):
-        missing_spi["AGERANGE"] += np.where(
-            (age < upper) & (age >= lower), code, 0
-        )
+        missing_spi["AGERANGE"] += np.where((age < upper) & (age >= lower), code, 0)
 
-    missing_spi["GORCODE"] = sim.calc("region", map_to="person")[
-        in_frs_and_not_spi
-    ].map({y: x for x, y in REGIONS.items()})
+    missing_spi["GORCODE"] = sim.calc("region", map_to="person")[in_frs_and_not_spi].map({y: x for x, y in REGIONS.items()})
 
     return pd.concat([main, missing_spi]).fillna(0)
 
@@ -164,9 +118,7 @@ def add_demographics(tables: Dict[str, DataFrame], main: DataFrame):
     LOWER = np.array([0, 16, 25, 35, 45, 55, 65, 75])
     UPPER = np.array([16, 25, 35, 45, 55, 65, 75, 80])
     age_range = main.AGERANGE
-    tables["person"]["age"] = LOWER[age_range] + np.random.rand(len(main)) * (
-        UPPER[age_range] - LOWER[age_range]
-    )
+    tables["person"]["age"] = LOWER[age_range] + np.random.rand(len(main)) * (UPPER[age_range] - LOWER[age_range])
 
     REGIONS = {
         1: "NORTH_EAST",
@@ -183,9 +135,7 @@ def add_demographics(tables: Dict[str, DataFrame], main: DataFrame):
         12: "NORTHERN_IRELAND",
     }
 
-    tables["household"]["region"] = np.array(
-        [REGIONS.get(x, "UNKNOWN") for x in main.GORCODE]
-    )
+    tables["household"]["region"] = np.array([REGIONS.get(x, "UNKNOWN") for x in main.GORCODE])
     return tables, main
 
 
@@ -210,12 +160,8 @@ def add_incomes(tables: Dict[str, DataFrame], main: DataFrame):
     )
     tables["person"]["pays_scottish_income_tax"] = main.SCOT_TXP == 1
     tables["person"]["employment_income"] = main[["PAY", "EPB", "TAXTERM"]].sum(axis=1)
-    tables["person"]["social_security_income"] = main[
-        ["SRP", "INCPBEN", "UBISJA", "OSSBEN"]
-    ].sum(axis=1)
-    tables["person"]["miscellaneous_income"] = main[
-        ["OTHERINV", "OTHERINC", "MOTHINC"]
-    ].sum(axis=1)
+    tables["person"]["social_security_income"] = main[["SRP", "INCPBEN", "UBISJA", "OSSBEN"]].sum(axis=1)
+    tables["person"]["miscellaneous_income"] = main[["OTHERINV", "OTHERINC", "MOTHINC"]].sum(axis=1)
     for var, key in RENAMES.items():
         tables["person"][var] = main[key]
     tables["household"]["household_weight"] = main.FACT
