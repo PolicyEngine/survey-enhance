@@ -1,12 +1,12 @@
 import torch
 import pandas as pd
 from policyengine_core.parameters import ParameterNodeAtInstant, ParameterNode
-from typing import List, Type, Tuple
+from typing import List, Type, Tuple, Dict
 import numpy as np
-from survey_enhance.survey import Dataset
 from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
-import datetime
+from survey_enhance.survey import Survey
+import warnings
 
 
 class LossCategory(torch.nn.Module):
@@ -14,9 +14,17 @@ class LossCategory(torch.nn.Module):
     subcategories: List[Type["LossCategory"]] = []
     static_dataset = False
 
+    normalise: bool = True
+    """Whether to normalise the starting loss value to 1."""
+
+    diagnostic: bool = False
+    """Whether to log the full tree of losses."""
+
+    diagnostic_tree: Dict[str, float] = None
+
     def __init__(
         self,
-        dataset: Dataset,
+        dataset: Survey,
         calibration_parameters: ParameterNodeAtInstant,
         weight: float = None,
         ancestor: "LossCategory" = None,
@@ -24,10 +32,18 @@ class LossCategory(torch.nn.Module):
         comparison_white_list: List[str] = None,
         comparison_black_list: List[str] = None,
         name: str = None,
+        normalise: bool = None,
+        diagnostic: bool = None,
     ):
         super().__init__()
         if weight is not None:
             self.weight = weight
+
+        if normalise is not None:
+            self.normalise = normalise
+
+        if diagnostic is not None:
+            self.diagnostic = diagnostic
 
         self.dataset = dataset
         self.calibration_parameters = calibration_parameters
@@ -64,12 +80,13 @@ class LossCategory(torch.nn.Module):
                     comparison_white_list=self.comparison_white_list,
                     comparison_black_list=self.comparison_black_list,
                     name=self.name,
+                    diagnostic=self.diagnostic,
                 )
                 for subcategory in self.subcategories
             ]
         )
 
-        def filtered_get_comparisons(dataset: Dataset):
+        def filtered_get_comparisons(dataset: Survey):
             comparisons = self.get_comparisons(dataset)
             if self.comparison_white_list is not None:
                 comparisons = [
@@ -88,14 +105,18 @@ class LossCategory(torch.nn.Module):
         self._get_comparisons = filtered_get_comparisons
 
     def create_holdout_sets(
-        self, dataset: Dataset, num_sets: int, exclude_by_name: str = None
-    ) -> List[Tuple[Dataset, Dataset]]:
+        self,
+        dataset: Survey,
+        num_sets: int,
+        num_weights: int,
+        exclude_by_name: str = None,
+    ) -> List[Tuple[Survey, Survey]]:
         # Run the loss function, get the list of all comparisons, then split into holdout sets
 
         comparisons = self.collect_comparison_log()
         if len(comparisons) == 0:
             household_weight = torch.tensor(
-                0 * dataset.household_df.household_weight.values,
+                0 * np.zeros(num_weights),
                 requires_grad=True,
             )
             self.forward(household_weight, dataset, initial_run=True)
@@ -121,7 +142,7 @@ class LossCategory(torch.nn.Module):
         return individual_comparisons.tolist()
 
     def get_comparisons(
-        self, dataset: Dataset
+        self, dataset: Survey
     ) -> List[Tuple[str, float, torch.Tensor]]:
         raise NotImplementedError(
             f"Loss category {self.__class__.__name__} does not implement an evaluation method."
@@ -145,7 +166,7 @@ class LossCategory(torch.nn.Module):
         return df
 
     def evaluate(
-        self, household_weights: torch.Tensor, dataset: Dataset
+        self, household_weights: torch.Tensor, dataset: Survey
     ) -> torch.Tensor:
         if self.static_dataset and self.comparisons is not None:
             comparisons = self.comparisons
@@ -183,16 +204,18 @@ class LossCategory(torch.nn.Module):
     def forward(
         self,
         household_weights: torch.Tensor,
-        dataset: Dataset,
+        dataset: Survey,
         initial_run: bool = False,
     ) -> torch.Tensor:
         if torch.isnan(household_weights).any():
             raise ValueError("NaN in household weights")
         if self.initial_loss_value is None and not initial_run:
-            self.initial_loss_value = torch.tensor(
-                self.forward(household_weights, dataset, initial_run=True),
-                requires_grad=False,
-            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.initial_loss_value = torch.tensor(
+                    self.forward(household_weights, dataset, initial_run=True),
+                    requires_grad=False,
+                )
 
         if not initial_run:
             self.epoch += 1
@@ -236,16 +259,23 @@ class LossCategory(torch.nn.Module):
                     subloss.name,
                 )
             )
+            if self.diagnostic:
+                if self.diagnostic_tree is None:
+                    self.diagnostic_tree = {}
+                self.diagnostic_tree[subloss.name] = dict(
+                    loss=float(subcategory_loss),
+                    children=subloss.diagnostic_tree,
+                )
             loss = loss + subcategory_loss
 
-        if initial_run:
+        if initial_run or not self.normalise:
             return loss
         else:
             return (loss / self.initial_loss_value) * self.weight
 
 
 class CalibratedWeights:
-    dataset: Dataset
+    dataset: Survey
     initial_weights: np.ndarray
     calibration_parameters: ParameterNode
     loss_type: Type[torch.nn.Module]
@@ -253,7 +283,7 @@ class CalibratedWeights:
     def __init__(
         self,
         initial_weights: np.ndarray,
-        dataset: Dataset,
+        dataset: Survey,
         loss_type: Type[torch.nn.Module],
         calibration_parameters: ParameterNode,
     ):
@@ -294,6 +324,8 @@ class CalibratedWeights:
             log_dir = Path(log_dir)
             log_dir.mkdir(parents=True, exist_ok=True)
             log_df = pd.DataFrame()
+        else:
+            log_df = None
 
         if validation_split > 0:
             if validation_blacklist is None:
@@ -321,7 +353,7 @@ class CalibratedWeights:
 
         if rotate_holdout_sets:
             for i in range(len(holdout_sets)):
-                self._train(
+                weights = self._train(
                     train_loss_fn,
                     validation_loss_fn,
                     epochs,
@@ -333,7 +365,7 @@ class CalibratedWeights:
                     i,
                 )
         else:
-            self._train(
+            weights = self._train(
                 train_loss_fn,
                 validation_loss_fn,
                 epochs,
@@ -343,6 +375,8 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
             )
+        
+        return weights
 
     def _train(
         self,
@@ -428,3 +462,5 @@ class CalibratedWeights:
                                     y_true_value,
                                     epoch,
                                 )
+            
+        return (household_weights + weight_adjustment).detach().numpy()

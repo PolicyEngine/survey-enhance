@@ -39,26 +39,51 @@ class RawFRS(Survey):
             table_name = tab_file.stem
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                tables[table_name] = pd.read_csv(tab_file, delimiter="\t", low_memory=False).apply(pd.to_numeric, errors="coerce")
+                tables[table_name] = pd.read_csv(
+                    tab_file, delimiter="\t", low_memory=False
+                ).apply(pd.to_numeric, errors="coerce")
 
-            sernum = "sernum" if "sernum" in tables[table_name].columns else "SERNUM"  # FRS inconsistently users sernum/SERNUM in different years
+            sernum = (
+                "sernum"
+                if "sernum" in tables[table_name].columns
+                else "SERNUM"
+            )  # FRS inconsistently users sernum/SERNUM in different years
 
             if "PERSON" in tables[table_name].columns:
-                tables[table_name]["person_id"] = (tables[table_name][sernum] * 1e2 + tables[table_name].BENUNIT * 1e1 + tables[table_name].PERSON).astype(int)
+                tables[table_name]["person_id"] = (
+                    tables[table_name][sernum] * 1e2
+                    + tables[table_name].BENUNIT * 1e1
+                    + tables[table_name].PERSON
+                ).astype(int)
 
             if "BENUNIT" in tables[table_name].columns:
-                tables[table_name]["benunit_id"] = (tables[table_name][sernum] * 1e2 + tables[table_name].BENUNIT * 1e1).astype(int)
+                tables[table_name]["benunit_id"] = (
+                    tables[table_name][sernum] * 1e2
+                    + tables[table_name].BENUNIT * 1e1
+                ).astype(int)
 
             if sernum in tables[table_name].columns:
-                tables[table_name]["household_id"] = (tables[table_name][sernum] * 1e2).astype(int)
+                tables[table_name]["household_id"] = (
+                    tables[table_name][sernum] * 1e2
+                ).astype(int)
             if table_name in ("adult", "child"):
-                tables[table_name].set_index("person_id", inplace=True, drop=False)
+                tables[table_name].set_index(
+                    "person_id", inplace=True, drop=False
+                )
             elif table_name == "benunit":
-                tables[table_name].set_index("benunit_id", inplace=True, drop=False)
+                tables[table_name].set_index(
+                    "benunit_id", inplace=True, drop=False
+                )
             elif table_name == "househol":
-                tables[table_name].set_index("household_id", inplace=True, drop=False)
-        tables["benunit"] = tables["benunit"][tables["benunit"].benunit_id.isin(tables["adult"].benunit_id)]
-        tables["househol"] = tables["househol"][tables["househol"].household_id.isin(tables["adult"].household_id)]
+                tables[table_name].set_index(
+                    "household_id", inplace=True, drop=False
+                )
+        tables["benunit"] = tables["benunit"][
+            tables["benunit"].benunit_id.isin(tables["adult"].benunit_id)
+        ]
+        tables["househol"] = tables["househol"][
+            tables["househol"].household_id.isin(tables["adult"].household_id)
+        ]
 
         # Save the data
         self.save(tables)

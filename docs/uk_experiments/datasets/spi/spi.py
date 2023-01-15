@@ -74,9 +74,14 @@ def extend_spi_main_table(main: DataFrame) -> DataFrame:
         household_weight="FACT",
     )
 
-    in_frs_and_not_spi = (sim.calc("total_income").rank(pct=True) < 1 - population_in_spi_percentage).values
+    in_frs_and_not_spi = (
+        sim.calc("total_income").rank(pct=True)
+        < 1 - population_in_spi_percentage
+    ).values
 
-    missing_spi = pd.DataFrame(sim.df(list(RENAMES)))[in_frs_and_not_spi].rename(columns=RENAMES)
+    missing_spi = pd.DataFrame(sim.df(list(RENAMES)))[
+        in_frs_and_not_spi
+    ].rename(columns=RENAMES)
 
     LOWER = np.array([0, 16, 25, 35, 45, 55, 65, 75])
     UPPER = np.array([16, 25, 35, 45, 55, 65, 75, 80])
@@ -98,9 +103,13 @@ def extend_spi_main_table(main: DataFrame) -> DataFrame:
     age = sim.calc("age")[in_frs_and_not_spi]
     missing_spi["AGERANGE"] = 0
     for lower, upper, code in zip(LOWER, UPPER, CODE):
-        missing_spi["AGERANGE"] += np.where((age < upper) & (age >= lower), code, 0)
+        missing_spi["AGERANGE"] += np.where(
+            (age < upper) & (age >= lower), code, 0
+        )
 
-    missing_spi["GORCODE"] = sim.calc("region", map_to="person")[in_frs_and_not_spi].map({y: x for x, y in REGIONS.items()})
+    missing_spi["GORCODE"] = sim.calc("region", map_to="person")[
+        in_frs_and_not_spi
+    ].map({y: x for x, y in REGIONS.items()})
 
     return pd.concat([main, missing_spi]).fillna(0)
 
@@ -118,7 +127,9 @@ def add_demographics(tables: Dict[str, DataFrame], main: DataFrame):
     LOWER = np.array([0, 16, 25, 35, 45, 55, 65, 75])
     UPPER = np.array([16, 25, 35, 45, 55, 65, 75, 80])
     age_range = main.AGERANGE
-    tables["person"]["age"] = LOWER[age_range] + np.random.rand(len(main)) * (UPPER[age_range] - LOWER[age_range])
+    tables["person"]["age"] = LOWER[age_range] + np.random.rand(len(main)) * (
+        UPPER[age_range] - LOWER[age_range]
+    )
 
     REGIONS = {
         1: "NORTH_EAST",
@@ -135,7 +146,9 @@ def add_demographics(tables: Dict[str, DataFrame], main: DataFrame):
         12: "NORTHERN_IRELAND",
     }
 
-    tables["household"]["region"] = np.array([REGIONS.get(x, "UNKNOWN") for x in main.GORCODE])
+    tables["household"]["region"] = np.array(
+        [REGIONS.get(x, "UNKNOWN") for x in main.GORCODE]
+    )
     return tables, main
 
 
@@ -159,9 +172,15 @@ def add_incomes(tables: Dict[str, DataFrame], main: DataFrame):
         state_pension="SRP",
     )
     tables["person"]["pays_scottish_income_tax"] = main.SCOT_TXP == 1
-    tables["person"]["employment_income"] = main[["PAY", "EPB", "TAXTERM"]].sum(axis=1)
-    tables["person"]["social_security_income"] = main[["SRP", "INCPBEN", "UBISJA", "OSSBEN"]].sum(axis=1)
-    tables["person"]["miscellaneous_income"] = main[["OTHERINV", "OTHERINC", "MOTHINC"]].sum(axis=1)
+    tables["person"]["employment_income"] = main[
+        ["PAY", "EPB", "TAXTERM"]
+    ].sum(axis=1)
+    tables["person"]["social_security_income"] = main[
+        ["SRP", "INCPBEN", "UBISJA", "OSSBEN"]
+    ].sum(axis=1)
+    tables["person"]["miscellaneous_income"] = main[
+        ["OTHERINV", "OTHERINC", "MOTHINC"]
+    ].sum(axis=1)
     for var, key in RENAMES.items():
         tables["person"][var] = main[key]
     tables["household"]["household_weight"] = main.FACT

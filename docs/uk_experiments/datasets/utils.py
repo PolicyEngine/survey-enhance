@@ -5,7 +5,9 @@ from survey_enhance.survey import Survey
 import pickle
 
 
-def sum_to_entity(values: pd.Series, foreign_key: pd.Series, primary_key) -> pd.Series:
+def sum_to_entity(
+    values: pd.Series, foreign_key: pd.Series, primary_key
+) -> pd.Series:
     """Sums values by joining foreign and primary keys.
 
     Args:
@@ -19,7 +21,9 @@ def sum_to_entity(values: pd.Series, foreign_key: pd.Series, primary_key) -> pd.
     return values.groupby(foreign_key).sum().reindex(primary_key).fillna(0)
 
 
-def categorical(values: pd.Series, default: int, left: list, right: list) -> pd.Series:
+def categorical(
+    values: pd.Series, default: int, left: list, right: list
+) -> pd.Series:
     """Maps a categorical input to an output using given left and right arrays.
 
     Args:
@@ -34,7 +38,9 @@ def categorical(values: pd.Series, default: int, left: list, right: list) -> pd.
     return values.fillna(default).map({i: j for i, j in zip(left, right)})
 
 
-def sum_from_positive_fields(table: pd.DataFrame, fields: List[str]) -> np.array:
+def sum_from_positive_fields(
+    table: pd.DataFrame, fields: List[str]
+) -> np.array:
     """Sum from fields in table, ignoring negative values.
 
     Args:
@@ -44,7 +50,9 @@ def sum_from_positive_fields(table: pd.DataFrame, fields: List[str]) -> np.array
     Returns:
         np.array
     """
-    return np.where(table[fields].sum(axis=1) > 0, table[fields].sum(axis=1), 0)
+    return np.where(
+        table[fields].sum(axis=1) > 0, table[fields].sum(axis=1), 0
+    )
 
 
 def sum_positive_variables(variables: List[str]) -> np.array:
@@ -59,7 +67,9 @@ def sum_positive_variables(variables: List[str]) -> np.array:
     return sum([np.where(variable > 0, variable, 0) for variable in variables])
 
 
-def fill_with_mean(table: pd.DataFrame, code: str, amount: str, multiplier: float = 52) -> np.array:
+def fill_with_mean(
+    table: pd.DataFrame, code: str, amount: str, multiplier: float = 52
+) -> np.array:
     """Fills missing values in a table with the mean of the column.
 
     Args:
@@ -78,7 +88,10 @@ def fill_with_mean(table: pd.DataFrame, code: str, amount: str, multiplier: floa
     return np.maximum(filled_values, 0) * multiplier
 
 
-def concatenate_two_surveys(primary_tables: Dict[str, pd.DataFrame], secondary_tables: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+def concatenate_two_surveys(
+    primary_tables: Dict[str, pd.DataFrame],
+    secondary_tables: Dict[str, pd.DataFrame],
+) -> Dict[str, pd.DataFrame]:
     """
     Concatenate a survey with another, by adjusting ID variable values.
 
@@ -94,7 +107,9 @@ def concatenate_two_surveys(primary_tables: Dict[str, pd.DataFrame], secondary_t
             other_table = secondary_tables[table_name]
             id_vars = [col for col in table.columns if col.endswith("_id")]
             for id_var in id_vars:
-                other_table[id_var] = other_table[id_var] + table[id_var].max() + 1
+                other_table[id_var] = (
+                    other_table[id_var] + table[id_var].max() + 1
+                )
             # Update index
             other_table.index = other_table.index + table.index.max() + 1
             new_tables[table_name] = pd.concat([table, other_table])

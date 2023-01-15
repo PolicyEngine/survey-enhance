@@ -1,4 +1,16 @@
-from datasets.frs import RawFRS_2018_19, RawFRS_2019_20, RawFRS_2020_21, FRS_2018_19, FRS_2019_20, FRS_2020_21, FRS_2018_21
+from datasets.frs import (
+    RawFRS_2018_19,
+    RawFRS_2019_20,
+    RawFRS_2020_21,
+    FRS_2018_19,
+    FRS_2019_20,
+    FRS_2020_21,
+    FRS_2018_21,
+    FRS_2020_OUT_22,
+    FRS_2018_21_OUT_22,
+    CalibratedFRS_2020_21_22,
+    CalibratedFRS_2018_21_22,
+)
 from datasets.spi import RawSPI_2019_20, SPI_2019_20
 
 from pathlib import Path
@@ -56,3 +68,24 @@ if __name__ == "__main__":
     spi_19 = SPI_2019_20()
     if not spi_19.exists:
         spi_19.generate()
+
+    logging.info("Generating FRS 2020 OUT 22")
+    frs_2020_out_22 = FRS_2020_OUT_22()
+    if not frs_2020_out_22.exists:
+        frs_2020_out_22.generate()
+
+    logging.info("Generating FRS 2018 OUT 22")
+    frs_2018_out_22 = FRS_2018_21_OUT_22()
+    if not frs_2018_out_22.exists:
+        frs_2018_out_22.generate()
+
+    logging.info("Generating Calibrated FRS 2020-21-22")
+    calibrated_frs_2020_21_22 = CalibratedFRS_2020_21_22()
+    if not calibrated_frs_2020_21_22.exists:
+        calibrated_frs_2020_21_22.generate()
+
+    logging.info("Generating Calibrated FRS 2018-21-22")
+    calibrated_frs_2018_21_22 = CalibratedFRS_2018_21_22()
+    if not calibrated_frs_2018_21_22.exists or True:
+        calibrated_frs_2018_21_22.generate()
+

@@ -25,11 +25,15 @@ class Survey:
     public_data_url: str = None
     """The URL where the public data is stored, if it is publicly available."""
 
+    tables: Dict[str, pd.DataFrame] = None
+
     def __init__(self):
         if self.data_file is None:
             self.data_file = (
                 Path(__file__).parent / "data" / f"{self.name}.pkl"
             )
+        if self.data_file.exists():
+            self.tables = self.load_all()
 
     def generate(self):
         """Generate the survey data."""
@@ -39,11 +43,15 @@ class Survey:
 
     def load(self, table_name: str) -> pd.DataFrame:
         """Load a table from disk."""
+        if self.tables is not None:
+            return self.tables[table_name]
         tables = self.load_all()
         return tables[table_name]
-    
+
     def load_all(self) -> Dict[str, pd.DataFrame]:
         """Load all tables from disk."""
+        if self.tables is not None:
+            return self.tables
         with open(self.data_file, "rb") as f:
             tables: Dict[str, pd.DataFrame] = pickle.load(f)
         return tables
@@ -53,7 +61,7 @@ class Survey:
             self.data_file.parent.mkdir(parents=True)
         with open(self.data_file, "wb") as f:
             pickle.dump(tables, f)
-    
+
     def __getattr__(self, __name: str) -> Any:
         return self.load(__name)
 
