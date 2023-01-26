@@ -6,3 +6,4 @@
 docs/_build
 **/*.csv
 **/*.pkl
+**/*.h5

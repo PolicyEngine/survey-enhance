@@ -1,4 +1,9 @@
-from datasets.frs.raw_frs import RawFRS_2019_20
+from datasets.frs import (
+    RawFRS_2019_20,
+    FRS_2019_20,
+    OutputFRS_2019_20_22,
+    CalibratedFRS_2019_20_22,
+)
 
 from pathlib import Path
 import yaml
@@ -16,4 +21,13 @@ if __name__ == "__main__":
     if not raw_frs_18.exists:
         raw_frs_18.generate(config.get("frs_2019_20"))
 
-        
+    DATASETS_TO_GENERATE = [
+        FRS_2019_20,
+        OutputFRS_2019_20_22,
+        CalibratedFRS_2019_20_22,
+    ]
+
+    for dataset in DATASETS_TO_GENERATE:
+        logging.info(f"Generating {dataset.label}")
+        ds = dataset()
+        ds.generate()

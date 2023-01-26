@@ -5,7 +5,7 @@ import numpy as np
 from policyengine_core.parameters import ParameterNode, Parameter
 from typing import Iterable, Tuple, List
 from ..utils import sum_by_household
-from survey_enhance.survey import Survey
+from survey_enhance.dataset import Dataset
 
 
 class CountryLevelProgramBudgetaryImpact(LossCategory):
@@ -15,7 +15,7 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
     taxpayer_only = False
 
     def get_comparisons(
-        self, dataset: Survey
+        self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
         countries = dataset.household.country
         pred = []
@@ -72,7 +72,7 @@ class CountryLevelProgramParticipants(LossCategory):
     taxpayer_only = False
 
     def get_comparisons(
-        self, dataset: Survey
+        self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
         countries = dataset.household.country
         pred = []
@@ -289,7 +289,7 @@ class IncomeTax(LossCategory):
     static_dataset = True
 
     def get_comparisons(
-        self, dataset: Survey
+        self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
         income_tax = dataset.person.income_tax
         total_income = dataset.person.adjusted_net_income

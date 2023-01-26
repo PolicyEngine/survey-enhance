@@ -9,7 +9,6 @@ from ..utils import (
     sum_from_positive_fields,
     sum_positive_variables,
     fill_with_mean,
-    concatenate_surveys,
 )
 from typing import Dict
 import numpy as np
@@ -96,4 +95,3 @@ class RawFRS_2019_20(RawFRS):
     name = "raw_frs_2019_20"
     label = "Family Resources Survey 2019-20 (raw)"
     file_path = Path(__file__).parent / "raw_frs_2019_20.h5"
-

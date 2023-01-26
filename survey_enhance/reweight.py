@@ -5,7 +5,7 @@ from typing import List, Type, Tuple, Dict
 import numpy as np
 from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
-from survey_enhance.survey import Survey
+from survey_enhance.dataset import Dataset
 import warnings
 
 
@@ -24,7 +24,7 @@ class LossCategory(torch.nn.Module):
 
     def __init__(
         self,
-        dataset: Survey,
+        dataset: Dataset,
         calibration_parameters: ParameterNodeAtInstant,
         weight: float = None,
         ancestor: "LossCategory" = None,
@@ -86,7 +86,7 @@ class LossCategory(torch.nn.Module):
             ]
         )
 
-        def filtered_get_comparisons(dataset: Survey):
+        def filtered_get_comparisons(dataset: Dataset):
             comparisons = self.get_comparisons(dataset)
             if self.comparison_white_list is not None:
                 comparisons = [
@@ -106,11 +106,11 @@ class LossCategory(torch.nn.Module):
 
     def create_holdout_sets(
         self,
-        dataset: Survey,
+        dataset: Dataset,
         num_sets: int,
         num_weights: int,
         exclude_by_name: str = None,
-    ) -> List[Tuple[Survey, Survey]]:
+    ) -> List[Tuple[Dataset, Dataset]]:
         # Run the loss function, get the list of all comparisons, then split into holdout sets
 
         comparisons = self.collect_comparison_log()
@@ -142,7 +142,7 @@ class LossCategory(torch.nn.Module):
         return individual_comparisons.tolist()
 
     def get_comparisons(
-        self, dataset: Survey
+        self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
         raise NotImplementedError(
             f"Loss category {self.__class__.__name__} does not implement an evaluation method."
@@ -166,7 +166,7 @@ class LossCategory(torch.nn.Module):
         return df
 
     def evaluate(
-        self, household_weights: torch.Tensor, dataset: Survey
+        self, household_weights: torch.Tensor, dataset: Dataset
     ) -> torch.Tensor:
         if self.static_dataset and self.comparisons is not None:
             comparisons = self.comparisons
@@ -204,7 +204,7 @@ class LossCategory(torch.nn.Module):
     def forward(
         self,
         household_weights: torch.Tensor,
-        dataset: Survey,
+        dataset: Dataset,
         initial_run: bool = False,
     ) -> torch.Tensor:
         if torch.isnan(household_weights).any():
@@ -275,7 +275,7 @@ class LossCategory(torch.nn.Module):
 
 
 class CalibratedWeights:
-    dataset: Survey
+    dataset: Dataset
     initial_weights: np.ndarray
     calibration_parameters: ParameterNode
     loss_type: Type[torch.nn.Module]
@@ -283,7 +283,7 @@ class CalibratedWeights:
     def __init__(
         self,
         initial_weights: np.ndarray,
-        dataset: Survey,
+        dataset: Dataset,
         loss_type: Type[torch.nn.Module],
         calibration_parameters: ParameterNode,
     ):
@@ -375,7 +375,7 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
             )
-        
+
         return weights
 
     def _train(
@@ -405,15 +405,6 @@ class CalibratedWeights:
             )
             loss.backward()
             optimizer.step()
-            if validation_loss_fn is not None:
-                validation_loss = validation_loss_fn(
-                    household_weights + weight_adjustment, self.dataset
-                )
-                print(
-                    f"Epoch {epoch}: loss={loss}, validation_loss={validation_loss}"
-                )
-            else:
-                print(f"Epoch {epoch}: loss={loss}")
 
             if log_df is not None and epoch % log_every == 0:
                 training_log = training_loss_fn.collect_comparison_log()
@@ -462,5 +453,5 @@ class CalibratedWeights:
                                     y_true_value,
                                     epoch,
                                 )
-            
+
         return (household_weights + weight_adjustment).detach().numpy()

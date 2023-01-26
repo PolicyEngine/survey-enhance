@@ -1,5 +1,5 @@
 from survey_enhance.reweight import LossCategory
-from survey_enhance.survey import Survey
+from survey_enhance.dataset import Dataset
 import torch
 from typing import List, Tuple
 import numpy as np
@@ -10,7 +10,7 @@ class Households(LossCategory):
     static_dataset = False
 
     def get_comparisons(
-        self, dataset: Survey
+        self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
         region_ct_band_parameter = (
             self.calibration_parameters.demographics.households.by_region_by_council_tax_band

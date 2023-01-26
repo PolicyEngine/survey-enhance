@@ -32,6 +32,8 @@ class Dataset:
     ARRAYS = "arrays"
     TIME_PERIOD_ARRAYS = "time_period_arrays"
 
+    _table_cache: Dict[str, pd.DataFrame] = None
+
     def __init__(self):
         # Setup dataset
         if self.file_path is None:
@@ -54,6 +56,7 @@ class Dataset:
             Dataset.TIME_PERIOD_ARRAYS,
         ], "You tried to instantiate a Dataset object, but your data_format attribute is invalid."
 
+        self._table_cache = {}
 
     def load(
         self, key: str = None, mode: str = "r"
@@ -83,9 +86,12 @@ class Dataset:
                 # Non-openfisca datasets are assumed to be of the format (table name: [table], ...).
                 return pd.HDFStore(file)
             else:
+                if key in self._table_cache:
+                    return self._table_cache[key]
                 # If a table name is provided, return that table.
                 with pd.HDFStore(file) as f:
                     values = f[key]
+                self._table_cache[key] = values
                 return values
         else:
             raise ValueError(
@@ -109,14 +115,13 @@ class Dataset:
         elif self.data_format == Dataset.TABLES:
             with pd.HDFStore(file, "a") as f:
                 f.put(key, values)
+            self._table_cache = {}
         else:
             raise ValueError(
                 f"Invalid data format {self.data_format} for dataset {self.label}."
             )
 
-    def save_dataset(
-        self, data
-    ) -> None:
+    def save_dataset(self, data) -> None:
         """Writes a complete dataset to disk.
 
         Args:
@@ -150,6 +155,33 @@ class Dataset:
                         del f[variable]
                     f.create_dataset(variable, data=value)
 
+    def load_dataset(
+        self,
+    ):
+        """Loads a complete dataset from disk.
+
+        Returns:
+            Dict[str, Dict[str, Sequence]]: The dataset.
+        """
+        file = self.file_path
+        if self.data_format == Dataset.TABLES:
+            with pd.HDFStore(file) as f:
+                data = {table_name: f[table_name] for table_name in f.keys()}
+        elif self.data_format == Dataset.TIME_PERIOD_ARRAYS:
+            with h5py.File(file, "r") as f:
+                data = {}
+                for variable in f.keys():
+                    data[variable] = {}
+                    for time_period in f[variable].keys():
+                        key = f"{variable}/{time_period}"
+                        data[variable][time_period] = np.array(f[key])
+        elif self.data_format == Dataset.ARRAYS:
+            with h5py.File(file, "r") as f:
+                data = {
+                    variable: np.array(f[variable]) for variable in f.keys()
+                }
+        return data
+
     def generate(self):
         """Generates the dataset for a given year (all datasets should implement this method).
 
@@ -168,3 +200,14 @@ class Dataset:
             bool: Whether the dataset exists.
         """
         return self.file_path.exists()
+
+    def __getattr__(self, name):
+        """Allows the dataset to be accessed like a dictionary.
+
+        Args:
+            name (str): The key to access.
+
+        Returns:
+            Union[np.array, pd.DataFrame]: The dataset.
+        """
+        return self.load(name)

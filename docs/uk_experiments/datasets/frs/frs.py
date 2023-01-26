@@ -7,7 +7,6 @@ from ..utils import (
     sum_from_positive_fields,
     sum_positive_variables,
     fill_with_mean,
-    concatenate_surveys,
 )
 from typing import Dict, List
 import numpy as np
@@ -15,12 +14,14 @@ from numpy import maximum as max_, where
 from typing import Type
 from .raw_frs import RawFRS_2019_20, RawFRS
 import h5py
+from pathlib import Path
+from ..output_dataset import OutputDataset
 
 
 class FRS(Dataset):
     name = "frs"
     label = "Family Resources Survey"
-
+    data_format = Dataset.ARRAYS
     raw_frs: Type[RawFRS]
 
     def generate(self):
@@ -79,6 +80,22 @@ class FRS(Dataset):
         )
         frs.close()
 
+
+class FRS_2019_20(FRS):
+    name = "frs_2019_20"
+    label = "Family Resources Survey 2019/20"
+    raw_frs = RawFRS_2019_20
+    file_path = Path(__file__).parent / "frs_2019_20.h5"
+
+
+class OutputFRS_2019_20_22(OutputDataset):
+    name = "output_frs_2019_20"
+    label = "Family Resources Survey 2019/20 (simulated)"
+    data_format = Dataset.TABLES
+    file_path = Path(__file__).parent / "output_frs_2019_20_22.h5"
+    input_dataset = FRS_2019_20
+    input_dataset_year = 2019
+    output_year = 2022
 
 
 def sum_to_entity(
@@ -401,10 +418,7 @@ def add_market_income(
         pension_payment + pension_tax_paid + pension_deductions_removed
     ) * 52
 
-    frs["self_employment_income"] = (
-        person.SEINCAM2
-        * 52
-    )
+    frs["self_employment_income"] = person.SEINCAM2 * 52
 
     INVERTED_BASIC_RATE = 1.25
 
