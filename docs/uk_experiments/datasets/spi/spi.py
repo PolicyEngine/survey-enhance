@@ -149,6 +149,11 @@ def add_demographics(tables: Dict[str, DataFrame], main: DataFrame):
     tables["household"]["region"] = np.array(
         [REGIONS.get(x, "UNKNOWN") for x in main.GORCODE]
     )
+
+    tables["person"]["gender"] = np.where(
+        main.SEX == 1, "MALE", "FEMALE",
+    )
+
     return tables, main
 
 

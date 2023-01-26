@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List, Dict
 import numpy as np
-from survey_enhance.survey import Survey
+from policyengine_core.data import Dataset
 import pickle
 
 
@@ -119,7 +119,7 @@ def concatenate_two_surveys(
     return new_tables
 
 
-def concatenate_surveys(surveys: List[Survey]) -> Survey:
+def concatenate_surveys(surveys: List[Dataset]) -> Dataset:
     """
     Concatenate a list of surveys.
 

@@ -1,4 +1,4 @@
-from survey_enhance.survey import Survey
+from survey_enhance.dataset import Dataset
 from pathlib import Path
 import pandas as pd
 from pandas import DataFrame
@@ -17,11 +17,12 @@ from numpy import maximum as max_, where
 from typing import Type
 
 
-class RawFRS(Survey):
+class RawFRS(Dataset):
     """A `Survey` instance for the Family Resources Survey."""
 
     name = "raw_frs"
     label = "Family Resources Survey"
+    data_format = Dataset.TABLES
 
     def generate(self, tab_folder: Path):
         """Generate the survey data from the original TAB files.
@@ -37,10 +38,12 @@ class RawFRS(Survey):
         tables = {}
         for tab_file in tab_folder.glob("*.tab"):
             table_name = tab_file.stem
+            if "frs" in table_name:
+                continue
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 tables[table_name] = pd.read_csv(
-                    tab_file, delimiter="\t", low_memory=False
+                    tab_file, delimiter="\t"
                 ).apply(pd.to_numeric, errors="coerce")
 
             sernum = (
@@ -86,19 +89,11 @@ class RawFRS(Survey):
         ]
 
         # Save the data
-        self.save(tables)
-
-
-class RawFRS_2018_19(RawFRS):
-    name = "raw_frs_2018_19"
-    label = "Family Resources Survey 2018-19 (raw)"
+        self.save_dataset(tables)
 
 
 class RawFRS_2019_20(RawFRS):
     name = "raw_frs_2019_20"
     label = "Family Resources Survey 2019-20 (raw)"
+    file_path = Path(__file__).parent / "raw_frs_2019_20.h5"
 
-
-class RawFRS_2020_21(RawFRS):
-    name = "raw_frs_2020_21"
-    label = "Family Resources Survey 2020-21 (raw)"

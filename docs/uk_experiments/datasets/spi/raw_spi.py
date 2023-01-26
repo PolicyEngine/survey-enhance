@@ -7,8 +7,6 @@ from typing import Type, Dict
 
 
 class RawSPI(Survey):
-    """A `Survey` instance for the Family Resources Survey."""
-
     name = "raw_spi"
     label = "Survey of Personal Incomes"
 
