@@ -2,7 +2,8 @@ from datasets.frs import (
     RawFRS_2019_20,
     FRS_2019_20,
     OutputFRS_2019_20_22,
-    CalibratedFRS_2019_20_22,
+    SPIEnhancedFRS2019_20,
+    CalibratedFRS,
 )
 
 from pathlib import Path
@@ -24,7 +25,8 @@ if __name__ == "__main__":
     DATASETS_TO_GENERATE = [
         FRS_2019_20,
         OutputFRS_2019_20_22,
-        CalibratedFRS_2019_20_22,
+        SPIEnhancedFRS2019_20,
+        #CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20, 2022, 2022)
     ]
 
     for dataset in DATASETS_TO_GENERATE:

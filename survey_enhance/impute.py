@@ -33,7 +33,7 @@ class Imputation:
             }
         X = X.copy()
         for i, column in enumerate(X.columns):
-            if self.X_category_mappings[i] is not None:
+            if self.X_category_mappings.get(i) is not None:
                 X[column] = X[column].map(self.X_category_mappings[i])
         return X
 
@@ -64,6 +64,7 @@ class Imputation:
                 X_ = to_array(pd.concat([X, Y[Y_columns]], axis=1))
             y_ = to_array(Y[Y.columns[i]])
             model = ManyToOneImputation()
+            model.encode_categories = self.encode_categories
             model.train(X_, y_, num_trees=num_trees)
             self.models.append(model)
 
@@ -89,8 +90,13 @@ class Imputation:
         X = to_array(self.encode_categories(X))
         Y = np.zeros((X.shape[0], len(self.models)))
         for i, model in enumerate(self.models):
+            if isinstance(mean_quantile, list):
+                quantile = mean_quantile[i]
+            else:
+                quantile = mean_quantile
             X_ = np.concatenate([X, Y[:, :i]], axis=1)
-            Y[:, i] = model.predict(X_, mean_quantile, self.random_generator)
+            model.encode_categories = self.encode_categories
+            Y[:, i] = model.predict(X_, quantile, self.random_generator)
         return pd.DataFrame(Y, columns=self.Y_columns)
 
     def save(self, path: str):
@@ -134,7 +140,24 @@ class Imputation:
             imputation.X_columns = data["X_columns"]
             imputation.X_category_mappings = data["X_category_mappings"]
             imputation.Y_columns = data["Y_columns"]
+            for model in imputation.models:
+                model.encode_categories = imputation.encode_categories
+                model.X_category_mappings = imputation.X_category_mappings
         return imputation
+    
+    def solve_for_mean_quantiles(self, targets: list, input_data: pd.DataFrame, weights: pd.Series):
+        mean_quantiles = []
+        input_data = input_data.copy()
+        for i, model in enumerate(self.models):
+            mean_quantiles.append(model.solve_for_mean_quantile(
+                target=targets[i],
+                input_df=input_data,
+                weights=weights,
+                verbose=True,
+            ))
+            predicted_column = model.predict(input_data, mean_quantiles[-1])
+            input_data[self.Y_columns[i]] = predicted_column
+        return mean_quantiles
 
 
 class ManyToOneImputation:
@@ -180,7 +203,8 @@ class ManyToOneImputation:
         Returns:
             pd.Series: The predicted distribution of values for each input row.
         """
-
+        if isinstance(X, pd.DataFrame) and any([X[column].dtype == "O" for column in X.columns]):
+            X = self.encode_categories(X)
         X = to_array(X)
         tree_predictions = [tree.predict(X) for tree in self.model.estimators_]
 
@@ -188,6 +212,8 @@ class ManyToOneImputation:
         tree_predictions = np.array(tree_predictions).transpose()
 
         a = mean_quantile / (1 - mean_quantile)
+        if random_generator is None:
+            random_generator = np.random.default_rng()
         input_quantiles = random_generator.beta(
             a, 1, size=tree_predictions.shape[0]
         )
@@ -203,3 +229,42 @@ class ManyToOneImputation:
             ),
         )
         return x
+
+    def solve_for_mean_quantile(self, target: float, input_df: pd.DataFrame, weights: np.ndarray, max_iterations: int = 10, verbose: bool = False):
+        """
+        Solve for the mean quantile that produces the target value.
+
+        Args:
+            target (float): The target value.
+            input_df (pd.DataFrame): The input dataset.
+            weights (np.ndarray): The sample weights.
+            max_iterations (int, optional): The maximum number of iterations. Defaults to 5.
+            verbose (bool, optional): Whether to print the loss at each iteration. Defaults to False.
+
+        Returns:
+            float: The mean quantile.
+        """
+
+        def loss(mean_quantile):
+            pred_values = self.predict(input_df, mean_quantile)
+            pred_aggregate = (pred_values * weights).sum()
+            print(f"PREDICTED: {pred_aggregate/1e9:.1f} (target: {target/1e9:.1f})")
+            return (pred_aggregate - target) ** 2, pred_aggregate
+        
+        best_loss = float("inf")
+        min_quantile = 0
+        max_quantile = 1
+
+        # Binary search for the mean quantile.
+        for i in range(max_iterations):
+            mean_quantile = (min_quantile + max_quantile) / 2
+            loss_value, pred_agg = loss(mean_quantile)
+            if verbose:
+                print(f"Iteration {i}: {mean_quantile:.4f} (loss: {loss_value:.4f})")
+            if loss_value < best_loss:
+                best_loss = loss_value
+            if pred_agg < target:
+                min_quantile = mean_quantile
+            else:
+                max_quantile = mean_quantile
+        return mean_quantile

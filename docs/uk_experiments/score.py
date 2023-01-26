@@ -16,15 +16,12 @@ loss = Loss(
 )
 
 original_weights = torch.tensor(dataset.household.household_weight.values)
-pooled_weights = torch.tensor(
+calibrated_weights = torch.tensor(
     calibrated_dataset.household.household_weight.values
 )
 
-print(f"Original weights: {original_weights}")
-print(f"Pooled weights: {pooled_weights}")
-
 original_loss = loss(original_weights, dataset)
-pooled_loss = loss(pooled_weights, calibrated_dataset)
+calibrated_loss = loss(calibrated_weights, calibrated_dataset)
 
 print(f"Original loss: {original_loss}")
-print(f"Pooled loss: {pooled_loss}")
+print(f"Calibrated loss: {calibrated_loss}")

@@ -246,7 +246,7 @@ class LossCategory(torch.nn.Module):
         )
         for subloss in self.sublosses:
             subcategory_loss = (
-                subloss(household_weights, dataset) / total_subloss_weight
+                subloss(household_weights, dataset) * subloss.weight / total_subloss_weight
             )
             self.comparison_log.append(
                 (
@@ -254,7 +254,7 @@ class LossCategory(torch.nn.Module):
                     subloss.__class__.__name__,
                     0,
                     0,
-                    float(subcategory_loss),
+                    float(subcategory_loss) * subloss.weight,
                     "category",
                     subloss.name,
                 )
@@ -271,7 +271,7 @@ class LossCategory(torch.nn.Module):
         if initial_run or not self.normalise:
             return loss
         else:
-            return (loss / self.initial_loss_value) * self.weight
+            return loss / self.initial_loss_value
 
 
 class CalibratedWeights:
@@ -307,7 +307,7 @@ class CalibratedWeights:
         calibration_parameters_at_instant = self.calibration_parameters(
             time_instant
         )
-        loss = self.loss_type(
+        self.loss = loss = self.loss_type(
             self.dataset,
             calibration_parameters_at_instant,
             static_dataset=True,
@@ -332,7 +332,7 @@ class CalibratedWeights:
                 validation_blacklist = []
             num_holdout_sets = int(1 / validation_split)
             holdout_sets = loss.create_holdout_sets(
-                self.dataset, num_holdout_sets, exclude_by_name="Demographics"
+                self.dataset, num_holdout_sets, len(self.initial_weights), exclude_by_name="Demographics", 
             )
             train_loss_fn = self.loss_type(
                 self.dataset,
@@ -375,7 +375,7 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
             )
-
+        
         return weights
 
     def _train(
@@ -405,6 +405,7 @@ class CalibratedWeights:
             )
             loss.backward()
             optimizer.step()
+            print(f"Epoch {epoch}: {loss.item()}")
 
             if log_df is not None and epoch % log_every == 0:
                 training_log = training_loss_fn.collect_comparison_log()
@@ -453,5 +454,5 @@ class CalibratedWeights:
                                     y_true_value,
                                     epoch,
                                 )
-
+            
         return (household_weights + weight_adjustment).detach().numpy()

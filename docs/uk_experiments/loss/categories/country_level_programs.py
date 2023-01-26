@@ -145,22 +145,22 @@ class CountryLevelProgram(LossCategory):
             and "GREAT_BRITAIN" in parameter.budgetary_impact._children
         ):
             self.weight = parameter.budgetary_impact._children["GREAT_BRITAIN"]
-
-        for single_country in (
-            "ENGLAND",
-            "WALES",
-            "SCOTLAND",
-            "NORTHERN_IRELAND",
-        ):
-            if (
-                self.weight is None
-                and single_country in parameter.budgetary_impact._children
-            ):
-                self.weight = parameter.budgetary_impact._children[
-                    single_country
-                ]
-
         if self.weight is None:
+            self.weight = 0
+            for single_country in (
+                "ENGLAND",
+                "WALES",
+                "SCOTLAND",
+                "NORTHERN_IRELAND",
+            ):
+                if (
+                    single_country in parameter.budgetary_impact._children
+                ):
+                    self.weight += parameter.budgetary_impact._children[
+                        single_country
+                    ]
+
+        if self.weight is None or self.weight == 0:
             raise ValueError(
                 f"I tried to ensure that {self.variable} is weighted by its budgetary impact, but I couldn't find a budgetary impact for it."
             )
@@ -285,8 +285,8 @@ class DividendIncome(CountryLevelProgram):
 
 
 class IncomeTax(LossCategory):
-    weight = 1
     static_dataset = True
+    weight = 200
 
     def get_comparisons(
         self, dataset: Dataset
