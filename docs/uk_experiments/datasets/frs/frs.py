@@ -25,7 +25,13 @@ class FRS(Dataset):
     raw_frs: Type[RawFRS]
 
     def generate(self):
-        raw_frs_files = self.raw_frs().load()
+        raw_frs_files = self.raw_frs()
+        if not raw_frs_files.file_path.exists():
+            raise FileNotFoundError(
+                f"Raw FRS file {raw_frs_files.file_path} not found."
+            )
+        else:
+            raw_frs_files = raw_frs_files.load()
         frs = h5py.File(self.file_path, mode="w")
         TABLES = (
             "adult",

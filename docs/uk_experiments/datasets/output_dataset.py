@@ -17,7 +17,7 @@ class OutputDataset(Dataset):
             label = f"{dataset.label} {year} {out_year}"
             input_dataset = dataset
             input_dataset_year = year
-            output_year = out_year
+            output_year = out_year or 2023
             file_path = Path(__file__).parent / f"output_{dataset.name}.h5"
 
         dataset = OutputDatasetFromDataset()
@@ -27,6 +27,9 @@ class OutputDataset(Dataset):
 
     def generate(self):
         from policyengine_uk import Microsimulation
+
+        if not self.input_dataset().exists:
+            self.input_dataset().generate()
 
         sim = Microsimulation(
             dataset=self.input_dataset(), dataset_year=self.input_dataset_year

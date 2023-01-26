@@ -13,9 +13,9 @@ class CalibratedFRS_2019_20_22(Dataset):
     file_path = Path(__file__).parent / "calibrated_frs_2019_20_22.h5"
 
     def generate(self):
-        from .frs import OutputFRS_2019_20_22, FRS_2019_20
+        from .frs import FRS_2019_20, OutputDataset
 
-        frs_2020_out_22 = OutputFRS_2019_20_22()
+        frs_2020_out_22 = OutputDataset.from_dataset(FRS_2019_20, 2020, 2022)()
 
         original_weights = frs_2020_out_22.household.household_weight.values
 
@@ -28,7 +28,7 @@ class CalibratedFRS_2019_20_22(Dataset):
 
         weights = calibrated_weights.calibrate(
             "2022-01-01",
-            epochs=100,
+            epochs=1_000,
             learning_rate=0.1,
         )
 

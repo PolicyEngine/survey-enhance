@@ -86,7 +86,6 @@ class Imputation:
 
         if self.random_generator is None:
             self.random_generator = np.random.default_rng()
-
         X = to_array(self.encode_categories(X))
         Y = np.zeros((X.shape[0], len(self.models)))
         for i, model in enumerate(self.models):
