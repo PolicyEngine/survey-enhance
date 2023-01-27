@@ -1,11 +1,11 @@
 from loss.loss import Loss, calibration_parameters
-from datasets.frs import OutputFRS_2019_20_22, CalibratedFRS_2019_20_22
+from datasets.frs import FRS_2019_20, SPIEnhancedFRS2019_20, CalibratedFRS
 from datasets.output_dataset import OutputDataset
 import torch
 
-dataset = OutputFRS_2019_20_22()
+dataset = OutputDataset.from_dataset(FRS_2019_20, 2019, 2022)()
 calibrated_dataset = OutputDataset.from_dataset(
-    CalibratedFRS_2019_20_22, 2022, 2022
+    CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20, 2022, 2022), 2022, 2022
 )()
 loss = Loss(
     dataset,

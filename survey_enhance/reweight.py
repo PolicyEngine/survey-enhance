@@ -246,7 +246,9 @@ class LossCategory(torch.nn.Module):
         )
         for subloss in self.sublosses:
             subcategory_loss = (
-                subloss(household_weights, dataset) * subloss.weight / total_subloss_weight
+                subloss(household_weights, dataset)
+                * subloss.weight
+                / total_subloss_weight
             )
             self.comparison_log.append(
                 (
@@ -332,7 +334,10 @@ class CalibratedWeights:
                 validation_blacklist = []
             num_holdout_sets = int(1 / validation_split)
             holdout_sets = loss.create_holdout_sets(
-                self.dataset, num_holdout_sets, len(self.initial_weights), exclude_by_name="Demographics", 
+                self.dataset,
+                num_holdout_sets,
+                len(self.initial_weights),
+                exclude_by_name="Demographics",
             )
             train_loss_fn = self.loss_type(
                 self.dataset,
@@ -375,7 +380,7 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
             )
-        
+
         return weights
 
     def _train(
@@ -454,5 +459,5 @@ class CalibratedWeights:
                                     y_true_value,
                                     epoch,
                                 )
-            
+
         return (household_weights + weight_adjustment).detach().numpy()

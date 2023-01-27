@@ -2,10 +2,15 @@ from survey_enhance.impute import Imputation
 from survey_enhance.dataset import Dataset
 from pathlib import Path
 
+
 class SPIEnhancedFRS2019_20(Dataset):
     name = "spi_enhanced_frs_2019_20"
     label = "SPI-Enhanced FRS 2019/20"
-    file_path = Path(__file__).parent / "spi_enhanced_frs_2019_20.h5"
+    file_path = (
+        Path(__file__).parent.parent.parent
+        / "data"
+        / "spi_enhanced_frs_2019_20.h5"
+    )
     data_format = Dataset.ARRAYS
 
     def generate(self):
@@ -18,22 +23,21 @@ class SPIEnhancedFRS2019_20(Dataset):
 
         for variable in frs.keys():
             if "_id" in variable:
-                print("Skipping", variable)
                 # e.g. [1, 2, 3] -> [10, 20, 30, 11, 21, 31]
                 values = list(frs[variable][...] * 10)
                 values = [*values, *[x + 1 for x in values]]
                 new_values[variable] = values
-                if variable == "person_household_id":
-                    print(values)
             elif "_weight" in variable:
-                new_values[variable] = list(frs[variable][...]) + list(frs[variable][...] * 0)
+                new_values[variable] = list(frs[variable][...]) + list(
+                    frs[variable][...] * 0
+                )
             else:
                 new_values[variable] = list(frs[variable][...]) * 2
-        
+
         TARGETS = [
-            1.016e12, # From up-to-date published RTI data
-            123.3e9, # This and below from the 2019-20 SPI, uprated by 16% (2019 -> 2022)
-            7.25e9, # 16% is the relative change from 2019 SPI total pay to 2022 EOY RTI total pay
+            1.016e12,  # From up-to-date published RTI data
+            123.3e9,  # This and below from the 2019-20 SPI, uprated by 16% (2019 -> 2022)
+            7.25e9,  # 16% is the relative change from 2019 SPI total pay to 2022 EOY RTI total pay
             78.0e9,
             133.0e9,
             10.3e9,
@@ -42,6 +46,8 @@ class SPIEnhancedFRS2019_20(Dataset):
             31.9e9,
         ]
 
+        TARGETS = [0.5 for _ in TARGETS]
+
         income = Imputation.load("income.pkl")
 
         simulation = Microsimulation(
@@ -49,7 +55,9 @@ class SPIEnhancedFRS2019_20(Dataset):
             dataset_year=2019,
         )
 
-        input_df = simulation.calculate_dataframe(["age", "gender", "region"], 2022)
+        input_df = simulation.calculate_dataframe(
+            ["age", "gender", "region"], 2022
+        )
 
         SOLVE_QUANTILES = False
         if SOLVE_QUANTILES:
@@ -59,15 +67,28 @@ class SPIEnhancedFRS2019_20(Dataset):
                 sim.calculate("household_weight", map_to="person").values,
             )
         else:
-            mean_quantiles = [0.38, 0.24, 0.39, 0.28, 0.45, 0.43, 0.29, 0.52, 0.5]
-        
+            mean_quantiles = [
+                0.38,
+                0.24,
+                0.39,
+                0.28,
+                0.45,
+                0.43,
+                0.29,
+                0.52,
+                0.5,
+            ]
+
         full_imputations = income.predict(input_df, mean_quantiles)
         for variable in full_imputations.columns:
             # Assign over the second half of the dataset
             if variable in new_values.keys():
-                new_values[variable][len(new_values[variable]) // 2 :] = full_imputations[variable].values
-        
+                new_values[variable][
+                    len(new_values[variable]) // 2 :
+                ] = full_imputations[variable].values
+
         self.save_dataset(new_values)
+
 
 IMPUTATIONS = [
     "employment_income",

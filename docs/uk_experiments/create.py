@@ -23,10 +23,10 @@ if __name__ == "__main__":
         raw_frs_18.generate(config.get("frs_2019_20"))
 
     DATASETS_TO_GENERATE = [
-        FRS_2019_20,
-        OutputFRS_2019_20_22,
-        SPIEnhancedFRS2019_20,
-        #CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20, 2022, 2022)
+        # FRS_2019_20,
+        # OutputFRS_2019_20_22,
+        # SPIEnhancedFRS2019_20,
+        CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20),
     ]
 
     for dataset in DATASETS_TO_GENERATE:

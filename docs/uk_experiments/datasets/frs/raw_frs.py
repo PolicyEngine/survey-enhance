@@ -94,4 +94,6 @@ class RawFRS(Dataset):
 class RawFRS_2019_20(RawFRS):
     name = "raw_frs_2019_20"
     label = "Family Resources Survey 2019-20 (raw)"
-    file_path = Path(__file__).parent / "raw_frs_2019_20.h5"
+    file_path = (
+        Path(__file__).parent.parent.parent / "data" / "raw_frs_2019_20.h5"
+    )

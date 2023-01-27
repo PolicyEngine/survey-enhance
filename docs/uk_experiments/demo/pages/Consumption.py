@@ -3,7 +3,7 @@ import streamlit as st
 from survey_enhance.impute import Imputation
 import pandas as pd
 
-model = Imputation.load("consumption.pkl")
+model = Imputation.load("data/consumption.pkl")
 
 st.title("Imputing consumption from the LCFS")
 

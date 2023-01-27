@@ -11,17 +11,27 @@ class OutputDataset(Dataset):
     output_year: int
 
     @staticmethod
-    def from_dataset(dataset: Type[Dataset], year: int, out_year: int):
+    def from_dataset(
+        dataset: Type[Dataset],
+        year: int = 2022,
+        out_year: int = 2022,
+        generate: bool = False,
+    ):
         class OutputDatasetFromDataset(OutputDataset):
             name = f"{dataset.name}_{year}_{out_year}"
             label = f"{dataset.label} {year} {out_year}"
             input_dataset = dataset
             input_dataset_year = year
-            output_year = out_year or 2023
-            file_path = Path(__file__).parent / f"output_{dataset.name}.h5"
+            output_year = out_year
+            file_path = (
+                Path(__file__).parent.parent
+                / "data"
+                / f"output_{dataset.name}.h5"
+            )
 
-        dataset = OutputDatasetFromDataset()
-        dataset.generate()
+        output_dataset = OutputDatasetFromDataset()
+        if generate or not output_dataset.exists:
+            output_dataset.generate()
 
         return OutputDatasetFromDataset
 
@@ -42,7 +52,6 @@ class OutputDataset(Dataset):
             "region",
             "country",
             "person_id",
-            "person_household_id",
             "tax_band",
             "adjusted_net_income",
         ]
@@ -105,6 +114,11 @@ class OutputDataset(Dataset):
                 )
             else:
                 household[variable] = sim.calculate(variable).values
+
+        person["person_household_id"] = sim.calculate(
+            "household_id", map_to="person"
+        )
+
         self.save_dataset(
             dict(
                 person=person,

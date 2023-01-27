@@ -153,9 +153,7 @@ class CountryLevelProgram(LossCategory):
                 "SCOTLAND",
                 "NORTHERN_IRELAND",
             ):
-                if (
-                    single_country in parameter.budgetary_impact._children
-                ):
+                if single_country in parameter.budgetary_impact._children:
                     self.weight += parameter.budgetary_impact._children[
                         single_country
                     ]
@@ -284,10 +282,7 @@ class DividendIncome(CountryLevelProgram):
     taxpayers_only = True
 
 
-class IncomeTax(LossCategory):
-    static_dataset = True
-    weight = 200
-
+class IncomeTaxBudgetaryImpact(LossCategory):
     def get_comparisons(
         self, dataset: Dataset
     ) -> List[Tuple[str, float, torch.Tensor]]:
@@ -348,6 +343,19 @@ class IncomeTax(LossCategory):
                 )
             ]
 
+        return comparisons
+
+
+class IncomeTaxParticipants(LossCategory):
+    def get_comparisons(
+        self, dataset: Dataset
+    ) -> List[Tuple[str, float, torch.Tensor]]:
+        income_tax = dataset.person.income_tax
+
+        it = self.calibration_parameters.programs.income_tax
+
+        comparisons = []
+
         # Taxpayers by country and income band
 
         tax_band = dataset.person.tax_band
@@ -384,6 +392,16 @@ class IncomeTax(LossCategory):
                 ]
 
         return comparisons
+
+
+class IncomeTax(LossCategory):
+    static_dataset = True
+    weight = 200
+
+    subcategories = [
+        IncomeTaxBudgetaryImpact,
+        IncomeTaxParticipants,
+    ]
 
 
 country_level_programs = [
