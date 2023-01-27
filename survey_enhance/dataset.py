@@ -1,22 +1,14 @@
-import importlib
-import logging
-import os
-import re
-from array import ArrayType
 from pathlib import Path
-from typing import Callable, Dict, Union, Optional, Sequence, TypeVar, Generic
-
+from typing import Dict, Union
 import h5py
 import numpy as np
 import pandas as pd
 
-from policyengine_core.types import ArrayLike
-
 
 class Dataset:
-    """The `Dataset` class is a base class for datasets used directly or indirectly for OpenFisca models.
+    """The `Dataset` class is a base class for datasets used directly or indirectly for microsimulation models.
     A dataset defines a generation function to create it from other data, and this class provides common features
-    like cloud storage, metadata and loading."""
+    like storage, metadata and loading."""
 
     name: str = None
     """The name of the dataset. This is used to generate filenames and is used as the key in the `datasets` dictionary."""

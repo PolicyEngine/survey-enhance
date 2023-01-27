@@ -10,9 +10,16 @@ import warnings
 
 
 class LossCategory(torch.nn.Module):
+    """
+    A loss category is essentially a loss function, but contains a number of utilities for ease of programming, like
+    decomposition into weighted and normalised subcategories, and logging.
+    """
     weight: float = 1.0
+    """The weight of this loss category in the total loss."""
     subcategories: List[Type["LossCategory"]] = []
+    """The subcategories of this loss category."""
     static_dataset = False
+    """Whether the dataset is static, i.e. does not change between epochs."""
 
     normalise: bool = True
     """Whether to normalise the starting loss value to 1."""
@@ -21,6 +28,7 @@ class LossCategory(torch.nn.Module):
     """Whether to log the full tree of losses."""
 
     diagnostic_tree: Dict[str, float] = None
+    """The tree of losses."""
 
     def __init__(
         self,

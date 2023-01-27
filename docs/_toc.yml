@@ -1,5 +1,14 @@
 format: jb-book
 root: index
-chapters:
-  - file: literature_survey/literature_survey.md
-  - file: results.ipynb
+parts:
+  - caption: Paper
+    chapters:
+    - file: literature_survey/literature_survey.md
+    - file: results.ipynb
+  - caption: Python API
+    chapters:
+    - file: python_api/dataset.md
+    - file: python_api/impute.md
+    - file: python_api/percentile_matching.md
+    - file: python_api/reweight.md
+

@@ -1,7 +1,3 @@
-"""
-This module replicates the ONS SPI adjustment method.
-"""
-
 import pandas as pd
 import numpy as np
 

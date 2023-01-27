@@ -16,12 +16,20 @@ def get_category_mapping(values: pd.Series) -> Dict[str, int]:
 
 
 class Imputation:
+    """
+    An `Imputation` represents a learned function f(`input_variables`) -> `output_variables`.
+    """
     models: List["ManyToOneImputation"]
+    """Each column of the output variables is predicted by a separate model, stored in this list."""
     X_columns: List[str]
+    """The names of the input variables."""
     Y_columns: List[str]
+    """The names of the output variables."""
     random_generator: np.random.Generator = None
+    """The random generator used to sample from the distribution of the imputation."""
 
     X_category_mappings: List[Dict[str, int]] = None
+    """The mapping from category names to integers for each input variable."""
 
     def encode_categories(self, X: pd.DataFrame) -> pd.DataFrame:
         if self.X_category_mappings is None:
@@ -165,7 +173,11 @@ class Imputation:
 
 
 class ManyToOneImputation:
+    """
+    An `Imputation` consists of a set of `ManyToOneImputation` models, one for each output variable.
+    """
     model: RandomForestRegressor
+    """The random forest model."""
 
     def train(
         self,
