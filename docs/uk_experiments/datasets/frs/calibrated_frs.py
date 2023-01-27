@@ -10,8 +10,8 @@ class CalibratedFRS(Dataset):
     input_dataset: Type[Dataset]
     input_dataset_year: int
     output_year: int
-    epochs: int = 400
-    learning_rate: float = 25
+    epochs: int = 1_000
+    learning_rate: float = 1e-1
     log_dir: str = None
 
     @staticmethod

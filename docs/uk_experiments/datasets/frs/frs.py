@@ -94,20 +94,6 @@ class FRS_2019_20(FRS):
     file_path = Path(__file__).parent.parent.parent / "data" / "frs_2019_20.h5"
 
 
-class OutputFRS_2019_20_22(OutputDataset):
-    name = "output_frs_2019_20"
-    label = "Family Resources Survey 2019/20 (simulated)"
-    data_format = Dataset.TABLES
-    file_path = (
-        Path(__file__).parent.parent.parent
-        / "data"
-        / "output_frs_2019_20_22.h5"
-    )
-    input_dataset = FRS_2019_20
-    input_dataset_year = 2019
-    output_year = 2022
-
-
 def sum_to_entity(
     values: pd.Series, foreign_key: pd.Series, primary_key
 ) -> pd.Series:

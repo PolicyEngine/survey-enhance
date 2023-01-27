@@ -46,8 +46,6 @@ class SPIEnhancedFRS2019_20(Dataset):
             31.9e9,
         ]
 
-        TARGETS = [0.5 for _ in TARGETS]
-
         income = Imputation.load("income.pkl")
 
         simulation = Microsimulation(
