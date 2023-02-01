@@ -17,13 +17,12 @@ datasets["Calibrated FRS"] = OutputDataset.from_dataset(
     CalibratedFRS.from_dataset(FRS_2019_20)
 )()
 datasets["Calibrated SPI-enhanced FRS"] = OutputDataset.from_dataset(
-    CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20)
+    CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20, force_generate=True)
 )()
 datasets["SPI percentile-matched FRS"] = OutputDataset.from_dataset(
     PercentileMatchedFRS.from_dataset(
         FRS_2019_20,
         percentile_matched_variables=["dividend_income"],
-        force_generate=True,
     )
 )()
 

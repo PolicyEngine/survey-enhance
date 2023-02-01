@@ -185,13 +185,22 @@ class LossCategory(torch.nn.Module):
                 self.comparisons = comparisons
 
         loss = torch.tensor(1e-3)
-        for name, y_pred_array, y_true in comparisons:
+        for comparison in comparisons:
+            if len(comparison) == 3:
+                name, y_pred_array, y_true = comparison
+                weight = 1
+            elif len(comparison) == 4:
+                name, y_pred_array, y_true, weight = comparison
             # y_pred_array needs to be a weighted sum with household_weights
             y_pred_array = torch.tensor(
                 np.array(y_pred_array).astype(float), requires_grad=True
             )
             y_pred = torch.sum(y_pred_array * household_weights)
-            loss_addition = (y_pred / (y_true + 1) - 1) ** 2
+            loss_addition = ((y_pred / (y_true + 1) - 1) * weight) ** 2
+            if weight != 1:
+                print(
+                    f"Weighted loss for {name} is {loss_addition} (y_pred={y_pred}, y_true={y_true})"
+                )
             if torch.isnan(loss_addition):
                 raise ValueError(
                     f"Loss for {name} is NaN (y_pred={y_pred}, y_true={y_true})"

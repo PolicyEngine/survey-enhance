@@ -7,6 +7,15 @@ from typing import Iterable, Tuple, List
 from ..utils import sum_by_household
 from survey_enhance.dataset import Dataset
 
+COUNTRY_WEIGHTS = {
+    "ENGLAND": 0.84,
+    "WALES": 0.05,
+    "SCOTLAND": 0.08,
+    "NORTHERN_IRELAND": 0,  # 0.03,
+    "GREAT_BRITAIN": 0.97,
+    "UNITED_KINGDOM": 1,
+}
+
 
 class CountryLevelProgramBudgetaryImpact(LossCategory):
     weight = 1
@@ -21,6 +30,7 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
         pred = []
         targets = []
         names = []
+        weights = []
 
         parameter = self.calibration_parameters.programs._children[
             self.variable
@@ -40,11 +50,13 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
             pred += [values]
             targets += [parameter.budgetary_impact._children["UNITED_KINGDOM"]]
             names += [f"{self.variable}_budgetary_impact_UNITED_KINGDOM"]
+            weights += [COUNTRY_WEIGHTS["UNITED_KINGDOM"]]
 
         if "GREAT_BRITAIN" in parameter.budgetary_impact._children:
             pred += [values * (countries != "NORTHERN_IRELAND")]
             targets += [parameter.budgetary_impact._children["GREAT_BRITAIN"]]
             names += [f"{self.variable}_budgetary_impact_GREAT_BRITAIN"]
+            weights += [COUNTRY_WEIGHTS["GREAT_BRITAIN"]]
 
         for single_country in (
             "ENGLAND",
@@ -58,6 +70,7 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
                     parameter.budgetary_impact._children[single_country]
                 ]
                 names += [f"{self.variable}_budgetary_impact_{single_country}"]
+                weights += [COUNTRY_WEIGHTS[single_country]]
 
         comparisons = []
         for name, value, target in zip(names, pred, targets):
@@ -78,6 +91,7 @@ class CountryLevelProgramParticipants(LossCategory):
         pred = []
         targets = []
         names = []
+        weights = []
 
         parameter = self.calibration_parameters.programs._children[
             self.variable
@@ -98,10 +112,13 @@ class CountryLevelProgramParticipants(LossCategory):
                 pred += [values]
                 targets += [parameter.participants._children["UNITED_KINGDOM"]]
                 names += [f"{self.variable}_participants_UNITED_KINGDOM"]
+                weights += [COUNTRY_WEIGHTS["UNITED_KINGDOM"]]
+
             if "GREAT_BRITAIN" in parameter.participants._children:
                 pred += [values * (countries != "NORTHERN_IRELAND")]
                 targets += [parameter.participants._children["GREAT_BRITAIN"]]
                 names += [f"{self.variable}_participants_GREAT_BRITAIN"]
+                weights += [COUNTRY_WEIGHTS["GREAT_BRITAIN"]]
 
             for single_country in (
                 "ENGLAND",
@@ -115,6 +132,7 @@ class CountryLevelProgramParticipants(LossCategory):
                         parameter.participants._children[single_country]
                     ]
                     names += [f"{self.variable}_participants_{single_country}"]
+                    weights += [COUNTRY_WEIGHTS[single_country]]
 
         comparisons = []
         for name, value, target in zip(names, pred, targets):
@@ -303,6 +321,7 @@ class IncomeTaxBudgetaryImpact(LossCategory):
                     f"income_tax_{country}",
                     household_income_tax * (countries == country),
                     it.budgetary_impact.by_country._children[country],
+                    COUNTRY_WEIGHTS[country],
                 )
             ]
 
@@ -311,6 +330,7 @@ class IncomeTaxBudgetaryImpact(LossCategory):
                 "income_tax_UNITED_KINGDOM",
                 household_income_tax,
                 it.budgetary_impact.by_country._children["UNITED_KINGDOM"],
+                COUNTRY_WEIGHTS["UNITED_KINGDOM"],
             )
         ]
 
@@ -388,6 +408,7 @@ class IncomeTaxParticipants(LossCategory):
                         it.participants.by_country_and_band._children[
                             country
                         ]._children[band],
+                        COUNTRY_WEIGHTS[country],
                     )
                 ]
 
