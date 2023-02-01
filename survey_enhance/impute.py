@@ -19,6 +19,7 @@ class Imputation:
     """
     An `Imputation` represents a learned function f(`input_variables`) -> `output_variables`.
     """
+
     models: List["ManyToOneImputation"]
     """Each column of the output variables is predicted by a separate model, stored in this list."""
     X_columns: List[str]
@@ -176,6 +177,7 @@ class ManyToOneImputation:
     """
     An `Imputation` consists of a set of `ManyToOneImputation` models, one for each output variable.
     """
+
     model: RandomForestRegressor
     """The random forest model."""
 

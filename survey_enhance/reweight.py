@@ -14,6 +14,7 @@ class LossCategory(torch.nn.Module):
     A loss category is essentially a loss function, but contains a number of utilities for ease of programming, like
     decomposition into weighted and normalised subcategories, and logging.
     """
+
     weight: float = 1.0
     """The weight of this loss category in the total loss."""
     subcategories: List[Type["LossCategory"]] = []

@@ -1,27 +1,43 @@
 from loss.loss import Loss, calibration_parameters
-from datasets.frs import FRS_2019_20, SPIEnhancedFRS2019_20, CalibratedFRS
+from datasets.frs import (
+    FRS_2019_20,
+    SPIEnhancedFRS2019_20,
+    CalibratedFRS,
+    PercentileMatchedFRS,
+)
 from datasets.output_dataset import OutputDataset
 import torch
 
-dataset = OutputDataset.from_dataset(FRS_2019_20, 2019, 2022)()
-calibrated_dataset = OutputDataset.from_dataset(
-    CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20, 2022, 2022), 2022, 2022
+datasets = {}
+
+datasets["Original FRS"] = OutputDataset.from_dataset(
+    FRS_2019_20, 2019, 2022
 )()
+datasets["Calibrated FRS"] = OutputDataset.from_dataset(
+    CalibratedFRS.from_dataset(FRS_2019_20)
+)()
+datasets["Calibrated SPI-enhanced FRS"] = OutputDataset.from_dataset(
+    CalibratedFRS.from_dataset(SPIEnhancedFRS2019_20)
+)()
+datasets["SPI percentile-matched FRS"] = OutputDataset.from_dataset(
+    PercentileMatchedFRS.from_dataset(
+        FRS_2019_20,
+        percentile_matched_variables=["dividend_income"],
+        force_generate=True,
+    )
+)()
+
 loss = Loss(
-    dataset,
+    datasets["Original FRS"],
     calibration_parameters(f"2022-01-01"),
     static_dataset=False,
-    normalise=False,
-    diagnostic=True,
 )
 
-original_weights = torch.tensor(dataset.household.household_weight.values)
-calibrated_weights = torch.tensor(
-    calibrated_dataset.household.household_weight.values
-)
+losses = {}
+for name, dataset in datasets.items():
+    losses[name] = loss(
+        torch.tensor(dataset.household.household_weight.values), dataset
+    )
 
-original_loss = loss(original_weights, dataset)
-calibrated_loss = loss(calibrated_weights, calibrated_dataset)
-
-print(f"Original loss: {original_loss}")
-print(f"Calibrated loss: {calibrated_loss}")
+for name, loss in losses.items():
+    print(f"{name}: {loss}")

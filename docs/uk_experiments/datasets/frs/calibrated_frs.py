@@ -59,8 +59,8 @@ class CalibratedFRS(Dataset):
 
         weights = calibrated_weights.calibrate(
             "2022-01-01",
-            epochs=5_000,
-            learning_rate=0.1,
+            epochs=256,
+            learning_rate=1e1,
         )
 
         data = self.input_dataset().load_dataset()

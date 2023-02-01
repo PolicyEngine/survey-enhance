@@ -1,10 +1,15 @@
 import pandas as pd
 import numpy as np
+from microdf import MicroDataFrame, MicroSeries
+from typing import Union
+
+DataFrame = Union[pd.DataFrame, MicroDataFrame]
+Series = Union[pd.Series, MicroSeries]
 
 
 def match_percentiles_df(
-    target_df: pd.DataFrame,
-    source_df: pd.DataFrame,
+    target_df: DataFrame,
+    source_df: DataFrame,
     percentile_threshold: float = 0.95,
     num_groups: int = 10,
 ) -> pd.DataFrame:
@@ -35,8 +40,8 @@ def match_percentiles_df(
 
 
 def match_percentiles(
-    targets: pd.Series,
-    sources: pd.Series,
+    targets: Series,
+    sources: Series,
     percentile_threshold: float = 0.95,
     num_groups: int = 10,
 ) -> pd.Series:
@@ -52,6 +57,10 @@ def match_percentiles(
     Returns:
         A Series with the same index as target_df, but with the adjusted values.
     """
+    if not isinstance(targets, MicroSeries):
+        targets = MicroSeries(targets)
+    if not isinstance(sources, MicroSeries):
+        sources = MicroSeries(sources)
     targets = targets.copy()
 
     percentile_boundaries = np.linspace(
