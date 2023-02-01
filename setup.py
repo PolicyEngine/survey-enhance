@@ -10,6 +10,7 @@ setup(
         "microdf_python",
         "torch",
         "policyengine_core",
+        "ipython",
     ],
     extras_require={
         "dev": [
