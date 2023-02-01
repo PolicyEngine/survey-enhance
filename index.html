@@ -139,7 +139,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -159,9 +159,17 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Paper</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="literature_survey/literature_survey.html">Literature survey</a></li>
 <li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python_api/dataset.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/impute.html">Imputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/percentile_matching.html">Percentile matching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/reweight.html">Datasets</a></li>
 </ul>
 
 </div>
@@ -190,7 +198,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -198,7 +206,9 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="survey-enhance">
 <h1>Survey-Enhance<a class="headerlink" href="#survey-enhance" title="Permalink to this headline">#</a></h1>
-<p>This is the documentation for <code class="docutils literal notranslate"><span class="pre">survey-enhance</span></code>, a project to evaluate different methods of improving the accuracy of household survey microdata.</p>
+<p>This package contains a framework for enhancing household survey microdata. It’s designed to be general-purpose (all code in the package is agnostic of country or survey architecture). This documentation covers the package’s usage, as well as a survey of the relevant literature and a paper on the various techniques enabled by the package.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -257,8 +267,26 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Survey-Enhance</a><ul>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

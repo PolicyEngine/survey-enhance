@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Literature survey" href="literature_survey/literature_survey.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Datasets" href="python_api/dataset.html" /><link rel="prev" title="Literature survey" href="literature_survey/literature_survey.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
         <title>Results - Survey-Enhance documentation</title>
@@ -159,9 +159,17 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <p class="caption" role="heading"><span class="caption-text">Paper</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="literature_survey/literature_survey.html">Literature survey</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python_api/dataset.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/impute.html">Imputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/percentile_matching.html">Percentile matching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_api/reweight.html">Datasets</a></li>
 </ul>
 
 </div>
@@ -201,82 +209,82 @@
 <p>TL;DR: What are the effects of different microdata adjustment methods on the accuracy of the microdata in reproducing official statistics? Findings (on the UK Family Resources Survey 2018/19) in the table below.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
-import warnings
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
-warnings.filterwarnings(&quot;ignore&quot;)
-warnings.simplefilter(action=&quot;ignore&quot;)
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
-df = pd.DataFrame(
-    {
-        &quot;Adjustment&quot;: [
-            &quot;None&quot;,
-            &quot;Percentile matching (all)&quot;,
-            &quot;Percentile matching (pensioner/non-pensioner split)&quot;,
-            &quot;Percentile matching (dividends only)&quot;,
-            &quot;Gradient descent-based reweighting&quot;,
-            &quot;SPI RF imputation + reweighting&quot;,
-        ],
-        &quot;Loss&quot;: [
-            1.0,
-            1.039242148399353,
-            1.0089750289916992,
-            0.9986706972122192,
-            0.40872600000000003,
-            0.12000000000000001,
-        ],
-    }
-)
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Adjustment&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Percentile matching (all)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Percentile matching (pensioner/non-pensioner split)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Percentile matching (dividends only)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Gradient descent-based reweighting&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SPI RF imputation + reweighting&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;Loss&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">1.039242148399353</span><span class="p">,</span>
+            <span class="mf">1.0089750289916992</span><span class="p">,</span>
+            <span class="mf">0.9986706972122192</span><span class="p">,</span>
+            <span class="mf">0.40872600000000003</span><span class="p">,</span>
+            <span class="mf">0.12000000000000001</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 
-df[&quot;Loss change&quot;] = [
-    f&quot;{x:+.2%}&quot; if x != 0 else f&quot;{x:.2%}&quot;
-    for x in (df[&quot;Loss&quot;] / df[&quot;Loss&quot;].iloc[0]) - 1
-]
-df = df.sort_values(&quot;Loss&quot;, ascending=False).drop(columns=[&quot;Loss&quot;])
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;Loss change&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">+.2%</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Loss&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Loss&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Loss&quot;</span><span class="p">])</span>
 
-df.style.hide_index().set_properties(
-    **{&quot;font-weight&quot;: &quot;bold&quot;}, subset=pd.IndexSlice[[0], :]
-)
+<span class="n">df</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">hide_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_properties</span><span class="p">(</span>
+    <span class="o">**</span><span class="p">{</span><span class="s2">&quot;font-weight&quot;</span><span class="p">:</span> <span class="s2">&quot;bold&quot;</span><span class="p">},</span> <span class="n">subset</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><style type="text/css">
-#T_ee1df_row2_col0, #T_ee1df_row2_col1 {
+#T_64afb_row2_col0, #T_64afb_row2_col1 {
   font-weight: bold;
 }
 </style>
-<table id="T_ee1df">
+<table id="T_64afb">
   <thead>
     <tr>
-      <th id="T_ee1df_level0_col0" class="col_heading level0 col0" >Adjustment</th>
-      <th id="T_ee1df_level0_col1" class="col_heading level0 col1" >Loss change</th>
+      <th id="T_64afb_level0_col0" class="col_heading level0 col0" >Adjustment</th>
+      <th id="T_64afb_level0_col1" class="col_heading level0 col1" >Loss change</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_ee1df_row0_col0" class="data row0 col0" >Percentile matching (all)</td>
-      <td id="T_ee1df_row0_col1" class="data row0 col1" >+3.92%</td>
+      <td id="T_64afb_row0_col0" class="data row0 col0" >Percentile matching (all)</td>
+      <td id="T_64afb_row0_col1" class="data row0 col1" >+3.92%</td>
     </tr>
     <tr>
-      <td id="T_ee1df_row1_col0" class="data row1 col0" >Percentile matching (pensioner/non-pensioner split)</td>
-      <td id="T_ee1df_row1_col1" class="data row1 col1" >+0.90%</td>
+      <td id="T_64afb_row1_col0" class="data row1 col0" >Percentile matching (pensioner/non-pensioner split)</td>
+      <td id="T_64afb_row1_col1" class="data row1 col1" >+0.90%</td>
     </tr>
     <tr>
-      <td id="T_ee1df_row2_col0" class="data row2 col0" >None</td>
-      <td id="T_ee1df_row2_col1" class="data row2 col1" >0.00%</td>
+      <td id="T_64afb_row2_col0" class="data row2 col0" >None</td>
+      <td id="T_64afb_row2_col1" class="data row2 col1" >0.00%</td>
     </tr>
     <tr>
-      <td id="T_ee1df_row3_col0" class="data row3 col0" >Percentile matching (dividends only)</td>
-      <td id="T_ee1df_row3_col1" class="data row3 col1" >-0.13%</td>
+      <td id="T_64afb_row3_col0" class="data row3 col0" >Percentile matching (dividends only)</td>
+      <td id="T_64afb_row3_col1" class="data row3 col1" >-0.13%</td>
     </tr>
     <tr>
-      <td id="T_ee1df_row4_col0" class="data row4 col0" >Gradient descent-based reweighting</td>
-      <td id="T_ee1df_row4_col1" class="data row4 col1" >-59.13%</td>
+      <td id="T_64afb_row4_col0" class="data row4 col0" >Gradient descent-based reweighting</td>
+      <td id="T_64afb_row4_col1" class="data row4 col1" >-59.13%</td>
     </tr>
     <tr>
-      <td id="T_ee1df_row5_col0" class="data row5 col0" >SPI RF imputation + reweighting</td>
-      <td id="T_ee1df_row5_col1" class="data row5 col1" >-88.00%</td>
+      <td id="T_64afb_row5_col0" class="data row5 col0" >SPI RF imputation + reweighting</td>
+      <td id="T_64afb_row5_col1" class="data row5 col1" >-88.00%</td>
     </tr>
   </tbody>
 </table>
@@ -308,7 +316,15 @@ df.style.hide_index().set_properties(
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="python_api/dataset.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Datasets</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="literature_survey/literature_survey.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
