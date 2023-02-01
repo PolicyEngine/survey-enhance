@@ -9,6 +9,6 @@ parts:
     chapters:
     - file: python_api/dataset.md
     - file: python_api/impute.md
-    - file: python_api/percentile_matching.md
+    - file: python_api/percentile_match.md
     - file: python_api/reweight.md
 
