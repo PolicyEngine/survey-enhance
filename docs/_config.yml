@@ -3,7 +3,7 @@ author: Nikhil Woodruff
 copyright: "2022"
 
 execute:
-  execute_notebooks: "cache"
+  execute_notebooks: force
 
 repository:
   url: https://github.com/nikhilwoodruff/survey-enhance
