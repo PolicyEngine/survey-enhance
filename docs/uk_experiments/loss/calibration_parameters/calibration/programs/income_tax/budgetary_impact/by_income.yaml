@@ -100,10 +100,21 @@ brackets:
       2018-01-01: 500_000
     amount: 
       values:
-        2018-01-01: 28_200_000_000
-        2019-01-01: 30_040_000_000
-        2020-01-01: 28_800_000_000
-        2021-01-01: 29_440_000_000
+        2018-01-01: 10_100_000_000
+        2019-01-01: 10_700_000_000
+        2020-01-01: 10_400_000_000
+        2021-01-01: 10_700_000_000
+      metadata:
+        uprating: 
+          parameter: calibration.programs.income_tax.budgetary_impact.by_country.UNITED_KINGDOM
+  - threshold: 
+      2018-01-01: 1_000_000
+    amount: 
+      values:
+        2018-01-01: 18_100_000_000
+        2019-01-01: 19_340_000_000
+        2020-01-01: 18_440_000_000
+        2021-01-01: 18_740_000_000
       metadata:
         uprating: 
           parameter: calibration.programs.income_tax.budgetary_impact.by_country.UNITED_KINGDOM

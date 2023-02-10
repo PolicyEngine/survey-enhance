@@ -322,7 +322,9 @@ class CalibratedWeights:
         log_dir: str = None,
         tensorboard_log_dir: str = None,
         log_frequency: int = 100,
+        verbose: bool = False,
     ) -> np.ndarray:
+        self.verbose = verbose
         calibration_parameters_at_instant = self.calibration_parameters(
             time_instant
         )
@@ -427,7 +429,8 @@ class CalibratedWeights:
             )
             loss.backward()
             optimizer.step()
-            print(f"Epoch {epoch}: {loss.item()}")
+            if self.verbose:
+                print(f"Epoch {epoch}: {loss.item()}")
 
             if log_df is not None and epoch % log_every == 0:
                 training_log = training_loss_fn.collect_comparison_log()

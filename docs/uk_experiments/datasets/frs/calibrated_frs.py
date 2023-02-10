@@ -21,7 +21,7 @@ class CalibratedFRS(Dataset):
     input_dataset_year: int
     output_year: int
     epochs: int = 1_000
-    learning_rate: float = 1e-1
+    learning_rate: float = 3e-1
     log_dir: str = None
 
     @staticmethod
@@ -69,7 +69,7 @@ class CalibratedFRS(Dataset):
             "2022-01-01",
             epochs=self.epochs,
             learning_rate=self.learning_rate,
-            log_dir=".",
+            verbose=False,
         )
 
         data = self.input_dataset().load_dataset()
