@@ -196,11 +196,10 @@ class LossCategory(torch.nn.Module):
                 np.array(y_pred_array).astype(float), requires_grad=True
             )
             y_pred = torch.sum(y_pred_array * household_weights)
-            loss_addition = ((y_pred / (y_true + 1) - 1) * weight) ** 2
-            if weight != 1:
-                print(
-                    f"Weighted loss for {name} is {loss_addition} (y_pred={y_pred}, y_true={y_true})"
-                )
+            BUFFER = 1e4
+            loss_addition = (
+                (y_pred + BUFFER) / (y_true + BUFFER) - 1
+            ) ** 2 * weight
             if torch.isnan(loss_addition):
                 raise ValueError(
                     f"Loss for {name} is NaN (y_pred={y_pred}, y_true={y_true})"

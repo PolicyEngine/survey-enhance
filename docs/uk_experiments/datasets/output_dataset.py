@@ -15,11 +15,12 @@ class OutputDataset(Dataset):
         dataset: Type[Dataset],
         year: int = 2022,
         out_year: int = 2022,
-        generate: bool = False,
+        force_generate: bool = False,
+        force_not_generate: bool = False,
     ):
         class OutputDatasetFromDataset(OutputDataset):
-            name = f"{dataset.name}_{year}_{out_year}"
-            label = f"{dataset.label} {year} {out_year}"
+            name = f"{dataset.name}"
+            label = f"{dataset.label}"
             input_dataset = dataset
             input_dataset_year = year
             output_year = out_year
@@ -30,7 +31,9 @@ class OutputDataset(Dataset):
             )
 
         output_dataset = OutputDatasetFromDataset()
-        if generate or not output_dataset.exists:
+        if not force_not_generate and (
+            force_generate or not output_dataset.exists
+        ):
             output_dataset.generate()
 
         return OutputDatasetFromDataset
@@ -44,6 +47,7 @@ class OutputDataset(Dataset):
         sim = Microsimulation(
             dataset=self.input_dataset(), dataset_year=self.input_dataset_year
         )
+
         sim.default_calculation_period = self.output_year
 
         PERSON_VARIABLES = [
@@ -117,7 +121,7 @@ class OutputDataset(Dataset):
 
         person["person_household_id"] = sim.calculate(
             "household_id", map_to="person"
-        )
+        ).values
 
         self.save_dataset(
             dict(

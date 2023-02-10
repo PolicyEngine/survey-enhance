@@ -207,7 +207,7 @@ class ManyToOneImputation:
     def predict(
         self,
         X: pd.DataFrame,
-        mean_quantile: float,
+        mean_quantile: float = 0.5,
         random_generator: np.random.Generator = None,
     ) -> pd.DataFrame:
         """
@@ -230,7 +230,8 @@ class ManyToOneImputation:
 
         # Get the percentiles of the predictions.
         tree_predictions = np.array(tree_predictions).transpose()
-
+        if mean_quantile is None:
+            mean_quantile = 0.5
         a = mean_quantile / (1 - mean_quantile)
         if random_generator is None:
             random_generator = np.random.default_rng()

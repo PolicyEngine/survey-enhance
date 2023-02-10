@@ -4,6 +4,16 @@ from loss.loss import Loss, calibration_parameters
 import numpy as np
 from pathlib import Path
 from typing import Type
+import pandas as pd
+
+
+def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:
+    return (
+        pd.Series(values)
+        .groupby(dataset.person.person_household_id.values)
+        .sum()
+        .values
+    )
 
 
 class CalibratedFRS(Dataset):
@@ -23,7 +33,7 @@ class CalibratedFRS(Dataset):
         force_not_generate: bool = False,
     ):
         class CalibratedFRSFromDataset(CalibratedFRS):
-            name = f"calibrated_{dataset.name}_{year}_{out_year}"
+            name = f"calibrated_{dataset.name}"
             label = f"Calibrated {dataset.label} {year} {out_year}"
             input_dataset = dataset
             input_dataset_year = year
@@ -44,9 +54,7 @@ class CalibratedFRS(Dataset):
     def generate(self):
         from .frs import OutputDataset
 
-        input_dataset = OutputDataset.from_dataset(
-            self.input_dataset, self.input_dataset_year, self.output_year
-        )()
+        input_dataset = OutputDataset.from_dataset(self.input_dataset)()
 
         original_weights = input_dataset.household.household_weight.values
 
@@ -58,7 +66,10 @@ class CalibratedFRS(Dataset):
         )
 
         weights = calibrated_weights.calibrate(
-            "2022-01-01", epochs=256, learning_rate=1e1, log_dir="."
+            "2022-01-01",
+            epochs=self.epochs,
+            learning_rate=self.learning_rate,
+            log_dir=".",
         )
 
         data = self.input_dataset().load_dataset()

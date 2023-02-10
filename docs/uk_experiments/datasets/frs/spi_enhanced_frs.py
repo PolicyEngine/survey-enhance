@@ -1,6 +1,7 @@
 from survey_enhance.impute import Imputation
 from survey_enhance.dataset import Dataset
 from pathlib import Path
+import numpy as np
 
 
 class SPIEnhancedFRS2019_20(Dataset):
@@ -23,9 +24,11 @@ class SPIEnhancedFRS2019_20(Dataset):
 
         for variable in frs.keys():
             if "_id" in variable:
-                # e.g. [1, 2, 3] -> [10, 20, 30, 11, 21, 31]
-                values = list(frs[variable][...] * 10)
-                values = [*values, *[x + 1 for x in values]]
+                # e.g. [1, 2, 3] -> [11, 12, 13, 21, 22, 23]
+                marker = 10 ** np.ceil(max(np.log10(frs[variable][...])))
+                values = list(frs[variable][...] + marker) + list(
+                    frs[variable][...] + marker * 2
+                )
                 new_values[variable] = values
             elif "_weight" in variable:
                 new_values[variable] = list(frs[variable][...]) + list(
@@ -46,7 +49,9 @@ class SPIEnhancedFRS2019_20(Dataset):
             31.9e9,
         ]
 
-        income = Imputation.load("income.pkl")
+        income = Imputation.load(
+            Path(__file__).parent.parent.parent / "data" / "income.pkl"
+        )
 
         simulation = Microsimulation(
             dataset=FRS_2019_20(),
@@ -58,13 +63,14 @@ class SPIEnhancedFRS2019_20(Dataset):
         )
 
         SOLVE_QUANTILES = False
+        APPLY_QUANTILES = False
         if SOLVE_QUANTILES:
             mean_quantiles = income.solve_quantiles(
                 TARGETS,
                 input_df,
                 sim.calculate("household_weight", map_to="person").values,
             )
-        else:
+        elif APPLY_QUANTILES:
             mean_quantiles = [
                 0.38,
                 0.24,
@@ -76,6 +82,8 @@ class SPIEnhancedFRS2019_20(Dataset):
                 0.52,
                 0.5,
             ]
+        else:
+            mean_quantiles = None
 
         full_imputations = income.predict(input_df, mean_quantiles)
         for variable in full_imputations.columns:

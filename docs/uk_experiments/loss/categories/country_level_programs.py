@@ -11,7 +11,7 @@ COUNTRY_WEIGHTS = {
     "ENGLAND": 0.84,
     "WALES": 0.05,
     "SCOTLAND": 0.08,
-    "NORTHERN_IRELAND": 0,  # 0.03,
+    "NORTHERN_IRELAND": 0.03,
     "GREAT_BRITAIN": 0.97,
     "UNITED_KINGDOM": 1,
 }
@@ -338,6 +338,8 @@ class IncomeTaxBudgetaryImpact(LossCategory):
 
         scale = it.budgetary_impact.by_income
 
+        x = 0
+
         for i in range(len(scale.thresholds)):
             lower_threshold = scale.thresholds[i]
             upper_threshold = (
@@ -360,6 +362,7 @@ class IncomeTaxBudgetaryImpact(LossCategory):
                     f"income_tax_by_income_{i}",
                     household_values,
                     amount,
+                    amount / 200e9,
                 )
             ]
 
@@ -396,6 +399,9 @@ class IncomeTaxParticipants(LossCategory):
 
         for country in ("ENGLAND", "WALES", "NORTHERN_IRELAND", "SCOTLAND"):
             for band in ("BASIC", "HIGHER", "ADDITIONAL"):
+                payers = it.participants.by_country_and_band._children[
+                    country
+                ]._children[band]
                 comparisons += [
                     (
                         f"income_tax_payers_{country}_{band}",
@@ -405,10 +411,8 @@ class IncomeTaxParticipants(LossCategory):
                             * (tax_band == band),
                             dataset,
                         ),
-                        it.participants.by_country_and_band._children[
-                            country
-                        ]._children[band],
-                        COUNTRY_WEIGHTS[country],
+                        payers,
+                        payers / 30e6,
                     )
                 ]
 
