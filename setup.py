@@ -11,7 +11,7 @@ setup(
         "torch",
         "policyengine_core",
         "ipython",
-        "sklearn",
+        "scikit-learn",
         "tensorboard",
     ],
     extras_require={
