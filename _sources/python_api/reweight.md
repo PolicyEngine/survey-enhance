@@ -1,4 +1,4 @@
-# Datasets
+# Weight calibration
 
 The `survey_enhance.reweight` module contains two classes which can be used to define a loss architecture and minimise it for a given survey.
 
