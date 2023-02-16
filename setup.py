@@ -11,6 +11,8 @@ setup(
         "torch",
         "policyengine_core",
         "ipython",
+        "sklearn",
+        "tensorboard",
     ],
     extras_require={
         "dev": [
