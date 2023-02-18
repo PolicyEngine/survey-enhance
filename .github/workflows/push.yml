@@ -42,8 +42,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Publish a git tag
-        run: ".github/publish-git-tag.sh"
       - name: Build package
         run: make
       - name: Publish a Python distribution to PyPI

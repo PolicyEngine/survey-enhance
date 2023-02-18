@@ -1,10 +1,14 @@
+all: build
+
 format:
 	black . -l 79
 
 install:
 	pip install -e .[dev]
 
-all: install format
+build: install
+	pip install wheel
+	python setup.py sdist bdist_wheel
 
 documentation:
 	jb clean docs

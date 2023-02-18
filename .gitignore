@@ -7,3 +7,5 @@ docs/_build
 **/*.csv
 **/*.pkl
 **/*.h5
+build/*
+dist/*
