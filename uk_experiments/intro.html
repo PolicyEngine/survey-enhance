@@ -1,0 +1,572 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Datasets" href="../python_api/dataset.html" /><link rel="prev" title="Results" href="../results.html" />
+
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+        <title>Introduction - Survey-Enhance documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Survey-Enhance documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Survey-Enhance documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Paper</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../literature_survey/literature_survey.html">Literature survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../results.html">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/dataset.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/impute.html">Imputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/percentile_match.html">Percentile matching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/reweight.html">Weight calibration</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">#</a></h1>
+<p>Inaccuracy in survey microdata is a common problem in microsimulation. But what do we mean by inaccuracy? This notebook (and the following) will attempt to walk you through the theory and practice of Survey-Enhance. We’ll focus on the UK, and experiment with different ways of enhancing the Family Resources Survey (FRS) data.</p>
+<section id="loss">
+<h2>Loss<a class="headerlink" href="#loss" title="Permalink to this headline">#</a></h2>
+<p>The fundamental core of Survey-Enhance is the idea of measuring survey accuracy/usefulness in a singular value that packs together lots of individual targets we’re concerned about: everything from tax to benefits to demographics. We call this value the loss. The loss is a measure of how far away the survey is from the truth. It’s a single number that we can use to compare different survey designs, and to measure the impact of different survey enhancements.</p>
+<p>We need to build this ourselves for any given survey, trying to be as neutral as possible. There’s strength in numbers: I’ve incorporated as many different statistics as are readily available for the UK, but of course the way I’ve constructed the loss function is the most vulnerable part of the pipeline to arbitrary assumptions. I followed the following principles:</p>
+<ul class="simple">
+<li><p>Put demographics into one bin, and financial statistics into another, then normalise them and weight them equally.</p></li>
+<li><p>Within those bins, weight by size (e.g. “Income Tax statistics” should be weighted 200:40 to “Universal Credit statistics”, because Income Tax revenue is £200bn and Universal Credit spending is £40bn).</p></li>
+</ul>
+<p>So what does this look like? The following code runs the loss function on the 2019-20 FRS.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">loss.loss</span> <span class="kn">import</span> <span class="n">Loss</span><span class="p">,</span> <span class="n">calibration_parameters</span>
+<span class="kn">from</span> <span class="nn">datasets.frs</span> <span class="kn">import</span> <span class="n">FRS_2019_20</span>
+<span class="kn">from</span> <span class="nn">datasets.output_dataset</span> <span class="kn">import</span> <span class="n">OutputDataset</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">original_frs</span> <span class="o">=</span> <span class="n">OutputDataset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span><span class="n">FRS_2019_20</span><span class="p">,</span> <span class="mi">2019</span><span class="p">,</span> <span class="mi">2022</span><span class="p">)()</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="n">Loss</span><span class="p">(</span>
+    <span class="n">original_frs</span><span class="p">,</span>
+    <span class="n">calibration_parameters</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2022-01-01&quot;</span><span class="p">),</span>
+    <span class="n">static_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">frs_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">original_frs</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">original_frs</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original FRS: </span><span class="si">{</span><span class="n">frs_loss</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original FRS: 1.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>… which isn’t too exciting, because it’s normalised to 1.0 (deliberately). The value of the loss is fundamentally difficult to understand, because we don’t really think of accuracy as a single number. But we can get some level of intuition by changing the survey up a bit and seeing how the loss changes. For example: what if everyone in the FRS lied and said they had no pension income? How much less accurate would the survey be? We have some rough subjective feeling for this, so we can see what the loss function says and calibrate our mental model of accuracy to that.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FRS_2019_20_with_no_pension_income</span><span class="p">(</span><span class="n">FRS_2019_20</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;FRS_2019_20_with_no_pension_income&quot;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">FRS_2019_20</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;frs_2019_20_with_no_pension_income.h5&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="n">pension_income</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;pension_income&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;pension_income&quot;</span><span class="p">,</span> <span class="n">pension_income</span> <span class="o">*</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">frs_with_no_pension_income</span> <span class="o">=</span> <span class="n">OutputDataset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">FRS_2019_20_with_no_pension_income</span><span class="p">,</span> <span class="mi">2019</span><span class="p">,</span> <span class="mi">2022</span>
+<span class="p">)()</span>
+
+<span class="n">frs_with_no_pension_income_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">frs_with_no_pension_income</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+    <span class="n">frs_with_no_pension_income</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FRS with no pension income: </span><span class="si">{</span><span class="n">frs_with_no_pension_income_loss</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FRS with no pension income: 6.552893370459233
+</pre></div>
+</div>
+</div>
+</div>
+<p>So the loss jumped to around 6. Why is that? We can check the loss function to see what’s going on:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+    <span class="n">frs_with_no_pension_income</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span>
+<span class="p">)</span>
+
+<span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span>
+    <span class="n">weights</span><span class="p">,</span>
+    <span class="n">frs_with_no_pension_income</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+
+<span class="k">def</span> <span class="nf">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+    <span class="n">new_tree</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1_loss&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">new_tree</span>
+
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+        <span class="n">filter_tree</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">frs_with_no_pension_income</span><span class="p">))</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loss.Programs:
+  1_loss: 12.105786740918466
+  2_weight: 1
+  3_children:
+    Loss.Programs.ChildTaxCredit:
+      1_loss: 0.996940178801625
+      2_weight: 13.875
+      3_children:
+        Loss.Programs.ChildTaxCredit.child_tax_credit_budgetary_impact:
+          1_loss: 0.9938803576032499
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.HousingBenefit:
+      1_loss: 0.9403234612227025
+      2_weight: 15.894
+      3_children:
+        Loss.Programs.HousingBenefit.housing_benefit_budgetary_impact:
+          1_loss: 0.9288759046814592
+          2_weight: 1
+          3_children: {}
+        Loss.Programs.HousingBenefit.housing_benefit_participants:
+          1_loss: 0.9517710177639459
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.IncomeSupport:
+      1_loss: 1.0020913645503176
+      2_weight: 0.67
+      3_children:
+        Loss.Programs.IncomeSupport.income_support_budgetary_impact:
+          1_loss: 1.0041827291006353
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.IncomeTax:
+      1_loss: 6.670099754003721
+      2_weight: 200
+      3_children:
+        Loss.Programs.IncomeTax.IncomeTaxBudgetaryImpact:
+          1_loss: 1.4495706264860806
+          2_weight: 1.0
+          3_children: {}
+        Loss.Programs.IncomeTax.IncomeTaxParticipants:
+          1_loss: 11.890628881521362
+          2_weight: 1.0
+          3_children: {}
+    Loss.Programs.PensionCredit:
+      1_loss: 11.28762767221413
+      2_weight: 4.466
+      3_children:
+        Loss.Programs.PensionCredit.pension_credit_budgetary_impact:
+          1_loss: 8.461916220883241
+          2_weight: 1
+          3_children: {}
+        Loss.Programs.PensionCredit.pension_credit_participants:
+          1_loss: 14.11333912354502
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.PensionIncome:
+      1_loss: 164.49260630151875
+      2_weight: 107.3
+      3_children:
+        Loss.Programs.PensionIncome.pension_income_budgetary_impact:
+          1_loss: 294.1710747907839
+          2_weight: 1
+          3_children: {}
+        Loss.Programs.PensionIncome.pension_income_participants:
+          1_loss: 34.8141378122536
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.UniversalCredit:
+      1_loss: 6.0452700739001335
+      2_weight: 43.657
+      3_children:
+        Loss.Programs.UniversalCredit.universal_credit_budgetary_impact:
+          1_loss: 0.5515091927126515
+          2_weight: 1
+          3_children: {}
+        Loss.Programs.UniversalCredit.universal_credit_participants:
+          1_loss: 11.539030955087615
+          2_weight: 1
+          3_children: {}
+    Loss.Programs.WorkingTaxCredit:
+      1_loss: 0.980615006865072
+      2_weight: 3.825
+      3_children:
+        Loss.Programs.WorkingTaxCredit.working_tax_credit_budgetary_impact:
+          1_loss: 0.9803294558918838
+          2_weight: 1
+          3_children: {}
+        Loss.Programs.WorkingTaxCredit.working_tax_credit_participants:
+          1_loss: 0.9809005578382601
+          2_weight: 1
+          3_children: {}
+</pre></div>
+</div>
+</div>
+</div>
+<p>What this is showing us is which parts of the loss function are most sensitive to the change we made. We can see that the biggest single loss change came from the pension income category (this makes sense- zeroing out pension incomes makes it very difficult to hit total pension income statistics!). But there were lots of knock-on effects on other categories, too: total taxpayer count statistics were significantly off after the change (likely because a lot of people pay tax solely because of their pension income, since the State Pension on its own is not enough to push you into the tax system).</p>
+<p>As another sanity check, let’s see what the loss is if we just toned down the pension income by 10%:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FRS_2019_20_with_too_little_pension_income</span><span class="p">(</span><span class="n">FRS_2019_20</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;FRS_2019_20_with_too_little_pension_income&quot;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">FRS_2019_20</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span>
+        <span class="o">/</span> <span class="s2">&quot;frs_2019_20_with_too_little_pension_income.h5&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="n">pension_income</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;pension_income&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;pension_income&quot;</span><span class="p">,</span> <span class="n">pension_income</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
+
+
+<span class="n">frs_with_too_little_pension_income</span> <span class="o">=</span> <span class="n">OutputDataset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">FRS_2019_20_with_too_little_pension_income</span><span class="p">,</span> <span class="mi">2019</span><span class="p">,</span> <span class="mi">2022</span>
+<span class="p">)()</span>
+
+<span class="n">frs_with_too_little_pension_income_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+        <span class="n">frs_with_too_little_pension_income</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">),</span>
+    <span class="n">frs_with_too_little_pension_income</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;FRS with 10% less pension income: </span><span class="si">{</span><span class="n">frs_with_too_little_pension_income_loss</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FRS with 10% less pension income: 1.0334495620378865
+</pre></div>
+</div>
+</div>
+</div>
+<p>… which is a much smaller change, and the loss function is much more stable- for lots of little reasons, like the fact that we didn’t cross a lot of people over boundaries between tax bands, etc. etc.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./uk_experiments"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../python_api/dataset.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Datasets</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../results.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Results</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#loss">Loss</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    </body>
+</html>

@@ -163,6 +163,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../literature_survey/literature_survey.html">Literature survey</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../results.html">Results</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../uk_experiments/intro.html">Introduction</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python_api/dataset.html">Datasets</a></li>
@@ -495,7 +499,21 @@
         <span class="k">if</span> <span class="n">initial_run</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">loss</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">loss</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span></div></div>
+            <span class="k">return</span> <span class="n">loss</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span></div>
+
+<div class="viewcode-block" id="LossCategory.computation_tree"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory.computation_tree">[docs]</a>    <span class="k">def</span> <span class="nf">computation_tree</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">household_weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">subloss</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublosses</span><span class="p">:</span>
+            <span class="n">tree</span><span class="p">[</span><span class="n">subloss</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;1_loss&quot;</span><span class="p">:</span> <span class="n">subloss</span><span class="p">(</span><span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                <span class="s2">&quot;2_weight&quot;</span><span class="p">:</span> <span class="n">subloss</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
+                <span class="s2">&quot;3_children&quot;</span><span class="p">:</span> <span class="n">subloss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span>
+                    <span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">tree</span></div></div>
 
 
 <div class="viewcode-block" id="CalibratedWeights"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.CalibratedWeights">[docs]</a><span class="k">class</span> <span class="nc">CalibratedWeights</span><span class="p">:</span>
