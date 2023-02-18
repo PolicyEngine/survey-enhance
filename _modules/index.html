@@ -2,11 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Weight calibration" href="reweight.html" /><link rel="prev" title="Imputation" href="impute.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>Percentile matching - Survey-Enhance documentation</title>
+        <title>Overview: module code - Survey-Enhance documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
@@ -165,11 +164,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../results.html">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="impute.html">Imputation</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Percentile matching</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reweight.html">Weight calibration</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/dataset.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/impute.html">Imputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/percentile_match.html">Percentile matching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/reweight.html">Weight calibration</a></li>
 </ul>
 
 </div>
@@ -189,8 +188,7 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
-<div class="theme-toggle-container theme-toggle-content">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -204,93 +202,19 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="percentile-matching">
-<h1>Percentile matching<a class="headerlink" href="#percentile-matching" title="Permalink to this headline">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">survey_enhance.percentile_match</span></code> module contains functions for matching the percentiles of two datasets.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="survey_enhance.percentile_match.match_percentiles">
-<span class="sig-prename descclassname"><span class="pre">survey_enhance.percentile_match.</span></span><span class="sig-name descname"><span class="pre">match_percentiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">microdf.generic.MicroSeries</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">microdf.generic.MicroSeries</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="reference internal" href="../_modules/survey_enhance/percentile_match.html#match_percentiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#survey_enhance.percentile_match.match_percentiles" title="Permalink to this definition">#</a></dt>
-<dd><p>Match the percentiles of the source Series to the target Series.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>targets</strong> – The Series to edit to match the source Series’s percentiles.</p></li>
-<li><p><strong>sources</strong> – The Series to match the percentiles to.</p></li>
-<li><p><strong>percentile_threshold</strong> – Don’t adjust data for percentiles below this threshold.</p></li>
-<li><p><strong>num_groups</strong> – The number of percentile groups to split the data into.</p></li>
+          <h1>All modules for which code is available</h1>
+<ul><li><a href="survey_enhance/dataset.html">survey_enhance.dataset</a></li>
+<li><a href="survey_enhance/impute.html">survey_enhance.impute</a></li>
+<li><a href="survey_enhance/percentile_match.html">survey_enhance.percentile_match</a></li>
+<li><a href="survey_enhance/reweight.html">survey_enhance.reweight</a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A Series with the same index as target_df, but with the adjusted values.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="survey_enhance.percentile_match.match_percentiles_df">
-<span class="sig-prename descclassname"><span class="pre">survey_enhance.percentile_match.</span></span><span class="sig-name descname"><span class="pre">match_percentiles_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">microdf.generic.MicroDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">microdf.generic.MicroDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="../_modules/survey_enhance/percentile_match.html#match_percentiles_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#survey_enhance.percentile_match.match_percentiles_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Match the percentiles of the source_df to the target_df.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target_df</strong> – The DataFrame to edit to match the source_df’s percentiles.</p></li>
-<li><p><strong>source_df</strong> – The DataFrame to match the percentiles to.</p></li>
-<li><p><strong>percentile_threshold</strong> – Don’t adjust data for percentiles below this threshold.</p></li>
-<li><p><strong>num_groups</strong> – The number of percentile groups to split the data into.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A DataFrame with the same index as target_df, but with the adjusted values.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-
-    <script type="text/x-thebe-config">
-    {
-        requestKernel: true,
-        binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
-        },
-        codeMirrorConfig: {
-            theme: "abcdef",
-            mode: "python"
-        },
-        kernelOptions: {
-            name: "python3",
-            path: "./python_api"
-        },
-        predefinedOutput: true
-    }
-    </script>
-    <script>kernelName = 'python3'</script>
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="reweight.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Weight calibration</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="impute.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Imputation</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
