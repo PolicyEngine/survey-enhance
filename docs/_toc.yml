@@ -5,6 +5,9 @@ parts:
     chapters:
     - file: literature_survey/literature_survey.md
     - file: results.ipynb
+  - caption: Theory
+    chapters:
+    - file: uk_experiments/intro.ipynb
   - caption: Python API
     chapters:
     - file: python_api/dataset.md

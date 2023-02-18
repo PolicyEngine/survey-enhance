@@ -292,6 +292,20 @@ class LossCategory(torch.nn.Module):
         else:
             return loss / self.initial_loss_value
 
+    def computation_tree(
+        self, household_weights: torch.Tensor, dataset: Dataset
+    ) -> dict:
+        tree = {}
+        for subloss in self.sublosses:
+            tree[subloss.name] = {
+                "1_loss": subloss(household_weights, dataset).item(),
+                "2_weight": subloss.weight,
+                "3_children": subloss.computation_tree(
+                    household_weights, dataset
+                ),
+            }
+        return tree
+
 
 class CalibratedWeights:
     dataset: Dataset
