@@ -177,7 +177,10 @@ class LossCategory(torch.nn.Module):
         return df
 
     def evaluate(
-        self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False
+        self,
+        household_weights: torch.Tensor,
+        dataset: Dataset,
+        initial_run: bool = False,
     ) -> torch.Tensor:
         if self.static_dataset and self.comparisons is not None:
             comparisons = self.comparisons
@@ -249,7 +252,9 @@ class LossCategory(torch.nn.Module):
         )  # To avoid division by zero
 
         try:
-            self_loss = self.evaluate(household_weights, dataset, initial_run=initial_run)
+            self_loss = self.evaluate(
+                household_weights, dataset, initial_run=initial_run
+            )
             loss = loss + self_loss
         except NotImplementedError:
             pass
@@ -329,7 +334,8 @@ class LossCategory(torch.nn.Module):
                     elif len(comparison) == 4:
                         name, y_pred_array, y_true, weight = comparison
                     y_pred_array = torch.tensor(
-                        np.array(y_pred_array).astype(float), requires_grad=True
+                        np.array(y_pred_array).astype(float),
+                        requires_grad=True,
                     )
                     y_pred = torch.sum(y_pred_array * household_weights)
                     BUFFER = 1e4
@@ -338,7 +344,9 @@ class LossCategory(torch.nn.Module):
                     ) ** 2 * weight
                     tree[name] = {
                         "1_loss": loss_addition.item(),
-                        "2_loss_0": self._comparison_initial_cache[name]['loss'],
+                        "2_loss_0": self._comparison_initial_cache[name][
+                            "loss"
+                        ],
                         "3_y_pred": f"{y_pred.item():,.2f}",
                         "4_y_0_pred": f"{self._comparison_initial_cache[name]['y_pred']:,.2f}",
                         "5_y_true": f"{y_true:,.2f}",
