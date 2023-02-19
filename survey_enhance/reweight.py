@@ -113,6 +113,8 @@ class LossCategory(torch.nn.Module):
 
         self._get_comparisons = filtered_get_comparisons
 
+        self._comparison_initial_cache = {}
+
     def create_holdout_sets(
         self,
         dataset: Dataset,
@@ -175,7 +177,7 @@ class LossCategory(torch.nn.Module):
         return df
 
     def evaluate(
-        self, household_weights: torch.Tensor, dataset: Dataset
+        self, household_weights: torch.Tensor, dataset: Dataset, initial_run: bool = False
     ) -> torch.Tensor:
         if self.static_dataset and self.comparisons is not None:
             comparisons = self.comparisons
@@ -216,6 +218,11 @@ class LossCategory(torch.nn.Module):
                     self.name,
                 )
             )
+            if initial_run:
+                self._comparison_initial_cache[name] = {
+                    "y_pred": float(y_pred.item()),
+                    "loss": float(loss_addition.item()),
+                }
         return loss
 
     def forward(
@@ -242,7 +249,7 @@ class LossCategory(torch.nn.Module):
         )  # To avoid division by zero
 
         try:
-            self_loss = self.evaluate(household_weights, dataset)
+            self_loss = self.evaluate(household_weights, dataset, initial_run=initial_run)
             loss = loss + self_loss
         except NotImplementedError:
             pass
@@ -307,6 +314,37 @@ class LossCategory(torch.nn.Module):
                     household_weights, dataset
                 ),
             }
+        try:
+            if self.static_dataset and self.comparisons is not None:
+                comparisons = self.comparisons
+            else:
+                comparisons = self._get_comparisons(dataset)
+                if self.static_dataset:
+                    self.comparisons = comparisons
+            if comparisons is not None:
+                for comparison in comparisons:
+                    if len(comparison) == 3:
+                        name, y_pred_array, y_true = comparison
+                        weight = 1
+                    elif len(comparison) == 4:
+                        name, y_pred_array, y_true, weight = comparison
+                    y_pred_array = torch.tensor(
+                        np.array(y_pred_array).astype(float), requires_grad=True
+                    )
+                    y_pred = torch.sum(y_pred_array * household_weights)
+                    BUFFER = 1e4
+                    loss_addition = (
+                        (y_pred + BUFFER) / (y_true + BUFFER) - 1
+                    ) ** 2 * weight
+                    tree[name] = {
+                        "1_loss": loss_addition.item(),
+                        "2_loss_0": self._comparison_initial_cache[name]['loss'],
+                        "3_y_pred": f"{y_pred.item():,.2f}",
+                        "4_y_0_pred": f"{self._comparison_initial_cache[name]['y_pred']:,.2f}",
+                        "5_y_true": f"{y_true:,.2f}",
+                    }
+        except:
+            pass
 
         if filter_non_one:
 
