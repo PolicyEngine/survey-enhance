@@ -1,0 +1,547 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+        <title>Percentile matching - Survey-Enhance documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Survey-Enhance documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Survey-Enhance documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Paper</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../literature_survey/literature_survey.html">Literature survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../results.html">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/dataset.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/impute.html">Imputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/percentile_match.html">Percentile matching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/reweight.html">Weight calibration</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="percentile-matching">
+<h1>Percentile matching<a class="headerlink" href="#percentile-matching" title="Permalink to this headline">#</a></h1>
+<p>A common method for correcting income under-reporting is matching the income distribution of the survey to an administrative tax dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">loss.loss</span> <span class="kn">import</span> <span class="n">Loss</span><span class="p">,</span> <span class="n">calibration_parameters</span>
+<span class="kn">from</span> <span class="nn">datasets.frs</span> <span class="kn">import</span> <span class="n">FRS_2019_20</span><span class="p">,</span> <span class="n">PercentileMatchedFRS</span>
+<span class="kn">from</span> <span class="nn">datasets.output_dataset</span> <span class="kn">import</span> <span class="n">OutputDataset</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="n">original_frs</span> <span class="o">=</span> <span class="n">OutputDataset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span><span class="n">FRS_2019_20</span><span class="p">,</span> <span class="mi">2019</span><span class="p">,</span> <span class="mi">2022</span><span class="p">)()</span>
+
+<span class="n">percentile_matched_frs</span> <span class="o">=</span> <span class="n">OutputDataset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">PercentileMatchedFRS</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+        <span class="n">FRS_2019_20</span><span class="p">,</span>
+        <span class="n">percentile_matched_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dividend_income&quot;</span><span class="p">],</span>
+        <span class="n">force_generate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="mi">2019</span><span class="p">,</span>
+    <span class="mi">2022</span><span class="p">,</span>
+<span class="p">)()</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="n">Loss</span><span class="p">(</span>
+    <span class="n">original_frs</span><span class="p">,</span>
+    <span class="n">calibration_parameters</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2022-01-01&quot;</span><span class="p">),</span>
+    <span class="n">static_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">original_frs</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="n">frs_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">original_frs</span><span class="p">)</span>
+
+<span class="n">percentile_matched_frs_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">percentile_matched_frs</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">percentile_matched_frs</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loss.Programs:
+  1_loss: 1.0213157906954613
+  2_weight: 1
+  3_children:
+    Loss.Programs.DividendIncome:
+      1_loss: 0.773819055140283
+      2_weight: 65.2
+      3_children:
+        Loss.Programs.DividendIncome.dividend_income_budgetary_impact:
+          1_loss: 0.5476381102805661
+          2_weight: 1
+          3_children:
+            dividend_income_budgetary_impact_ENGLAND:
+              1_loss: 2.2063085119521027e-06
+              2_loss_0: 0.6773687680202487
+              3_y_pred: 53,320,681,506.21
+              4_y_0_pred: 9,450,501,623.28
+              5_y_true: 53,400,000,000.00
+            dividend_income_budgetary_impact_NORTHERN_IRELAND:
+              1_loss: 0.9537625500042562
+              2_loss_0: 0.9537625500042562
+              3_y_pred: 32,739,489.54
+              4_y_0_pred: 32,739,489.54
+              5_y_true: 1,400,000,000.00
+            dividend_income_budgetary_impact_SCOTLAND:
+              1_loss: 0.37513747584301366
+              2_loss_0: 0.6671235232756144
+              3_y_pred: 6,449,944,820.71
+              4_y_0_pred: 732,886,634.60
+              5_y_true: 4,000,000,000.00
+            dividend_income_budgetary_impact_UNITED_KINGDOM:
+              1_loss: 0.005990490196922195
+              2_loss_0: 0.7021411000527296
+              3_y_pred: 60,153,632,865.29
+              4_y_0_pred: 10,566,394,796.24
+              5_y_true: 65,200,000,000.00
+            dividend_income_budgetary_impact_WALES:
+              1_loss: 0.680397898556267
+              2_loss_0: 0.680397898556267
+              3_y_pred: 350,267,048.82
+              4_y_0_pred: 350,267,048.82
+              5_y_true: 2,000,000,000.00
+    Loss.Programs.IncomeTax:
+      1_loss: 1.2555149852856258
+      2_weight: 200
+      3_children:
+        Loss.Programs.IncomeTax.IncomeTaxBudgetaryImpact:
+          1_loss: 1.6544480994919992
+          2_weight: 1.0
+          3_children:
+            income_tax_ENGLAND:
+              1_loss: 0.003447679807966177
+              2_loss_0: 0.0006271463139645406
+              3_y_pred: 192,589,709,802.04
+              4_y_0_pred: 176,048,741,158.45
+              5_y_true: 180,994,233,766.23
+            income_tax_NORTHERN_IRELAND:
+              1_loss: 1.9256606637561124e-05
+              2_loss_0: 1.9256606637561124e-05
+              3_y_pred: 2,955,055,971.07
+              4_y_0_pred: 2,955,055,971.07
+              5_y_true: 3,031,870,129.87
+            income_tax_SCOTLAND:
+              1_loss: 0.0010639923744253977
+              2_loss_0: 0.00012708409748636915
+              3_y_pred: 15,430,047,474.20
+              4_y_0_pred: 13,283,171,589.62
+              5_y_true: 13,834,571,428.57
+            income_tax_UNITED_KINGDOM:
+              1_loss: 0.0034557659998135045
+              2_loss_0: 0.0010481049598803094
+              3_y_pred: 217,051,082,121.98
+              4_y_0_pred: 198,363,237,593.81
+              5_y_true: 205,000,000,000.00
+            income_tax_WALES:
+              1_loss: 0.0004043363704885881
+              2_loss_0: 0.0004043363704885881
+              3_y_pred: 6,076,268,874.68
+              4_y_0_pred: 6,076,268,874.68
+              5_y_true: 5,574,935,064.94
+            income_tax_by_income_0:
+              1_loss: 6.748906982749366e-05
+              2_loss_0: 6.748906982749366e-05
+              3_y_pred: 594,159,126.47
+              4_y_0_pred: 594,159,126.47
+              5_y_true: 690,717,092.34
+            income_tax_by_income_1:
+              1_loss: 3.0090927382269634e-07
+              2_loss_0: 3.4312950599093186e-07
+              3_y_pred: 5,717,438,973.28
+              4_y_0_pred: 5,718,695,568.22
+              5_y_true: 5,698,919,449.90
+            income_tax_by_income_2:
+              1_loss: 0.00024566560707949735
+              2_loss_0: 0.0002506845888299809
+              3_y_pred: 21,544,868,902.65
+              4_y_0_pred: 21,555,079,012.34
+              5_y_true: 20,540,275,049.12
+            income_tax_by_income_3:
+              1_loss: 0.00015998942257932372
+              2_loss_0: 0.00018280208234789676
+              3_y_pred: 40,491,233,395.41
+              4_y_0_pred: 40,568,586,590.97
+              5_y_true: 39,368,860,510.81
+            income_tax_by_income_4:
+              1_loss: 0.0011024489352243557
+              2_loss_0: 0.0014657527281342298
+              3_y_pred: 50,449,270,924.37
+              4_y_0_pred: 50,943,154,447.18
+              5_y_true: 47,222,495,088.41
+            income_tax_by_income_5:
+              1_loss: 0.002450879594732759
+              2_loss_0: 0.0022794983690308445
+              3_y_pred: 19,508,925,168.85
+              4_y_0_pred: 19,628,073,448.97
+              5_y_true: 22,856,090,373.28
+            income_tax_by_income_6:
+              1_loss: 0.00020941415656882954
+              2_loss_0: 1.9116027211312415e-05
+              3_y_pred: 10,785,028,869.52
+              4_y_0_pred: 11,268,903,161.40
+              5_y_true: 11,478,388,998.04
+            income_tax_by_income_7:
+              1_loss: 0.009937666723533634
+              2_loss_0: 0.01091179040335241
+              3_y_pred: 16,459,740,811.64
+              4_y_0_pred: 16,134,294,355.73
+              5_y_true: 23,258,840,864.44
+            income_tax_by_income_8:
+              1_loss: 0.0670342432366614
+              2_loss_0: 0.02631339684132812
+              3_y_pred: 22,791,893,578.77
+              4_y_0_pred: 3,243,769,566.05
+              5_y_true: 10,773,575,638.51
+            income_tax_by_income_9:
+              1_loss: 0.02539162600358509
+              2_loss_0: 0.02539162600358509
+              3_y_pred: 28,657,747,649.16
+              4_y_0_pred: 28,657,747,649.16
+              5_y_true: 18,868,860,510.81
+        Loss.Programs.IncomeTax.IncomeTaxParticipants:
+          1_loss: 0.8565818710792523
+          2_weight: 1.0
+          3_children:
+            income_tax_payers_ENGLAND_ADDITIONAL:
+              1_loss: 2.5188396576360072e-05
+              2_loss_0: 0.0007227589804237184
+              3_y_pred: 389,032.00
+              4_y_0_pred: 310,751.00
+              5_y_true: 407,000.00
+            income_tax_payers_ENGLAND_BASIC:
+              1_loss: 0.0011398167436279007
+              2_loss_0: 0.0010632793647991784
+              3_y_pred: 21,720,523.00
+              4_y_0_pred: 21,750,564.00
+              5_y_true: 22,600,000.00
+            income_tax_payers_ENGLAND_HIGHER:
+              1_loss: 2.219227990701562e-06
+              2_loss_0: 3.8078248690651396e-05
+              3_y_pred: 3,535,352.00
+              4_y_0_pred: 3,583,592.00
+              5_y_true: 3,520,000.00
+            income_tax_payers_NORTHERN_IRELAND_ADDITIONAL:
+              1_loss: 1.299108843537418e-07
+              2_loss_0: 1.299108843537418e-07
+              3_y_pred: 3,563.00
+              4_y_0_pred: 3,563.00
+              5_y_true: 4,000.00
+            income_tax_payers_NORTHERN_IRELAND_BASIC:
+              1_loss: 1.5750414639688642e-05
+              2_loss_0: 1.5750414639688642e-05
+              3_y_pred: 698,337.00
+              4_y_0_pred: 698,337.00
+              5_y_true: 717,000.00
+            income_tax_payers_NORTHERN_IRELAND_HIGHER:
+              1_loss: 1.845943877551021e-05
+              2_loss_0: 1.845943877551021e-05
+              3_y_pred: 53,275.00
+              4_y_0_pred: 53,275.00
+              5_y_true: 60,000.00
+            income_tax_payers_SCOTLAND_ADDITIONAL:
+              1_loss: 0.00020802264
+              2_loss_0: 2.5575834074074068e-05
+              3_y_pred: 36,758.00
+              4_y_0_pred: 25,876.00
+              5_y_true: 20,000.00
+            income_tax_payers_SCOTLAND_BASIC:
+              1_loss: 0.00014213282691026316
+              2_loss_0: 0.00012968087888400265
+              3_y_pred: 2,073,365.00
+              4_y_0_pred: 2,077,695.00
+              5_y_true: 2,170,000.00
+            income_tax_payers_SCOTLAND_HIGHER:
+              1_loss: 2.154798316156132e-07
+              2_loss_0: 5.2835264915082324e-06
+              3_y_pred: 406,658.00
+              4_y_0_pred: 413,210.00
+              5_y_true: 405,000.00
+            income_tax_payers_WALES_ADDITIONAL:
+              1_loss: 1.2307000781250008e-05
+              2_loss_0: 1.2307000781250008e-05
+              3_y_pred: 9,969.00
+              4_y_0_pred: 9,969.00
+              5_y_true: 6,000.00
+            income_tax_payers_WALES_BASIC:
+              1_loss: 0.00012816560364064744
+              2_loss_0: 0.00012816560364064744
+              3_y_pred: 1,189,844.00
+              4_y_0_pred: 1,189,844.00
+              5_y_true: 1,260,000.00
+            income_tax_payers_WALES_HIGHER:
+              1_loss: 9.717286352479793e-05
+              2_loss_0: 9.717286352479793e-05
+              3_y_pred: 132,756.00
+              4_y_0_pred: 132,756.00
+              5_y_true: 113,000.00
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./uk_experiments"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    </body>
+</html>

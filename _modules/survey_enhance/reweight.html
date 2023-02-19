@@ -322,6 +322,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_comparisons</span> <span class="o">=</span> <span class="n">filtered_get_comparisons</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comparison_initial_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
 <div class="viewcode-block" id="LossCategory.create_holdout_sets"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory.create_holdout_sets">[docs]</a>    <span class="k">def</span> <span class="nf">create_holdout_sets</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
@@ -384,7 +386,7 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 <div class="viewcode-block" id="LossCategory.evaluate"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">household_weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">household_weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">initial_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_dataset</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">comparisons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span>
@@ -425,6 +427,11 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">initial_run</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_comparison_initial_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;y_pred&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">y_pred</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
+                    <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">loss_addition</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
+                <span class="p">}</span>
         <span class="k">return</span> <span class="n">loss</span></div>
 
 <div class="viewcode-block" id="LossCategory.forward"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
@@ -451,7 +458,7 @@
         <span class="p">)</span>  <span class="c1"># To avoid division by zero</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">self_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+            <span class="n">self_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">initial_run</span><span class="o">=</span><span class="n">initial_run</span><span class="p">)</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="n">self_loss</span>
         <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -516,6 +523,37 @@
                     <span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span>
                 <span class="p">),</span>
             <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_dataset</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">comparisons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">comparisons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_comparisons</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_dataset</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span> <span class="o">=</span> <span class="n">comparisons</span>
+            <span class="k">if</span> <span class="n">comparisons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">comparison</span> <span class="ow">in</span> <span class="n">comparisons</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">name</span><span class="p">,</span> <span class="n">y_pred_array</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="n">comparison</span>
+                        <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">name</span><span class="p">,</span> <span class="n">y_pred_array</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">comparison</span>
+                    <span class="n">y_pred_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_pred_array</span> <span class="o">*</span> <span class="n">household_weights</span><span class="p">)</span>
+                    <span class="n">BUFFER</span> <span class="o">=</span> <span class="mf">1e4</span>
+                    <span class="n">loss_addition</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">y_pred</span> <span class="o">+</span> <span class="n">BUFFER</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_true</span> <span class="o">+</span> <span class="n">BUFFER</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">weight</span>
+                    <span class="n">tree</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;1_loss&quot;</span><span class="p">:</span> <span class="n">loss_addition</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                        <span class="s2">&quot;2_loss_0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comparison_initial_cache</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;loss&#39;</span><span class="p">],</span>
+                        <span class="s2">&quot;3_y_pred&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y_pred</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;4_y_0_pred&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_comparison_initial_cache</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;y_pred&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;5_y_true&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y_true</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
 
         <span class="k">if</span> <span class="n">filter_non_one</span><span class="p">:</span>
 
