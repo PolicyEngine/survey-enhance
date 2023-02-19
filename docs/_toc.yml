@@ -7,7 +7,7 @@ parts:
     - file: results.ipynb
   - caption: Theory
     chapters:
-    - file: uk_experiments/intro.ipynb
+    - file: uk_experiments/loss.ipynb
   - caption: Python API
     chapters:
     - file: python_api/dataset.md

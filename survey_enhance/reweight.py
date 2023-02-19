@@ -293,7 +293,10 @@ class LossCategory(torch.nn.Module):
             return loss / self.initial_loss_value
 
     def computation_tree(
-        self, household_weights: torch.Tensor, dataset: Dataset
+        self,
+        household_weights: torch.Tensor,
+        dataset: Dataset,
+        filter_non_one: bool = True,
     ) -> dict:
         tree = {}
         for subloss in self.sublosses:
@@ -304,6 +307,20 @@ class LossCategory(torch.nn.Module):
                     household_weights, dataset
                 ),
             }
+
+        if filter_non_one:
+
+            def filter_tree(tree):
+                new_tree = {}
+                for key in tree:
+                    if isinstance(tree[key], dict):
+                        if tree[key].get("1_loss") != 1:
+                            new_tree[key] = filter_tree(tree[key])
+                    else:
+                        new_tree[key] = tree[key]
+                return new_tree
+
+            tree = filter_tree(tree)
         return tree
 
 
