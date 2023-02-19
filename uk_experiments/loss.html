@@ -306,7 +306,13 @@
         Loss.Programs.ChildTaxCredit.child_tax_credit_budgetary_impact:
           1_loss: 0.9938803576032499
           2_weight: 1
-          3_children: {}
+          3_children:
+            child_tax_credit_budgetary_impact_UNITED_KINGDOM:
+              1_loss: 0.03474512870643906
+              2_loss_0: 0.03496522301027196
+              3_y_pred: 11,288,691,857.03
+              4_y_0_pred: 11,280,513,256.16
+              5_y_true: 13,875,000,000.00
     Loss.Programs.HousingBenefit:
       1_loss: 0.9403234612227025
       2_weight: 15.894
@@ -314,11 +320,41 @@
         Loss.Programs.HousingBenefit.housing_benefit_budgetary_impact:
           1_loss: 0.9288759046814592
           2_weight: 1
-          3_children: {}
+          3_children:
+            housing_benefit_budgetary_impact_ENGLAND:
+              1_loss: 0.3096141427762169
+              2_loss_0: 0.3307878655022342
+              3_y_pred: 6,167,514,000.37
+              4_y_0_pred: 5,907,340,083.64
+              5_y_true: 13,904,269,989.62
+            housing_benefit_budgetary_impact_GREAT_BRITAIN:
+              1_loss: 0.294927479221772
+              2_loss_0: 0.31576504441671466
+              3_y_pred: 7,262,404,074.10
+              4_y_0_pred: 6,962,682,927.39
+              5_y_true: 15,894,000,000.00
+            housing_benefit_budgetary_impact_SCOTLAND:
+              1_loss: 0.22872400416684383
+              2_loss_0: 0.2515104132980511
+              3_y_pred: 660,194,641.54
+              4_y_0_pred: 630,765,776.74
+              5_y_true: 1,265,358,255.45
+            housing_benefit_budgetary_impact_WALES:
+              1_loss: 0.16052299929477207
+              2_loss_0: 0.17189633937014331
+              3_y_pred: 434,695,432.20
+              4_y_0_pred: 424,577,067.00
+              5_y_true: 725,288,681.20
         Loss.Programs.HousingBenefit.housing_benefit_participants:
           1_loss: 0.9517710177639459
           2_weight: 1
-          3_children: {}
+          3_children:
+            housing_benefit_participants_GREAT_BRITAIN:
+              1_loss: 0.1186021863142509
+              2_loss_0: 0.12466277401210472
+              3_y_pred: 1,771,957.00
+              4_y_0_pred: 1,748,339.00
+              5_y_true: 2,708,000.00
     Loss.Programs.IncomeSupport:
       1_loss: 1.0020913645503176
       2_weight: 0.67
@@ -326,7 +362,31 @@
         Loss.Programs.IncomeSupport.income_support_budgetary_impact:
           1_loss: 1.0041827291006353
           2_weight: 1
-          3_children: {}
+          3_children:
+            income_support_budgetary_impact_ENGLAND:
+              1_loss: 4.249780754066259
+              2_loss_0: 4.214660249904289
+              3_y_pred: 1,737,846,867.38
+              4_y_0_pred: 1,733,001,493.10
+              5_y_true: 567,638,888.89
+            income_support_budgetary_impact_GREAT_BRITAIN:
+              1_loss: 4.156487687733461
+              2_loss_0: 4.127052395889945
+              3_y_pred: 2,035,980,607.61
+              4_y_0_pred: 2,031,135,233.34
+              5_y_true: 670,000,000.00
+            income_support_budgetary_impact_SCOTLAND:
+              1_loss: 5.232539158996147
+              2_loss_0: 5.232539158996147
+              3_y_pred: 199,889,142.81
+              4_y_0_pred: 199,889,142.81
+              5_y_true: 60,796,296.30
+            income_support_budgetary_impact_WALES:
+              1_loss: 1.8586418211392282
+              2_loss_0: 1.8586418211392282
+              3_y_pred: 98,244,597.43
+              4_y_0_pred: 98,244,597.43
+              5_y_true: 41,564,814.81
     Loss.Programs.IncomeTax:
       1_loss: 6.670099754003721
       2_weight: 200
@@ -334,11 +394,173 @@
         Loss.Programs.IncomeTax.IncomeTaxBudgetaryImpact:
           1_loss: 1.4495706264860806
           2_weight: 1.0
-          3_children: {}
+          3_children:
+            income_tax_ENGLAND:
+              1_loss: 0.010762267044668917
+              2_loss_0: 0.0006271463139645406
+              3_y_pred: 160,507,298,177.05
+              4_y_0_pred: 176,048,741,158.45
+              5_y_true: 180,994,233,766.23
+            income_tax_NORTHERN_IRELAND:
+              1_loss: 0.00048283865135192387
+              2_loss_0: 1.9256606637561124e-05
+              3_y_pred: 2,647,231,929.95
+              4_y_0_pred: 2,955,055,971.07
+              5_y_true: 3,031,870,129.87
+            income_tax_SCOTLAND:
+              1_loss: 0.0016329619691775883
+              2_loss_0: 0.00012708409748636915
+              3_y_pred: 11,858,015,691.37
+              4_y_0_pred: 13,283,171,589.62
+              5_y_true: 13,834,571,428.57
+            income_tax_UNITED_KINGDOM:
+              1_loss: 0.014397364986064058
+              2_loss_0: 0.0010481049598803094
+              3_y_pred: 180,402,249,644.15
+              4_y_0_pred: 198,363,237,593.81
+              5_y_true: 205,000,000,000.00
+            income_tax_WALES:
+              1_loss: 5.519721810327052e-05
+              2_loss_0: 0.0004043363704885881
+              3_y_pred: 5,389,703,845.79
+              4_y_0_pred: 6,076,268,874.68
+              5_y_true: 5,574,935,064.94
+            income_tax_by_income_0:
+              1_loss: 0.00033164917068490484
+              2_loss_0: 6.748906982749366e-05
+              3_y_pred: 476,669,254.75
+              4_y_0_pred: 594,159,126.47
+              5_y_true: 690,717,092.34
+            income_tax_by_income_1:
+              1_loss: 0.0010402387322878083
+              2_loss_0: 3.4312950599093186e-07
+              3_y_pred: 4,610,043,189.83
+              4_y_0_pred: 5,718,695,568.22
+              5_y_true: 5,698,919,449.90
+            income_tax_by_income_2:
+              1_loss: 0.0014664567584223708
+              2_loss_0: 0.0002506845888299809
+              3_y_pred: 18,085,831,955.67
+              4_y_0_pred: 21,555,079,012.34
+              5_y_true: 20,540,275,049.12
+            income_tax_by_income_3:
+              1_loss: 0.002030362224970141
+              2_loss_0: 0.00018280208234789676
+              3_y_pred: 35,370,533,665.02
+              4_y_0_pred: 40,568,586,590.97
+              5_y_true: 39,368,860,510.81
+            income_tax_by_income_4:
+              1_loss: 0.0005755933414904142
+              2_loss_0: 0.0014657527281342298
+              3_y_pred: 44,890,930,581.33
+              4_y_0_pred: 50,943,154,447.18
+              5_y_true: 47,222,495,088.41
+            income_tax_by_income_5:
+              1_loss: 0.004396955264977238
+              2_loss_0: 0.0022794983690308445
+              3_y_pred: 18,372,848,357.89
+              4_y_0_pred: 19,628,073,448.97
+              5_y_true: 22,856,090,373.28
+            income_tax_by_income_6:
+              1_loss: 0.00030844714684624973
+              2_loss_0: 1.9116027211312415e-05
+              3_y_pred: 10,636,904,297.55
+              4_y_0_pred: 11,268,903,161.40
+              5_y_true: 11,478,388,998.04
+            income_tax_by_income_7:
+              1_loss: 0.011441761973320568
+              2_loss_0: 0.01091179040335241
+              3_y_pred: 15,963,330,604.27
+              4_y_0_pred: 16,134,294,355.73
+              5_y_true: 23,258,840,864.44
+            income_tax_by_income_8:
+              1_loss: 0.02631339684132812
+              2_loss_0: 0.02631339684132812
+              3_y_pred: 3,243,769,566.05
+              4_y_0_pred: 3,243,769,566.05
+              5_y_true: 10,773,575,638.51
+            income_tax_by_income_9:
+              1_loss: 0.02539162600358509
+              2_loss_0: 0.02539162600358509
+              3_y_pred: 28,657,747,649.16
+              4_y_0_pred: 28,657,747,649.16
+              5_y_true: 18,868,860,510.81
         Loss.Programs.IncomeTax.IncomeTaxParticipants:
           1_loss: 11.890628881521362
           2_weight: 1.0
-          3_children: {}
+          3_children:
+            income_tax_payers_ENGLAND_ADDITIONAL:
+              1_loss: 0.0009010046825794996
+              2_loss_0: 0.0007227589804237184
+              3_y_pred: 299,536.00
+              4_y_0_pred: 310,751.00
+              5_y_true: 407,000.00
+            income_tax_payers_ENGLAND_BASIC:
+              1_loss: 0.028990568749145913
+              2_loss_0: 0.0010632793647991784
+              3_y_pred: 18,164,574.00
+              4_y_0_pred: 21,750,564.00
+              5_y_true: 22,600,000.00
+            income_tax_payers_ENGLAND_HIGHER:
+              1_loss: 0.001199046699568731
+              2_loss_0: 3.8078248690651396e-05
+              3_y_pred: 3,163,153.00
+              4_y_0_pred: 3,583,592.00
+              5_y_true: 3,520,000.00
+            income_tax_payers_NORTHERN_IRELAND_ADDITIONAL:
+              1_loss: 1.299108843537418e-07
+              2_loss_0: 1.299108843537418e-07
+              3_y_pred: 3,563.00
+              4_y_0_pred: 3,563.00
+              5_y_true: 4,000.00
+            income_tax_payers_NORTHERN_IRELAND_BASIC:
+              1_loss: 0.0008070547280856869
+              2_loss_0: 1.5750414639688642e-05
+              3_y_pred: 583,406.00
+              4_y_0_pred: 698,337.00
+              5_y_true: 717,000.00
+            income_tax_payers_NORTHERN_IRELAND_HIGHER:
+              1_loss: 6.36735102040816e-05
+              2_loss_0: 1.845943877551021e-05
+              3_y_pred: 47,510.00
+              4_y_0_pred: 53,275.00
+              5_y_true: 60,000.00
+            income_tax_payers_SCOTLAND_ADDITIONAL:
+              1_loss: 1.9921922962962976e-05
+              2_loss_0: 2.5575834074074068e-05
+              3_y_pred: 25,186.00
+              4_y_0_pred: 25,876.00
+              5_y_true: 20,000.00
+            income_tax_payers_SCOTLAND_BASIC:
+              1_loss: 0.0035467197530715724
+              2_loss_0: 0.00012968087888400265
+              3_y_pred: 1,687,274.00
+              4_y_0_pred: 2,077,695.00
+              5_y_true: 2,170,000.00
+            income_tax_payers_SCOTLAND_HIGHER:
+              1_loss: 0.00014780775715488465
+              2_loss_0: 5.2835264915082324e-06
+              3_y_pred: 361,576.00
+              4_y_0_pred: 413,210.00
+              5_y_true: 405,000.00
+            income_tax_payers_WALES_ADDITIONAL:
+              1_loss: 1.2307000781250008e-05
+              2_loss_0: 1.2307000781250008e-05
+              3_y_pred: 9,969.00
+              4_y_0_pred: 9,969.00
+              5_y_true: 6,000.00
+            income_tax_payers_WALES_BASIC:
+              1_loss: 0.0020349541451844502
+              2_loss_0: 0.00012816560364064744
+              3_y_pred: 980,452.00
+              4_y_0_pred: 1,189,844.00
+              5_y_true: 1,260,000.00
+            income_tax_payers_WALES_HIGHER:
+              1_loss: 3.3385976601229484e-07
+              2_loss_0: 9.717286352479793e-05
+              3_y_pred: 114,158.00
+              4_y_0_pred: 132,756.00
+              5_y_true: 113,000.00
     Loss.Programs.PensionCredit:
       1_loss: 11.28762767221413
       2_weight: 4.466
@@ -346,11 +568,47 @@
         Loss.Programs.PensionCredit.pension_credit_budgetary_impact:
           1_loss: 8.461916220883241
           2_weight: 1
-          3_children: {}
+          3_children:
+            pension_credit_budgetary_impact_ENGLAND:
+              1_loss: 2.9156531127713157
+              2_loss_0: 0.297061259504248
+              3_y_pred: 10,398,840,643.11
+              4_y_0_pred: 5,934,025,769.52
+              5_y_true: 3,840,707,158.35
+            pension_credit_budgetary_impact_GREAT_BRITAIN:
+              1_loss: 3.1144386330497538
+              2_loss_0: 0.3253896354742803
+              3_y_pred: 12,347,512,708.27
+              4_y_0_pred: 7,013,543,150.60
+              5_y_true: 4,466,000,000.00
+            pension_credit_budgetary_impact_SCOTLAND:
+              1_loss: 3.664814116675755
+              2_loss_0: 0.35455476491156845
+              3_y_pred: 1,085,720,114.89
+              4_y_0_pred: 594,362,865.18
+              5_y_true: 372,533,622.56
+            pension_credit_budgetary_impact_WALES:
+              1_loss: 5.943786266464714
+              2_loss_0: 0.8702390781055094
+              3_y_pred: 862,951,950.27
+              4_y_0_pred: 485,154,515.90
+              5_y_true: 250,997,830.80
         Loss.Programs.PensionCredit.pension_credit_participants:
           1_loss: 14.11333912354502
           2_weight: 1
-          3_children: {}
+          3_children:
+            pension_credit_participants_GREAT_BRITAIN:
+              1_loss: 4.1200198068926746
+              2_loss_0: 0.30532492617862045
+              3_y_pred: 4,280,173.00
+              4_y_0_pred: 2,188,428.00
+              5_y_true: 1,406,000.00
+            pension_credit_participants_NORTHERN_IRELAND:
+              1_loss: 0.24924661918146548
+              2_loss_0: 0.0033301021031315694
+              3_y_pred: 115,277.00
+              4_y_0_pred: 68,738.00
+              5_y_true: 73,560.00
     Loss.Programs.PensionIncome:
       1_loss: 164.49260630151875
       2_weight: 107.3
@@ -358,11 +616,59 @@
         Loss.Programs.PensionIncome.pension_income_budgetary_impact:
           1_loss: 294.1710747907839
           2_weight: 1
-          3_children: {}
+          3_children:
+            pension_income_budgetary_impact_ENGLAND:
+              1_loss: 0.9999997794199109
+              2_loss_0: 0.0021542731663359346
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 94,878,371,294.33
+              5_y_true: 90,670,000,000.00
+            pension_income_budgetary_impact_NORTHERN_IRELAND:
+              1_loss: 0.9999910314504612
+              2_loss_0: 0.004517053051631717
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 2,379,876,798.01
+              5_y_true: 2,230,000,000.00
+            pension_income_budgetary_impact_SCOTLAND:
+              1_loss: 0.9999978260905009
+              2_loss_0: 0.0005624402949595239
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 9,418,185,815.43
+              5_y_true: 9,200,000,000.00
+            pension_income_budgetary_impact_WALES:
+              1_loss: 0.9999961538572485
+              2_loss_0: 0.005367111070767158
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 4,819,044,305.03
+              5_y_true: 5,200,000,000.00
         Loss.Programs.PensionIncome.pension_income_participants:
           1_loss: 34.8141378122536
           2_weight: 1
-          3_children: {}
+          3_children:
+            pension_income_participants_ENGLAND:
+              1_loss: 0.9979143921831062
+              2_loss_0: 0.02770807952279969
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 7,979,112.00
+              5_y_true: 9,574,528.00
+            pension_income_participants_NORTHERN_IRELAND:
+              1_loss: 0.9234313652775278
+              2_loss_0: 0.033148268836202005
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 199,476.00
+              5_y_true: 246,104.00
+            pension_income_participants_SCOTLAND:
+              1_loss: 0.9802973887302842
+              2_loss_0: 0.01706980670333531
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 868,102.00
+              5_y_true: 1,000,069.00
+            pension_income_participants_WALES:
+              1_loss: 0.9671945443686408
+              2_loss_0: 0.0322309188201993
+              3_y_pred: &#39;0.00&#39;
+              4_y_0_pred: 486,067.00
+              5_y_true: 594,613.00
     Loss.Programs.UniversalCredit:
       1_loss: 6.0452700739001335
       2_weight: 43.657
@@ -370,11 +676,47 @@
         Loss.Programs.UniversalCredit.universal_credit_budgetary_impact:
           1_loss: 0.5515091927126515
           2_weight: 1
-          3_children: {}
+          3_children:
+            universal_credit_budgetary_impact_ENGLAND:
+              1_loss: 0.11256544594368158
+              2_loss_0: 0.18237610176924823
+              3_y_pred: 25,428,239,107.43
+              4_y_0_pred: 21,924,977,400.92
+              5_y_true: 38,267,176,499.79
+            universal_credit_budgetary_impact_GREAT_BRITAIN:
+              1_loss: 0.10567797150601813
+              2_loss_0: 0.17566137266458945
+              3_y_pred: 29,464,914,384.31
+              4_y_0_pred: 25,359,484,475.54
+              5_y_true: 43,657,000,000.00
+            universal_credit_budgetary_impact_SCOTLAND:
+              1_loss: 0.0593429227753039
+              2_loss_0: 0.12984504989139067
+              3_y_pred: 2,516,853,555.62
+              4_y_0_pred: 2,128,420,787.55
+              5_y_true: 3,327,431,777.80
+            universal_credit_budgetary_impact_WALES:
+              1_loss: 0.05695533068968505
+              2_loss_0: 0.11952378216913219
+              3_y_pred: 1,519,821,721.26
+              4_y_0_pred: 1,306,086,287.06
+              5_y_true: 1,996,230,926.00
         Loss.Programs.UniversalCredit.universal_credit_participants:
           1_loss: 11.539030955087615
           2_weight: 1
-          3_children: {}
+          3_children:
+            universal_credit_participants_GREAT_BRITAIN:
+              1_loss: 0.05295461378800914
+              2_loss_0: 0.005227485533058386
+              3_y_pred: 5,721,123.00
+              4_y_0_pred: 4,985,852.00
+              5_y_true: 4,649,000.00
+            universal_credit_participants_NORTHERN_IRELAND:
+              1_loss: 0.04026121859481554
+              2_loss_0: 0.0019374836267398506
+              3_y_pred: 141,006.00
+              4_y_0_pred: 121,306.00
+              5_y_true: 115,770.00
     Loss.Programs.WorkingTaxCredit:
       1_loss: 0.980615006865072
       2_weight: 3.825
@@ -382,11 +724,23 @@
         Loss.Programs.WorkingTaxCredit.working_tax_credit_budgetary_impact:
           1_loss: 0.9803294558918838
           2_weight: 1
-          3_children: {}
+          3_children:
+            working_tax_credit_budgetary_impact_UNITED_KINGDOM:
+              1_loss: 0.11608891521407116
+              2_loss_0: 0.1184383321966801
+              3_y_pred: 2,521,749,346.45
+              4_y_0_pred: 2,508,627,756.09
+              5_y_true: 3,825,000,000.00
         Loss.Programs.WorkingTaxCredit.working_tax_credit_participants:
           1_loss: 0.9809005578382601
           2_weight: 1
-          3_children: {}
+          3_children:
+            working_tax_credit_participants_GREAT_BRITAIN:
+              1_loss: 0.04301688518753893
+              2_loss_0: 0.04387395265168562
+              3_y_pred: 825,395.00
+              4_y_0_pred: 823,228.00
+              5_y_true: 1,044,000.00
 </pre></div>
 </div>
 </div>
