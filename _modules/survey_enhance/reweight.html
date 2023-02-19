@@ -165,7 +165,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Theory</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../uk_experiments/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../uk_experiments/loss.html">Loss</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
@@ -502,7 +502,10 @@
             <span class="k">return</span> <span class="n">loss</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span></div>
 
 <div class="viewcode-block" id="LossCategory.computation_tree"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory.computation_tree">[docs]</a>    <span class="k">def</span> <span class="nf">computation_tree</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">household_weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">household_weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">filter_non_one</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">subloss</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sublosses</span><span class="p">:</span>
@@ -513,6 +516,20 @@
                     <span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span>
                 <span class="p">),</span>
             <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">filter_non_one</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+                <span class="n">new_tree</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1_loss&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">new_tree</span>
+
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tree</span></div></div>
 
 

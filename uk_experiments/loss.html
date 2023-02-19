@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Datasets" href="../python_api/dataset.html" /><link rel="prev" title="Results" href="../results.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>Introduction - Survey-Enhance documentation</title>
+        <title>Loss - Survey-Enhance documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
@@ -139,7 +139,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -166,7 +166,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Theory</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Loss</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
@@ -202,17 +202,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">#</a></h1>
-<p>Inaccuracy in survey microdata is a common problem in microsimulation. But what do we mean by inaccuracy? This notebook (and the following) will attempt to walk you through the theory and practice of Survey-Enhance. We’ll focus on the UK, and experiment with different ways of enhancing the Family Resources Survey (FRS) data.</p>
-<section id="loss">
-<h2>Loss<a class="headerlink" href="#loss" title="Permalink to this headline">#</a></h2>
+          <section class="tex2jax_ignore mathjax_ignore" id="loss">
+<h1>Loss<a class="headerlink" href="#loss" title="Permalink to this headline">#</a></h1>
 <p>The fundamental core of Survey-Enhance is the idea of measuring survey accuracy/usefulness in a singular value that packs together lots of individual targets we’re concerned about: everything from tax to benefits to demographics. We call this value the loss. The loss is a measure of how far away the survey is from the truth. It’s a single number that we can use to compare different survey designs, and to measure the impact of different survey enhancements.</p>
 <p>We need to build this ourselves for any given survey, trying to be as neutral as possible. There’s strength in numbers: I’ve incorporated as many different statistics as are readily available for the UK, but of course the way I’ve constructed the loss function is the most vulnerable part of the pipeline to arbitrary assumptions. I followed the following principles:</p>
 <ul class="simple">
@@ -290,30 +287,10 @@
     <span class="n">frs_with_no_pension_income</span><span class="o">.</span><span class="n">household</span><span class="o">.</span><span class="n">household_weight</span><span class="o">.</span><span class="n">values</span>
 <span class="p">)</span>
 
-<span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span>
-    <span class="n">weights</span><span class="p">,</span>
-    <span class="n">frs_with_no_pension_income</span><span class="p">,</span>
-<span class="p">)</span>
-
 <span class="kn">import</span> <span class="nn">yaml</span>
 
 
-<span class="k">def</span> <span class="nf">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
-    <span class="n">new_tree</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1_loss&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">new_tree</span>
-
-
-<span class="nb">print</span><span class="p">(</span>
-    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
-        <span class="n">filter_tree</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">frs_with_no_pension_income</span><span class="p">))</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">computation_tree</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">frs_with_no_pension_income</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -456,7 +433,6 @@
 </div>
 <p>… which is a much smaller change, and the loss function is much more stable- for lots of little reasons, like the fact that we didn’t cross a lot of people over boundaries between tax bands, etc. etc.</p>
 </section>
-</section>
 
     <script type="text/x-thebe-config">
     {
@@ -522,27 +498,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Introduction</a><ul>
-<li><a class="reference internal" href="#loss">Loss</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
