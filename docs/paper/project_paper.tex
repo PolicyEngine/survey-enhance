@@ -522,9 +522,26 @@ The loss function for a specific household survey will be a large set of composi
 
 There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, if one of the income tax targets involves the revenue from certain high-income tax filers, a survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. 
 \section{Results}
-This section presents the results of the solutions. It should include information on experimental settings. The results should demonstrate the claimed benefits/disadvantages of the proposed solutions.
 
-This section should be around 2 pages in length.
+Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
+
+\begin{table}[!t]
+  \caption{Loss reductions under different survey improvement methods}
+  \label{tab:loss_reduction}
+  \centering
+  \begin{tabular}{cc}
+    \hline\hline
+    Adjustment & Loss change \\
+    \hline
+    Percentile matching (all) &      +3.92\% \\
+    Percentile matching (pensioner/non-pensioner split) &      +0.90\% \\
+    None &       0.00\% \\
+    Percentile matching (dividends only) &      -0.13\% \\
+    Gradient descent-based reweighting &     -59.13\% \\
+    SPI RF imputation + reweighting &     -88.00\% \\
+  \hline\hline
+  \end{tabular}
+\end{table}
 
 \section{Evaluation}
 This section should be between 1 to 2 pages in length.
