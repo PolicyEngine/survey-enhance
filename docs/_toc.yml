@@ -8,6 +8,7 @@ parts:
   - caption: Theory
     chapters:
     - file: uk_experiments/loss.ipynb
+    - file: uk_experiments/percentile_matching.ipynb
   - caption: Python API
     chapters:
     - file: python_api/dataset.md

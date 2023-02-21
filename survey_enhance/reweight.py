@@ -509,7 +509,7 @@ class CalibratedWeights:
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")
 
-            if log_df is not None and epoch % log_every == 0:
+            if log_df is not None and epoch + 1 % log_every == 0:
                 training_log = training_loss_fn.collect_comparison_log()
                 training_log["validation"] = False
                 if holdout_set_index is not None:

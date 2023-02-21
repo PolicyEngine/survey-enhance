@@ -31,6 +31,7 @@ class CalibratedFRS(Dataset):
         out_year: int = 2022,
         force_generate: bool = False,
         force_not_generate: bool = False,
+        log_folder: str = None,
     ):
         class CalibratedFRSFromDataset(CalibratedFRS):
             name = f"calibrated_{dataset.name}"
@@ -38,6 +39,7 @@ class CalibratedFRS(Dataset):
             input_dataset = dataset
             input_dataset_year = year
             output_year = out_year
+            log_dir = log_folder
             file_path = (
                 Path(__file__).parent.parent.parent
                 / "data"
@@ -70,6 +72,7 @@ class CalibratedFRS(Dataset):
             epochs=self.epochs,
             learning_rate=self.learning_rate,
             verbose=False,
+            log_dir=self.log_dir,
         )
 
         data = self.input_dataset().load_dataset()
