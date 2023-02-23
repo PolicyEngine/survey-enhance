@@ -217,6 +217,11 @@
 <span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
 <span class="kn">from</span> <span class="nn">survey_enhance.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;mps&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">set_default_tensor_type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">DoubleTensor</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="LossCategory"><a class="viewcode-back" href="../../python_api/reweight.html#survey_enhance.reweight.LossCategory">[docs]</a><span class="k">class</span> <span class="nc">LossCategory</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -339,6 +344,7 @@
             <span class="n">household_weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
                 <span class="mi">0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_weights</span><span class="p">),</span>
                 <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">household_weight</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">initial_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">comparisons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_comparison_log</span><span class="p">()</span>
@@ -399,7 +405,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_dataset</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">comparisons</span> <span class="o">=</span> <span class="n">comparisons</span>
 
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="mf">1e-3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">comparison</span> <span class="ow">in</span> <span class="n">comparisons</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">name</span><span class="p">,</span> <span class="n">y_pred_array</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="n">comparison</span>
@@ -408,8 +416,12 @@
                 <span class="n">name</span><span class="p">,</span> <span class="n">y_pred_array</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">comparison</span>
             <span class="c1"># y_pred_array needs to be a weighted sum with household_weights</span>
             <span class="n">y_pred_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">y_pred_array</span> <span class="o">=</span> <span class="n">household_weights</span> <span class="o">*</span> <span class="mi">1</span>
             <span class="n">y_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_pred_array</span> <span class="o">*</span> <span class="n">household_weights</span><span class="p">)</span>
             <span class="n">BUFFER</span> <span class="o">=</span> <span class="mf">1e4</span>
             <span class="n">loss_addition</span> <span class="o">=</span> <span class="p">(</span>
@@ -420,18 +432,19 @@
                     <span class="sa">f</span><span class="s2">&quot;Loss for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is NaN (y_pred=</span><span class="si">{</span><span class="n">y_pred</span><span class="si">}</span><span class="s2">, y_true=</span><span class="si">{</span><span class="n">y_true</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="p">)</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="n">loss_addition</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">comparison_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ancestor</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">name</span><span class="p">,</span>
-                    <span class="n">y_true</span><span class="p">,</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">loss_addition</span><span class="p">),</span>
-                    <span class="s2">&quot;individual&quot;</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagnostic</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comparison_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ancestor</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="n">y_true</span><span class="p">,</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">loss_addition</span><span class="p">),</span>
+                        <span class="s2">&quot;individual&quot;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">initial_run</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">initial_run</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagnostic</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_comparison_initial_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">&quot;y_pred&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">y_pred</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
                     <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">loss_addition</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
@@ -444,6 +457,9 @@
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
         <span class="n">initial_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">household_weights</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;NaN in household weights&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">initial_run</span><span class="p">:</span>
@@ -452,20 +468,24 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">initial_run</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                     <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">initial_run</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="mf">0.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>  <span class="c1"># To avoid division by zero</span>
+            <span class="mf">0.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span>
+        <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">evalstart</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">self_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
                 <span class="n">household_weights</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">initial_run</span><span class="o">=</span><span class="n">initial_run</span>
             <span class="p">)</span>
+            <span class="n">evalend</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="n">self_loss</span>
+            <span class="c1"># print(f&quot;Evaluation for {self.name} took {evalend - evalstart} seconds&quot;)</span>
         <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
             <span class="k">pass</span>
 
@@ -509,6 +529,8 @@
                 <span class="p">)</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="n">subcategory_loss</span>
 
+        <span class="n">runtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
         <span class="k">if</span> <span class="n">initial_run</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">loss</span>
         <span class="k">else</span><span class="p">:</span>
@@ -544,8 +566,9 @@
                     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
                         <span class="n">name</span><span class="p">,</span> <span class="n">y_pred_array</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">comparison</span>
                     <span class="n">y_pred_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
                         <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_pred_array</span> <span class="o">*</span> <span class="n">household_weights</span><span class="p">)</span>
                     <span class="n">BUFFER</span> <span class="o">=</span> <span class="mf">1e4</span>
@@ -702,24 +725,30 @@
         <span class="n">holdout_set_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">household_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">initial_weights</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_weights</span><span class="p">,</span>
+            <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="s2">&quot;mps&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">weight_adjustment</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_weights</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_weights</span><span class="p">)),</span>
+            <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="s2">&quot;mps&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">([</span><span class="n">weight_adjustment</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">([</span><span class="n">weight_adjustment</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">training_loss_fn</span><span class="p">(</span>
                 <span class="n">household_weights</span> <span class="o">+</span> <span class="n">weight_adjustment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span>
             <span class="p">)</span>
             <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">log_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">%</span> <span class="n">log_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">log_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">log_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">training_log</span> <span class="o">=</span> <span class="n">training_loss_fn</span><span class="o">.</span><span class="n">collect_comparison_log</span><span class="p">()</span>
                 <span class="n">training_log</span><span class="p">[</span><span class="s2">&quot;validation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">if</span> <span class="n">holdout_set_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -767,7 +796,7 @@
                                     <span class="n">epoch</span><span class="p">,</span>
                                 <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">household_weights</span> <span class="o">+</span> <span class="n">weight_adjustment</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">household_weights</span> <span class="o">+</span> <span class="n">weight_adjustment</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
 </pre></div>
         </article>
       </div>
