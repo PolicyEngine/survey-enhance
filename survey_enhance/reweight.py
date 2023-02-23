@@ -7,6 +7,11 @@ from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 from survey_enhance.dataset import Dataset
 import warnings
+import psutil
+import os
+
+device = torch.device("mps")
+torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 class LossCategory(torch.nn.Module):
@@ -129,6 +134,7 @@ class LossCategory(torch.nn.Module):
             household_weight = torch.tensor(
                 0 * np.zeros(num_weights),
                 requires_grad=True,
+                device=device,
             )
             self.forward(household_weight, dataset, initial_run=True)
             comparisons = self.collect_comparison_log()
@@ -189,7 +195,9 @@ class LossCategory(torch.nn.Module):
             if self.static_dataset:
                 self.comparisons = comparisons
 
-        loss = torch.tensor(1e-3)
+        loss = torch.tensor(
+            1e-3, requires_grad=True, device=device, dtype=torch.float
+        )
         for comparison in comparisons:
             if len(comparison) == 3:
                 name, y_pred_array, y_true = comparison
@@ -198,8 +206,12 @@ class LossCategory(torch.nn.Module):
                 name, y_pred_array, y_true, weight = comparison
             # y_pred_array needs to be a weighted sum with household_weights
             y_pred_array = torch.tensor(
-                np.array(y_pred_array).astype(float), requires_grad=True
+                np.array(y_pred_array).astype(np.float64),
+                requires_grad=True,
+                device=device,
+                dtype=torch.float,
             )
+            y_pred_array = household_weights * 1
             y_pred = torch.sum(y_pred_array * household_weights)
             BUFFER = 1e4
             loss_addition = (
@@ -210,18 +222,19 @@ class LossCategory(torch.nn.Module):
                     f"Loss for {name} is NaN (y_pred={y_pred}, y_true={y_true})"
                 )
             loss = loss + loss_addition
-            self.comparison_log.append(
-                (
-                    self.ancestor.epoch,
-                    name,
-                    y_true,
-                    float(y_pred),
-                    float(loss_addition),
-                    "individual",
-                    self.name,
+            if self.diagnostic:
+                self.comparison_log.append(
+                    (
+                        self.ancestor.epoch,
+                        name,
+                        y_true,
+                        float(y_pred),
+                        float(loss_addition),
+                        "individual",
+                        self.name,
+                    )
                 )
-            )
-            if initial_run:
+            if initial_run and self.diagnostic:
                 self._comparison_initial_cache[name] = {
                     "y_pred": float(y_pred.item()),
                     "loss": float(loss_addition.item()),
@@ -234,6 +247,9 @@ class LossCategory(torch.nn.Module):
         dataset: Dataset,
         initial_run: bool = False,
     ) -> torch.Tensor:
+        import time
+
+        start = time.time()
         if torch.isnan(household_weights).any():
             raise ValueError("NaN in household weights")
         if self.initial_loss_value is None and not initial_run:
@@ -242,20 +258,24 @@ class LossCategory(torch.nn.Module):
                 self.initial_loss_value = torch.tensor(
                     self.forward(household_weights, dataset, initial_run=True),
                     requires_grad=False,
+                    device=device,
                 )
 
         if not initial_run:
             self.epoch += 1
 
         loss = torch.tensor(
-            0.0, requires_grad=True
-        )  # To avoid division by zero
+            0.0, requires_grad=True, device=device, dtype=torch.float
+        )
 
         try:
+            evalstart = time.time()
             self_loss = self.evaluate(
                 household_weights, dataset, initial_run=initial_run
             )
+            evalend = time.time()
             loss = loss + self_loss
+            # print(f"Evaluation for {self.name} took {evalend - evalstart} seconds")
         except NotImplementedError:
             pass
 
@@ -299,6 +319,8 @@ class LossCategory(torch.nn.Module):
                 )
             loss = loss + subcategory_loss
 
+        runtime = time.time() - start
+
         if initial_run or not self.normalise:
             return loss
         else:
@@ -334,8 +356,9 @@ class LossCategory(torch.nn.Module):
                     elif len(comparison) == 4:
                         name, y_pred_array, y_true, weight = comparison
                     y_pred_array = torch.tensor(
-                        np.array(y_pred_array).astype(float),
+                        np.array(y_pred_array).astype(np.float64),
                         requires_grad=True,
+                        device=device,
                     )
                     y_pred = torch.sum(y_pred_array * household_weights)
                     BUFFER = 1e4
@@ -492,24 +515,30 @@ class CalibratedWeights:
         holdout_set_index: int = None,
     ) -> np.ndarray:
         household_weights = torch.tensor(
-            self.initial_weights, requires_grad=True
+            self.initial_weights,
+            requires_grad=True,
+            dtype=torch.float,
+            device="mps",
         )
         weight_adjustment = torch.tensor(
-            np.zeros_like(self.initial_weights), requires_grad=True
+            np.zeros(len(self.initial_weights)),
+            requires_grad=True,
+            dtype=torch.float,
+            device="mps",
         )
-        optimizer = torch.optim.Adam([weight_adjustment], lr=learning_rate)
+        optimizer = torch.optim.Adam([weight_adjustment], lr=1e-1)
 
         for epoch in range(epochs):
-            optimizer.zero_grad()
             loss = training_loss_fn(
                 household_weights + weight_adjustment, self.dataset
             )
             loss.backward()
             optimizer.step()
+            optimizer.zero_grad()
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")
 
-            if log_df is not None and epoch + 1 % log_every == 0:
+            if log_df is not None and (epoch + 1) % log_every == 0:
                 training_log = training_loss_fn.collect_comparison_log()
                 training_log["validation"] = False
                 if holdout_set_index is not None:
@@ -557,4 +586,4 @@ class CalibratedWeights:
                                     epoch,
                                 )
 
-        return (household_weights + weight_adjustment).detach().numpy()
+        return (household_weights + weight_adjustment).detach().cpu().numpy()
