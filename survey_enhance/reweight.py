@@ -10,7 +10,7 @@ import warnings
 import psutil
 import os
 
-device = torch.device("mps")
+device = torch.device("cpu")
 torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -514,26 +514,33 @@ class CalibratedWeights:
         log_every: int = 100,
         holdout_set_index: int = None,
     ) -> np.ndarray:
+        print(f"_train")
         household_weights = torch.tensor(
             self.initial_weights,
             requires_grad=True,
             dtype=torch.float,
-            device="mps",
+            device=device,
         )
+        print(f"household_weights: {household_weights}")
         weight_adjustment = torch.tensor(
             np.zeros(len(self.initial_weights)),
             requires_grad=True,
             dtype=torch.float,
-            device="mps",
+            device=device,
         )
-        optimizer = torch.optim.Adam([weight_adjustment], lr=1e-1)
+        print(f"weight_adjustment: {weight_adjustment}")
+        optimizer = torch.optim.Adam([weight_adjustment], lr=learning_rate)
+        print(f"setup done")
 
         for epoch in range(epochs):
+            print(f"About to run loss")
             loss = training_loss_fn(
                 household_weights + weight_adjustment, self.dataset
             )
             loss.backward()
+            print(f"About to run step")
             optimizer.step()
+            print(f"Ran step")
             optimizer.zero_grad()
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")

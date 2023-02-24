@@ -13,26 +13,15 @@ datasets = {}
 datasets["Original FRS"] = OutputDataset.from_dataset(
     FRS_2019_20, 2019, 2022
 )()
-datasets["SPI percentile-matched FRS"] = OutputDataset.from_dataset(
-    PercentileMatchedFRS.from_dataset(
-        FRS_2019_20,
-        percentile_matched_variables=["dividend_income"],
-    ),
-    2019,
-    2022,
-)()
 datasets["Calibrated FRS"] = OutputDataset.from_dataset(
-    CalibratedFRS.from_dataset(FRS_2019_20, 2019, 2022, force_generate=True),
-    2022,
-    2022,
+    CalibratedFRS.from_dataset(FRS_2019_20, 2019, 2022, force_generate=True, verbose=True),
     force_generate=True,
 )()
+print("Calibrated FRS done")
 datasets["Calibrated SPI-enhanced FRS"] = OutputDataset.from_dataset(
     CalibratedFRS.from_dataset(
-        SPIEnhancedFRS2019_20, 2019, 2022, force_generate=True
+        SPIEnhancedFRS2019_20, 2019, 2022, force_generate=True, verbose=True
     ),
-    2022,
-    2022,
     force_generate=True,
 )()
 
@@ -44,6 +33,7 @@ loss = Loss(
 
 losses = {}
 for name, dataset in datasets.items():
+    print(f"Calculating loss for {name}...", flush=True)
     losses[name] = loss(
         torch.tensor(dataset.household.household_weight.values), dataset
     )

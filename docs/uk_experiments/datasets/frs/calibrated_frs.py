@@ -21,8 +21,8 @@ class CalibratedFRS(Dataset):
     input_dataset: Type[Dataset]
     input_dataset_year: int
     output_year: int
-    epochs: int = 1_000
-    learning_rate: float = 1e1
+    epochs: int = 100
+    learning_rate: float = 1e0
     log_dir: str = None
 
     @staticmethod
@@ -68,7 +68,7 @@ class CalibratedFRS(Dataset):
             IncomeTax,
             calibration_parameters,
         )
-
+        print("Calibrating weights...")
         weights = calibrated_weights.calibrate(
             "2022-01-01",
             epochs=self.epochs,
