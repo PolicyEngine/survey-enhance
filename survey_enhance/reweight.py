@@ -10,8 +10,7 @@ import warnings
 import psutil
 import os
 
-device = torch.device("cpu")
-torch.set_default_tensor_type(torch.DoubleTensor)
+device = torch.device("mps")
 
 
 class LossCategory(torch.nn.Module):
@@ -195,9 +194,7 @@ class LossCategory(torch.nn.Module):
             if self.static_dataset:
                 self.comparisons = comparisons
 
-        loss = torch.tensor(
-            1e-3, requires_grad=True, device=device, dtype=torch.float
-        )
+        loss = torch.tensor(1e-3, requires_grad=True, device=device)
         for comparison in comparisons:
             if len(comparison) == 3:
                 name, y_pred_array, y_true = comparison
@@ -205,15 +202,10 @@ class LossCategory(torch.nn.Module):
             elif len(comparison) == 4:
                 name, y_pred_array, y_true, weight = comparison
             # y_pred_array needs to be a weighted sum with household_weights
-            y_pred_array = torch.tensor(
-                np.array(y_pred_array).astype(np.float64),
-                requires_grad=True,
-                device=device,
-                dtype=torch.float,
-            )
+            y_pred_array = np.array(y_pred_array).astype(np.float32)
             y_pred_array = household_weights * 1
             y_pred = torch.sum(y_pred_array * household_weights)
-            BUFFER = 1e4
+            BUFFER = 1e3
             loss_addition = (
                 (y_pred + BUFFER) / (y_true + BUFFER) - 1
             ) ** 2 * weight
@@ -239,6 +231,7 @@ class LossCategory(torch.nn.Module):
                     "y_pred": float(y_pred.item()),
                     "loss": float(loss_addition.item()),
                 }
+            del y_pred
         return loss
 
     def forward(
@@ -247,35 +240,26 @@ class LossCategory(torch.nn.Module):
         dataset: Dataset,
         initial_run: bool = False,
     ) -> torch.Tensor:
-        import time
-
-        start = time.time()
         if torch.isnan(household_weights).any():
             raise ValueError("NaN in household weights")
         if self.initial_loss_value is None and not initial_run:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                self.initial_loss_value = torch.tensor(
-                    self.forward(household_weights, dataset, initial_run=True),
-                    requires_grad=False,
-                    device=device,
-                )
+                self.initial_loss_value = self.forward(
+                    household_weights, dataset, initial_run=True
+                ).item()
 
         if not initial_run:
             self.epoch += 1
 
-        loss = torch.tensor(
-            0.0, requires_grad=True, device=device, dtype=torch.float
-        )
+        loss = torch.tensor(1e-3, requires_grad=True, device=device)
 
         try:
-            evalstart = time.time()
             self_loss = self.evaluate(
                 household_weights, dataset, initial_run=initial_run
             )
-            evalend = time.time()
             loss = loss + self_loss
-            # print(f"Evaluation for {self.name} took {evalend - evalstart} seconds")
+            del self_loss
         except NotImplementedError:
             pass
 
@@ -299,18 +283,18 @@ class LossCategory(torch.nn.Module):
                 * subloss.weight
                 / total_subloss_weight
             )
-            self.comparison_log.append(
-                (
-                    self.ancestor.epoch,
-                    subloss.__class__.__name__,
-                    0,
-                    0,
-                    float(subcategory_loss) * subloss.weight,
-                    "category",
-                    subloss.name,
-                )
-            )
             if self.diagnostic:
+                self.comparison_log.append(
+                    (
+                        self.ancestor.epoch,
+                        subloss.__class__.__name__,
+                        0,
+                        0,
+                        float(subcategory_loss) * subloss.weight,
+                        "category",
+                        subloss.name,
+                    )
+                )
                 if self.diagnostic_tree is None:
                     self.diagnostic_tree = {}
                 self.diagnostic_tree[subloss.name] = dict(
@@ -318,8 +302,6 @@ class LossCategory(torch.nn.Module):
                     children=subloss.diagnostic_tree,
                 )
             loss = loss + subcategory_loss
-
-        runtime = time.time() - start
 
         if initial_run or not self.normalise:
             return loss
@@ -374,6 +356,7 @@ class LossCategory(torch.nn.Module):
                         "4_y_0_pred": f"{self._comparison_initial_cache[name]['y_pred']:,.2f}",
                         "5_y_true": f"{y_true:,.2f}",
                     }
+                    del y_pred_array
         except:
             pass
 
@@ -514,33 +497,25 @@ class CalibratedWeights:
         log_every: int = 100,
         holdout_set_index: int = None,
     ) -> np.ndarray:
-        print(f"_train")
         household_weights = torch.tensor(
-            self.initial_weights,
-            requires_grad=True,
-            dtype=torch.float,
+            self.initial_weights.astype(np.float32),
+            requires_grad=False,
             device=device,
         )
-        print(f"household_weights: {household_weights}")
         weight_adjustment = torch.tensor(
-            np.zeros(len(self.initial_weights)),
+            np.ones(len(self.initial_weights)).astype(np.float32),
             requires_grad=True,
-            dtype=torch.float,
             device=device,
         )
-        print(f"weight_adjustment: {weight_adjustment}")
         optimizer = torch.optim.Adam([weight_adjustment], lr=learning_rate)
-        print(f"setup done")
 
         for epoch in range(epochs):
-            print(f"About to run loss")
+            optimizer.zero_grad()
             loss = training_loss_fn(
                 household_weights + weight_adjustment, self.dataset
             )
             loss.backward()
-            print(f"About to run step")
             optimizer.step()
-            print(f"Ran step")
             optimizer.zero_grad()
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")

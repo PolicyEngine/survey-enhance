@@ -14,10 +14,11 @@ datasets["Original FRS"] = OutputDataset.from_dataset(
     FRS_2019_20, 2019, 2022
 )()
 datasets["Calibrated FRS"] = OutputDataset.from_dataset(
-    CalibratedFRS.from_dataset(FRS_2019_20, 2019, 2022, force_generate=True, verbose=True),
+    CalibratedFRS.from_dataset(
+        FRS_2019_20, 2019, 2022, force_generate=True, verbose=True
+    ),
     force_generate=True,
 )()
-print("Calibrated FRS done")
 datasets["Calibrated SPI-enhanced FRS"] = OutputDataset.from_dataset(
     CalibratedFRS.from_dataset(
         SPIEnhancedFRS2019_20, 2019, 2022, force_generate=True, verbose=True
@@ -31,12 +32,14 @@ loss = Loss(
     static_dataset=False,
 )
 
+device = torch.device("mps")
+
 losses = {}
 for name, dataset in datasets.items():
-    print(f"Calculating loss for {name}...", flush=True)
-    losses[name] = loss(
-        torch.tensor(dataset.household.household_weight.values), dataset
+    weights = torch.tensor(
+        dataset.household.household_weight.values, device=device
     )
+    losses[name] = loss(weights, dataset)
 
 for name, loss in losses.items():
     print(f"{name}: {loss}")

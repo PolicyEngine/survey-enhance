@@ -68,7 +68,6 @@ class CalibratedFRS(Dataset):
             IncomeTax,
             calibration_parameters,
         )
-        print("Calibrating weights...")
         weights = calibrated_weights.calibrate(
             "2022-01-01",
             epochs=self.epochs,
