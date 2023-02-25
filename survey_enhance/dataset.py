@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Union, List
 import h5py
 import numpy as np
 import pandas as pd
@@ -18,6 +18,7 @@ class Dataset:
     """The format of the dataset. This can be either `Dataset.ARRAYS`, `Dataset.TIME_PERIOD_ARRAYS` or `Dataset.TABLES`. If `Dataset.ARRAYS`, the dataset is stored as a collection of arrays. If `Dataset.TIME_PERIOD_ARRAYS`, the dataset is stored as a collection of arrays, with one array per time period. If `Dataset.TABLES`, the dataset is stored as a collection of tables (DataFrames)."""
     file_path: Path = None
     """The path to the dataset file. This is used to load the dataset from a file."""
+    time_period: str = None
 
     # Data formats
     TABLES = "tables"
@@ -192,6 +193,24 @@ class Dataset:
             bool: Whether the dataset exists.
         """
         return self.file_path.exists()
+
+    @property
+    def variables(self) -> List[str]:
+        """Returns the variables in the dataset.
+
+        Returns:
+            List[str]: The variables in the dataset.
+        """
+        if self.data_format == Dataset.TABLES:
+            with pd.HDFStore(self.file_path) as f:
+                return list(f.keys())
+        elif self.data_format in (Dataset.ARRAYS, Dataset.TIME_PERIOD_ARRAYS):
+            with h5py.File(self.file_path, "r") as f:
+                return list(f.keys())
+        else:
+            raise ValueError(
+                f"Invalid data format {self.data_format} for dataset {self.label}."
+            )
 
     def __getattr__(self, name):
         """Allows the dataset to be accessed like a dictionary.

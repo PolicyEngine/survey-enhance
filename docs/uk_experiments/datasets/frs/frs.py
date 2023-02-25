@@ -90,8 +90,59 @@ class FRS(Dataset):
 class FRS_2019_20(FRS):
     name = "frs_2019_20"
     label = "Family Resources Survey 2019/20"
+    time_period = 2019
     raw_frs = RawFRS_2019_20
     file_path = Path(__file__).parent.parent.parent / "data" / "frs_2019_20.h5"
+
+
+class UpratedFRS(Dataset):
+    data_format = Dataset.ARRAYS
+
+    @staticmethod
+    def from_dataset(
+        dataset: Type[Dataset],
+        out_year: int = 2022,
+        force_generate: bool = False,
+        force_not_generate: bool = False,
+    ):
+        class UpratedFRSFromDataset(UpratedFRS):
+            name = f"{dataset.name}_uprated_{out_year}"
+            label = f"{dataset.label}"
+            input_dataset = dataset
+            time_period = out_year
+            file_path = (
+                Path(__file__).parent.parent.parent
+                / "data"
+                / f"{dataset.name}_uprated_{out_year}.h5"
+            )
+
+        uprated_dataset = UpratedFRSFromDataset()
+        if not force_not_generate and (
+            force_generate or not uprated_dataset.exists
+        ):
+            uprated_dataset.generate()
+
+        return UpratedFRSFromDataset
+
+    def generate(self):
+        from policyengine_uk import Microsimulation
+
+        input_dataset = self.input_dataset()
+        simulation = Microsimulation(dataset=input_dataset)
+
+        data = {}
+        for variable in input_dataset.variables:
+            try:
+                data[variable] = simulation.calculate(
+                    variable, period=self.output_year
+                ).values
+            except:
+                data[variable] = input_dataset.load(variable)
+
+        self.save_dataset(data)
+
+
+FRS_2022 = UpratedFRS.from_dataset(FRS_2019_20, out_year=2022)
 
 
 def sum_to_entity(

@@ -2,9 +2,10 @@ from survey_enhance.dataset import Dataset
 from pathlib import Path
 import pandas as pd
 from datasets.frs.imputations.income import SPI_TAB_FOLDER, generate_spi_table
-from datasets.frs.frs import FRS_2019_20
+from datasets.frs.frs import FRS_2022
 from survey_enhance.percentile_match import match_percentiles
 from typing import List, Type
+from microdf import MicroSeries
 
 
 class PercentileMatchedFRS(Dataset):
@@ -24,7 +25,7 @@ class PercentileMatchedFRS(Dataset):
     ]
     match_threshold = 0.95
     num_groups = 10
-    input_dataset = FRS_2019_20
+    input_dataset = FRS_2022
 
     @staticmethod
     def from_dataset(
@@ -52,6 +53,7 @@ class PercentileMatchedFRS(Dataset):
                 / f"percentile_matched_{dataset.name}.h5"
             )
             data_format = dataset.data_format
+            time_period = dataset.time_period
 
         dataset = PercentileMatchedFRSFromDataset()
         if not force_not_generate and (force_generate or not dataset.exists):
@@ -60,8 +62,11 @@ class PercentileMatchedFRS(Dataset):
         return PercentileMatchedFRSFromDataset
 
     def generate(self):
+        from policyengine_uk import Microsimulation
+
         spi = pd.read_csv(SPI_TAB_FOLDER / "put1920uk.tab", delimiter="\t")
         spi = generate_spi_table(spi)
+        simulation = Microsimulation(dataset=self.input_dataset())
 
         frs = self.input_dataset().load()
 
@@ -71,9 +76,15 @@ class PercentileMatchedFRS(Dataset):
             if variable not in self.match_variables:
                 new_values[variable] = frs[variable][...]
             else:
+                targets = simulation.calculate(
+                    variable, period=self.input_dataset.time_period
+                )
+                source_values = spi[variable]
+                source_weights = spi.person_weight
+                sources = MicroSeries(source_values, weights=source_weights)
                 new_values[variable] = match_percentiles(
-                    frs[variable][...],
-                    spi[variable],
+                    targets,
+                    sources,
                     self.match_threshold,
                     self.num_groups,
                 )

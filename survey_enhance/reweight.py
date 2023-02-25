@@ -193,7 +193,6 @@ class LossCategory(torch.nn.Module):
             comparisons = self._get_comparisons(dataset)
             if self.static_dataset:
                 self.comparisons = comparisons
-
         loss = torch.tensor(1e-3, requires_grad=True, device=device)
         for comparison in comparisons:
             if len(comparison) == 3:
@@ -201,10 +200,10 @@ class LossCategory(torch.nn.Module):
                 weight = 1
             elif len(comparison) == 4:
                 name, y_pred_array, y_true, weight = comparison
-            # y_pred_array needs to be a weighted sum with household_weights
-            y_pred_array = np.array(y_pred_array).astype(np.float32)
-            y_pred_array = household_weights * 1
-            y_pred = torch.sum(y_pred_array * household_weights)
+            y_pred_array = torch.tensor(
+                np.array(y_pred_array).astype(np.float32), device=device
+            )
+            y_pred = torch.sum(household_weights * y_pred_array)
             BUFFER = 1e3
             loss_addition = (
                 (y_pred + BUFFER) / (y_true + BUFFER) - 1
@@ -226,12 +225,13 @@ class LossCategory(torch.nn.Module):
                         self.name,
                     )
                 )
-            if initial_run and self.diagnostic:
+            if initial_run:
                 self._comparison_initial_cache[name] = {
                     "y_pred": float(y_pred.item()),
                     "loss": float(loss_addition.item()),
                 }
             del y_pred
+            del y_pred_array
         return loss
 
     def forward(
@@ -240,6 +240,10 @@ class LossCategory(torch.nn.Module):
         dataset: Dataset,
         initial_run: bool = False,
     ) -> torch.Tensor:
+        if not isinstance(household_weights, torch.Tensor):
+            household_weights = torch.tensor(
+                household_weights, requires_grad=True, device=device
+            )
         if torch.isnan(household_weights).any():
             raise ValueError("NaN in household weights")
         if self.initial_loss_value is None and not initial_run:
@@ -283,18 +287,18 @@ class LossCategory(torch.nn.Module):
                 * subloss.weight
                 / total_subloss_weight
             )
-            if self.diagnostic:
-                self.comparison_log.append(
-                    (
-                        self.ancestor.epoch,
-                        subloss.__class__.__name__,
-                        0,
-                        0,
-                        float(subcategory_loss) * subloss.weight,
-                        "category",
-                        subloss.name,
-                    )
+            self.comparison_log.append(
+                (
+                    self.ancestor.epoch,
+                    subloss.__class__.__name__,
+                    0,
+                    0,
+                    float(subcategory_loss) * subloss.weight,
+                    "category",
+                    subloss.name,
                 )
+            )
+            if self.diagnostic:
                 if self.diagnostic_tree is None:
                     self.diagnostic_tree = {}
                 self.diagnostic_tree[subloss.name] = dict(
@@ -314,6 +318,10 @@ class LossCategory(torch.nn.Module):
         dataset: Dataset,
         filter_non_one: bool = True,
     ) -> dict:
+        if not isinstance(household_weights, torch.Tensor):
+            household_weights = torch.tensor(
+                household_weights, requires_grad=False, device=device
+            )
         tree = {}
         for subloss in self.sublosses:
             tree[subloss.name] = {
@@ -338,8 +346,7 @@ class LossCategory(torch.nn.Module):
                     elif len(comparison) == 4:
                         name, y_pred_array, y_true, weight = comparison
                     y_pred_array = torch.tensor(
-                        np.array(y_pred_array).astype(np.float64),
-                        requires_grad=True,
+                        np.array(y_pred_array).astype(np.float32),
                         device=device,
                     )
                     y_pred = torch.sum(y_pred_array * household_weights)
@@ -357,7 +364,7 @@ class LossCategory(torch.nn.Module):
                         "5_y_true": f"{y_true:,.2f}",
                     }
                     del y_pred_array
-        except:
+        except NotImplementedError:
             pass
 
         if filter_non_one:
@@ -516,7 +523,6 @@ class CalibratedWeights:
             )
             loss.backward()
             optimizer.step()
-            optimizer.zero_grad()
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")
 

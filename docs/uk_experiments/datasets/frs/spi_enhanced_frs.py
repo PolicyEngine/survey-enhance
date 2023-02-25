@@ -4,21 +4,21 @@ from pathlib import Path
 import numpy as np
 
 
-class SPIEnhancedFRS2019_20(Dataset):
-    name = "spi_enhanced_frs_2019_20"
-    label = "SPI-Enhanced FRS 2019/20"
+class SPIEnhancedFRS_2022(Dataset):
+    name = "spi_enhanced_frs"
+    label = "SPI-Enhanced FRS"
     file_path = (
         Path(__file__).parent.parent.parent
         / "data"
-        / "spi_enhanced_frs_2019_20.h5"
+        / "spi_enhanced_frs_2022.h5"
     )
     data_format = Dataset.ARRAYS
 
     def generate(self):
-        from datasets.frs import FRS_2019_20
+        from datasets.frs import FRS_2022
         from policyengine_uk import Microsimulation
 
-        frs = FRS_2019_20().load()
+        frs = FRS_2022().load()
 
         new_values = {}
 
@@ -54,8 +54,7 @@ class SPIEnhancedFRS2019_20(Dataset):
         )
 
         simulation = Microsimulation(
-            dataset=FRS_2019_20(),
-            dataset_year=2019,
+            dataset=FRS_2022(),
         )
 
         input_df = simulation.calculate_dataframe(

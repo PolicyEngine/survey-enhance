@@ -1,7 +1,6 @@
 from survey_enhance.dataset import Dataset
 from survey_enhance.reweight import CalibratedWeights
 from loss.loss import Loss, calibration_parameters
-from loss.categories.country_level_programs import IncomeTax
 import numpy as np
 from pathlib import Path
 from typing import Type
@@ -20,27 +19,27 @@ def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:
 class CalibratedFRS(Dataset):
     input_dataset: Type[Dataset]
     input_dataset_year: int
-    output_year: int
-    epochs: int = 100
-    learning_rate: float = 1e0
+    epochs: int = 32
+    learning_rate: float = 1e1
     log_dir: str = None
+    time_period: str = None
 
     @staticmethod
     def from_dataset(
         dataset: Type[Dataset],
-        year: int = 2022,
+        year: int = None,
         out_year: int = 2022,
         force_generate: bool = False,
         force_not_generate: bool = False,
         log_folder: str = None,
-        verbose: bool = False,
+        verbose: bool = True,
     ):
         class CalibratedFRSFromDataset(CalibratedFRS):
             name = f"calibrated_{dataset.name}"
             label = f"Calibrated {dataset.label} {year} {out_year}"
             input_dataset = dataset
-            input_dataset_year = year
-            output_year = out_year
+            input_dataset_year = year or dataset.time_period
+            time_period = out_year
             log_dir = log_folder
             file_path = (
                 Path(__file__).parent.parent.parent
@@ -65,7 +64,7 @@ class CalibratedFRS(Dataset):
         calibrated_weights = CalibratedWeights(
             original_weights,
             input_dataset,
-            IncomeTax,
+            Loss,
             calibration_parameters,
         )
         weights = calibrated_weights.calibrate(

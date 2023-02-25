@@ -13,7 +13,7 @@ class OutputDataset(Dataset):
     @staticmethod
     def from_dataset(
         dataset: Type[Dataset],
-        year: int = 2022,
+        year: int = None,
         out_year: int = 2022,
         force_generate: bool = False,
         force_not_generate: bool = False,
@@ -22,7 +22,7 @@ class OutputDataset(Dataset):
             name = f"{dataset.name}"
             label = f"{dataset.label}"
             input_dataset = dataset
-            input_dataset_year = year
+            input_dataset_year = year or dataset.time_period
             output_year = out_year
             file_path = (
                 Path(__file__).parent.parent

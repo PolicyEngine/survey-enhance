@@ -73,8 +73,8 @@ class CountryLevelProgramBudgetaryImpact(LossCategory):
                 weights += [COUNTRY_WEIGHTS[single_country]]
 
         comparisons = []
-        for name, value, target in zip(names, pred, targets):
-            comparisons += [(name, value, target)]
+        for name, value, target, weight in zip(names, pred, targets, weights):
+            comparisons += [(name, value, target, weight)]
         return comparisons
 
 
@@ -135,8 +135,8 @@ class CountryLevelProgramParticipants(LossCategory):
                     weights += [COUNTRY_WEIGHTS[single_country]]
 
         comparisons = []
-        for name, value, target in zip(names, pred, targets):
-            comparisons += [(name, value, target)]
+        for name, value, target, weight in zip(names, pred, targets, weights):
+            comparisons += [(name, value, target, weight)]
         return comparisons
 
 
