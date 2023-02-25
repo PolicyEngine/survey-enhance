@@ -10,7 +10,10 @@ import warnings
 import psutil
 import os
 
-device = torch.device("mps")
+try:
+    device = torch.device("mps")
+except RuntimeError:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class LossCategory(torch.nn.Module):
@@ -213,18 +216,17 @@ class LossCategory(torch.nn.Module):
                     f"Loss for {name} is NaN (y_pred={y_pred}, y_true={y_true})"
                 )
             loss = loss + loss_addition
-            if self.diagnostic:
-                self.comparison_log.append(
-                    (
-                        self.ancestor.epoch,
-                        name,
-                        y_true,
-                        float(y_pred),
-                        float(loss_addition),
-                        "individual",
-                        self.name,
-                    )
+            self.comparison_log.append(
+                (
+                    self.ancestor.epoch,
+                    name,
+                    y_true,
+                    float(y_pred),
+                    float(loss_addition),
+                    "individual",
+                    self.name,
                 )
+            )
             if initial_run:
                 self._comparison_initial_cache[name] = {
                     "y_pred": float(y_pred.item()),
@@ -387,13 +389,13 @@ class CalibratedWeights:
     dataset: Dataset
     initial_weights: np.ndarray
     calibration_parameters: ParameterNode
-    loss_type: Type[torch.nn.Module]
+    loss_type: Type[LossCategory]
 
     def __init__(
         self,
         initial_weights: np.ndarray,
         dataset: Dataset,
-        loss_type: Type[torch.nn.Module],
+        loss_type: Type[LossCategory],
         calibration_parameters: ParameterNode,
     ):
         self.initial_weights = initial_weights
@@ -418,7 +420,7 @@ class CalibratedWeights:
         calibration_parameters_at_instant = self.calibration_parameters(
             time_instant
         )
-        self.loss = loss = self.loss_type(
+        loss = self.loss_type(
             self.dataset,
             calibration_parameters_at_instant,
             static_dataset=True,
@@ -489,6 +491,10 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
             )
+
+        if log_dir is not None:
+            log_df = train_loss_fn.collect_comparison_log()
+            log_df.to_csv(log_dir / "log.csv.gz", compression="gzip")
 
         return weights
 

@@ -7,6 +7,7 @@ from datasets.frs import (
 )
 from datasets.output_dataset import OutputDataset
 import torch
+from pathlib import Path
 
 datasets = {}
 
@@ -27,7 +28,11 @@ datasets["Calibrated FRS"] = OutputDataset.from_dataset(
     force_generate=True,
 )()
 datasets["Calibrated SPI-enhanced FRS"] = OutputDataset.from_dataset(
-    CalibratedFRS.from_dataset(SPIEnhancedFRS_2022, force_generate=True),
+    CalibratedFRS.from_dataset(
+        SPIEnhancedFRS_2022,
+        force_generate=True,
+        log_folder=Path(__file__).parent / "logs",
+    ),
     force_generate=True,
 )()
 
