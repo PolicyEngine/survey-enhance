@@ -7,8 +7,6 @@ from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 from survey_enhance.dataset import Dataset
 import warnings
-import psutil
-import os
 
 try:
     device = torch.device("mps")
@@ -507,7 +505,7 @@ class CalibratedWeights:
         log_df: pd.DataFrame = None,
         log_dir: Path = None,
         tensorboard_log_writer: SummaryWriter = None,
-        log_every: int = 100,
+        log_every: int = 1e6,
         holdout_set_index: int = None,
     ) -> np.ndarray:
         household_weights = torch.tensor(
