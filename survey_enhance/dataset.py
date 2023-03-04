@@ -52,6 +52,9 @@ class Dataset:
 
         self._table_cache = {}
 
+        if not self.exists:
+            self.generate()
+
     def load(
         self, key: str = None, mode: str = "r"
     ) -> Union[h5py.File, np.array, pd.DataFrame, pd.HDFStore]:

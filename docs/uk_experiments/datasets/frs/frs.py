@@ -118,7 +118,7 @@ class UpratedFRS(Dataset):
 
         uprated_dataset = UpratedFRSFromDataset()
         if not force_not_generate and (
-            force_generate or not uprated_dataset.exists
+            force_generate
         ):
             uprated_dataset.generate()
 
