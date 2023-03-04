@@ -3,6 +3,7 @@ from typing import Dict, Union, List
 import h5py
 import numpy as np
 import pandas as pd
+import shutil
 
 
 class Dataset:
@@ -222,3 +223,15 @@ class Dataset:
             Union[np.array, pd.DataFrame]: The dataset.
         """
         return self.load(name)
+
+    def store_file(self, file_path: str):
+        """Moves a file to the dataset's file path.
+        
+        Args:
+            file_path (str): The file path to move.
+        """
+
+        file_path = Path(file_path)
+        if not file_path.exists():
+            raise FileNotFoundError(f"File {file_path} does not exist.")
+        shutil.move(file_path, self.file_path)

@@ -509,18 +509,19 @@ where $X_i$ is the value (of a particular variable) of the $i$th household recor
 
 \subsection{Gradient descent}
 
-A given survey $S$ is itself a set of variables $X_{i,j}$ (where $i$ is the household record and $j$ is the variable), as well as household weights $W_i$.\footnote{Although most household surveys also include personal and family weights, only the household weights are optimised in this project.} We can therefore split up the loss function to be a function of the variables and weights separately (and implementing this split is achievable in the underlying algorithm code) as $L(S) = L(X, W)$. Our loss minimisation task therefore becomes finding the solution to the following equation:
+A given survey $S$ is itself a set of variables $X_{i,j}$ (where $i$ is the household record and $j$ is the variable), as well as household weights $W_i$.\footnote{Although most household surveys also include personal and family weights, only the household weights are optimised in this project.} We can therefore split up the loss function to be a function of the variables and weights separately (and implementing this split is achievable in the underlying algorithm code) as $L(S) = L(X, W)$. Our loss minimisation task therefore becomes finding the solution to Equation \ref{eq:gradient_descent}.
 
 \begin{equation}
   % Solve for the derivative being zero.
   \frac{\partial L(X, W)}{\partial W} = 0
+  \label{eq:gradient_descent}
 \end{equation}
 
 The loss function for a specific household survey will be a large set of composite functions incorporating hundreds of individual targets, but the gradient function can be analytically calculated using automatic differentation packages such as PyTorch.\cite{pytorch} Under the gradient descent algorithm\cite{anns}, the weights are iteratively updated in the direction of the steepest negative gradient, until the loss function is minimised.
 
 \subsection{Random forest imputation}
 
-There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, if one of the income tax targets involves the revenue from certain high-income tax filers, a survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. 
+There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, suppose that one of the income tax targets involves the revenue from certain high-income tax filers. A survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. This case does occur frequently in practice: the highest taxable income in the Family Resources Survey is always less than £1m, but HMRC reports aggregate tax revenues from filers with incomes over this level.
 \section{Results}
 
 Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
