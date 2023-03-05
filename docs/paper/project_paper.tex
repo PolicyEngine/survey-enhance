@@ -305,6 +305,7 @@
 
 %% ---------------------------------------------- END OF USEFUL PACKAGES ----------------------------------------------
 
+\usepackage{amsmath}
 
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
@@ -493,6 +494,8 @@ There are several reasons why random forest models might outperform neural netwo
 
 \subsection{Loss}
 
+\subsubsection{Concept}
+
 The loss function is the function that is minimised by the optimisation algorithm. In the context of survey imputation, the loss function is the difference between the survey aggregate statistics and the official aggregate statistics. The loss function is defined as:
 
 \begin{equation}
@@ -506,6 +509,66 @@ where $L_c(S)$ is the loss function for a particular aggregate statistic $c$, $C
 \end{equation}
 
 where $X_i$ is the value (of a particular variable) of the $i$th household record, $W_i$ is the weight of the $i$th household record, $y$ is the official aggregate statistic for $c$, and $w$ is a weighting factor for the loss function. The weighting factor $w$ is used to prioritise certain aggregate statistics over others (for example, budgetary impact size is used to comparatively weight different financial aggregate statistics). The loss function is also hierarchical, in that each loss category contains a weighted sum of other (normalised) loss functions. For example, the loss function for demographic performance might contain subcategories measuring performance over household population targets as well as individual population targets.
+
+\subsubsection{Normalisation} There remains an issue in how to constrain the relative sizes of different loss values. For example, we might have many more detailed statistics over which we can evaluate the survey in its representation of Income Tax (revenues by income band, taxpayer counts) than we do for Child Benefit (only aggregate revenue and total claimants). Naively summing the relative error comparisons for each category would give Income Tax targeting a much higher weight in the optimisation process purely because of our access to statistics (which is no indication of a program's importance). Simply dividing by the number of comparisons would be inaccurate too, given some of those comparisons might be more important than others. Therefore instead, a more neutral assumption is to normalise each loss category by dividing by its initial value:
+
+\begin{equation}
+  L(S) = \frac{\sum_{c \in C} L_c(S)}{L(S_0)}
+\end{equation}
+
+The question of how to determine the weighting factor for each loss function is also arbitrary, but the most neutral assertion could be to use the aggregate financial size of a program, or the size of the population concerned. For example, if we have one loss category measuring how well the survey reproduces Income Tax statistics and another measuring Child Benefit, we could reasonably consider that the Income Tax loss category is approximately twenty times more important than the Child Benefit loss category\footnote{Income Tax revenue in 2022 was around £200 billion, while Child Benefit outlays were around £10 billion.}.
+
+This paper benchmarks the performance of the survey accuracy improvement pipeline by focussing on UK survey data, which requires an implementation of the loss function for the UK context. The UK loss function is defined using the following categories:
+
+\begin{enumerate}
+  \item Demographics
+  \begin{enumerate}
+    \item Households
+    \begin{enumerate}
+      \item Region-Council Tax Band intersections*
+      \item Region-tenure type intersections*
+    \end{enumerate}
+    \item Populations
+    \begin{enumerate}
+      \item Age-sex-region intersections*
+    \end{enumerate}
+  \end{enumerate}
+  \item Programs
+  \begin{enumerate}
+    \item Universal Credit$^\dagger$
+    \item Child Benefit$^\dagger$
+    \item Child Tax Credit$^\dagger$
+    \item Working Tax Credit$^\dagger$
+    \item Pension Credit$^\dagger$
+    \item Income Support$^\dagger$
+    \item State Pension$^\dagger$
+    \item Housing Benefit$^\dagger$
+    \item Income-based Employment Support Allowance$^\dagger$
+    \item Income-based Jobseeker's Allowance$^\dagger$
+    \item Council Tax$^\dagger$
+    \item National Insurance$^\dagger$
+    \item Employment income$^\dagger$
+    \item Self-employment profit$^\dagger$
+    \item Private pension income$^\dagger$
+    \item Savings interest income$^\dagger$
+    \item Property income$^\dagger$
+    \item Dividend income$^\dagger$
+    \item Income Tax$^\dagger$
+    \begin{enumerate}
+      \item Taxpayers by UK nation
+      \item Tax liability by 10 income bands
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+Loss categories marked with * contain statistics that are also used to determine the original FRS survey weights. Categories marked with $^\dagger$ include aggregate financial size and non-zero counts by UK nation, weighted by the aggregate financial size of the program. For example, the program loss categories is approximately defined by:
+\begin{equation}
+  \begin{split}
+  L_{Programs}(S) &= 45 \times 10 ^ 9 L_{Universal Credit} (S)\\& + 11 \times 10 ^ 9 L_{Child Benefit} (S)\\& + \dots\\& + 200 \times 10 ^ 9 L_{Income Tax} (S)
+  \end{split}
+\end{equation}
+
+This is necessary, since loss categories in themselves are normalised and expressed as a percentage of the first loss value.
 
 \subsection{Gradient descent}
 
@@ -521,12 +584,21 @@ The loss function for a specific household survey will be a large set of composi
 
 \subsection{Random forest imputation}
 
-There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, suppose that one of the income tax targets involves the revenue from certain high-income tax filers. A survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. This case does occur frequently in practice: the highest taxable income in the Family Resources Survey is always less than £1m, but HMRC reports aggregate tax revenues from filers with incomes over this level.
+There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, suppose that one of the income tax targets involves the revenue from certain high-income tax filers. A survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. This case does occur frequently in practice: the highest taxable income in the Family Resources Survey (2020-21) is less than £1m, but HMRC reports aggregate tax revenues from filers with incomes over this level in the order of £1bn.
+
+This problem manifests as a global minimum floor in the loss landscape over the space of the original survey weights, below which no optimisation improvement is capable of reaching. To circumnavigate this barrier, we must add new records and weights to the parameters optimised by the gradient descent algorithm.
+
+Synthesing new records to add to the existing survey brings risks: we could decrease the accuracy of the survey by adding new records which are unrealistic. This is not a concern: it can be avoided entirely by adding new records with weight values set to zero, since this does not actually change the result of anything produced with the survey, and instead just provides the optimisation algorithm with more parameters to change. However, while synthesising implausible records cannot harm the survey, it is likely that the more plausible the new record, the better it can aid the optimisation routine.
+
+There are a variety of machine learning-based methods for synthesising new data points from a learned distribution. In \cite{ghenis_quantile_regression}, Ghenis benchmarked several of these methods against each other and found that a random forest model-based approach minimised \emph{quantile loss}, an indicator of how well the distribution of generated values aligns with the prior distribution, the most. Preserving heterogeneity in distributions is important here: microsimulation modelling's core strength comes from its ability to simulate independent outcomes across a highly diverse sample of the population.
+
+
+
 \section{Results}
 
 Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
 
-\begin{table}[!t]
+\begin{table}[!ht]
   \caption{Loss reductions under different survey improvement methods}
   \label{tab:loss_reduction}
   \centering
@@ -543,6 +615,15 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
   \hline\hline
   \end{tabular}
 \end{table}
+
+% Figure from rel_error_training.png showing the distribution of error rates by epoch
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.45\textwidth]{rel_error_training.png}
+  \caption{Distribution of relative error rates by epoch}
+  \label{fig:rel_error_training}
+\end{figure}
 
 \section{Evaluation}
 This section should be between 1 to 2 pages in length.

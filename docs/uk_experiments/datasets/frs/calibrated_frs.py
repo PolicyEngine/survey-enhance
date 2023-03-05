@@ -19,8 +19,8 @@ def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:
 class CalibratedFRS(Dataset):
     input_dataset: Type[Dataset]
     input_dataset_year: int
-    epochs: int = 10_000
-    learning_rate: float = 1e-1
+    epochs: int = 1_000
+    learning_rate: float = 1e+1
     log_dir: str = None
     time_period: str = None
 
