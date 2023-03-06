@@ -543,8 +543,8 @@ This paper benchmarks the performance of the survey accuracy improvement pipelin
     \item Income Support$^\dagger$
     \item State Pension$^\dagger$
     \item Housing Benefit$^\dagger$
-    \item Income-based Employment Support Allowance$^\dagger$
-    \item Income-based Jobseeker's Allowance$^\dagger$
+    \item Income-based ESA$^\dagger$
+    \item Income-based JSA$^\dagger$
     \item Council Tax$^\dagger$
     \item National Insurance$^\dagger$
     \item Employment income$^\dagger$
@@ -582,7 +582,7 @@ A given survey $S$ is itself a set of variables $X_{i,j}$ (where $i$ is the hous
 
 The loss function for a specific household survey will be a large set of composite functions incorporating hundreds of individual targets, but the gradient function can be analytically calculated using automatic differentation packages such as PyTorch.\cite{pytorch} Under the gradient descent algorithm\cite{anns}, the weights are iteratively updated in the direction of the steepest negative gradient, until the loss function is minimised.
 
-\subsection{Random forest imputation}
+\subsection{Imputation}
 
 There are several reasons why reweighting alone will likely not be sufficient to eliminate certain types of error in the survey. For example, suppose that one of the income tax targets involves the revenue from certain high-income tax filers. A survey which does not include any instances of these filers will categorically be unable to make any progress towards this target. This case does occur frequently in practice: the highest taxable income in the Family Resources Survey (2020-21) is less than £1m, but HMRC reports aggregate tax revenues from filers with incomes over this level in the order of £1bn.
 
@@ -592,7 +592,32 @@ Synthesing new records to add to the existing survey brings risks: we could decr
 
 There are a variety of machine learning-based methods for synthesising new data points from a learned distribution. In \cite{ghenis_quantile_regression}, Ghenis benchmarked several of these methods against each other and found that a random forest model-based approach minimised \emph{quantile loss}, an indicator of how well the distribution of generated values aligns with the prior distribution, the most. Preserving heterogeneity in distributions is important here: microsimulation modelling's core strength comes from its ability to simulate independent outcomes across a highly diverse sample of the population.
 
+This leaves the question of from which distribution we should synthesise new records. Clearly, this should not be the Family Resources Survey given this would be self-defeating. A data source more likely to produce success would be HMRC's Survey of Personal Incomes: a 1\% (anonymised to meet disclosure rules) sample from HMRC's administrative tax records. The SPI does not suffer the same under-counting of incomes (in fact, its aggregates are the basis by which we know the FRS is inaccurate), and the inability of individuals to refuse to participate in the survey means that it is likely to be more representative of the population than the FRS. Therefore, since SPI records are able to reproduce SPI aggregates, SPI-like records sampled from the SPI in FRS format should be able to move FRS aggregates in the direction of SPI aggregates when given enough weight.
 
+The structural form of the model to use is distinct from how it mechanically integrates with the rest of the survey enhancement pipeline. The exact method we use is set out in the following steps:
+
+\begin{enumerate}
+  \item Identify common variables between the SPI and the FRS.
+  \item Partition these into two sets: the predictor set and the imputation set.
+  \item Train a random forest model to predict imputation set variables given the predictor set variables.
+  \item Duplicate each household record once, assigning zero weight to the copy.
+  \item For each household record in the FRS, use the random forest model to predict the imputation set variables.
+  \item Override the imputation set variables in the copied household record with the predicted values.
+\end{enumerate}
+
+At the end of this process, the new FRS dataset is identical to the original dataset because the new additions are zero-weighted. However, the optimiser now has a far expanded parameter space to work with, and can therefore (potentially) make more progress towards the target.
+
+\subsubsection{Distribution adjustment}
+
+However, even if we can accurately capture the relationship between variables in a more accurate dataset, this doesn't guarantee that applying the model to the FRS will produce the same record distributions as in the SPI, because the SPI and FRS have different sampling frames: imputing income variables might correct for the FRS undercounting high incomes \emph{among people who would have high incomes if HMRC were asking}, but the FRS also will have less of these people than would exist in the SPI (due to sampling bias).
+
+Another pitfall of the imputation method is that it might not produce the most efficiently loss-potential-reducing records (from the perspective of the space they take up), or might even fail to produce the specific records that exist in reality but not in either survey. For example, many of the individuals with the highest incomes will not appear even in the SPI. How can we ensure these records are created? One naive approach would be to simply craft them by hand, but this is both not scalable, and also might introduce inaccuracy if the hand-made records have some unseen internal contradiction that would mean they cannot exist in real life. Instead, we can preserve the strength of our random forest models at capturing relationships between variables, and just adjust the distribution they predict.
+
+Random forest regressors use the average of the results of a tree set as their outputs. The outputs from each tree incorporate all the learned information about the output variables conditional on the input variables, making it the optimal interception point to modify the model outputs without sacrificing the model's learned relationships. We can from here change the output from an average over all trees to a given percentile of the tree results. Since heterogeneity is still important, this percentile (per household observation) can be sampled randomly from a distribution (evenly and centered at 50\% by default). Parametrising this distribution as a Beta distribution allows us to control its skew by a set parameter.\footnote{The Beta distrubion is parametrised by two parameters, but it is trivial to express this as one.} Adjusting this skew parameter now enables us to adjust the distribution of predicted values upwards or downwards as needed.
+
+\subsubsection{Multivariate prediction}
+
+Multivariate prediction might need to make use of separate distribution parameters for individual variables (e.g. if dividend income is more likely to be under-represented by sampling bias than employment income). To allow for this while still retaining consistency between predicted variables, we can train individual variable predictive models on the sequential predictor variables. For example, if we are to predict employment income and dividend income from age, we would train one model predicting employment income given age, and another predicting dividend income given age and (previously predicted) employment income. This is a straightforward extension of the univariate case, and can be implemented in the same way.
 
 \section{Results}
 
