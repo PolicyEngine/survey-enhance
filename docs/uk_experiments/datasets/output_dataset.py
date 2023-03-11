@@ -15,8 +15,6 @@ class OutputDataset(Dataset):
         dataset: Type[Dataset],
         year: int = None,
         out_year: int = 2022,
-        force_generate: bool = False,
-        force_not_generate: bool = False,
     ):
         class OutputDatasetFromDataset(OutputDataset):
             name = f"{dataset.name}"
@@ -30,19 +28,10 @@ class OutputDataset(Dataset):
                 / f"output_{dataset.name}.h5"
             )
 
-        output_dataset = OutputDatasetFromDataset()
-        if not force_not_generate and (
-            force_generate or not output_dataset.exists
-        ):
-            output_dataset.generate()
-
         return OutputDatasetFromDataset
 
     def generate(self):
         from policyengine_uk import Microsimulation
-
-        if not self.input_dataset().exists:
-            self.input_dataset().generate()
 
         sim = Microsimulation(
             dataset=self.input_dataset(), dataset_year=self.input_dataset_year

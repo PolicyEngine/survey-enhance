@@ -194,7 +194,9 @@ class LossCategory(torch.nn.Module):
             comparisons = self._get_comparisons(dataset)
             if self.static_dataset:
                 self.comparisons = comparisons
-        loss = torch.tensor(1e-3, requires_grad=True, device=device)
+        loss = torch.tensor(1e-5, requires_grad=True, device=device)
+        if len(comparisons) == 0:
+            return loss
         for comparison in comparisons:
             if len(comparison) == 3:
                 name, y_pred_array, y_true = comparison
@@ -205,7 +207,7 @@ class LossCategory(torch.nn.Module):
                 np.array(y_pred_array).astype(np.float32), device=device
             )
             y_pred = torch.sum(household_weights * y_pred_array)
-            BUFFER = 1e3
+            BUFFER = 1e4
             loss_addition = (
                 (y_pred + BUFFER) / (y_true + BUFFER) - 1
             ) ** 2 * weight
@@ -242,7 +244,9 @@ class LossCategory(torch.nn.Module):
     ) -> torch.Tensor:
         if not isinstance(household_weights, torch.Tensor):
             household_weights = torch.tensor(
-                household_weights, requires_grad=True, device=device
+                household_weights.astype(np.float32),
+                requires_grad=True,
+                device=device,
             )
         if torch.isnan(household_weights).any():
             raise ValueError("NaN in household weights")
@@ -256,7 +260,7 @@ class LossCategory(torch.nn.Module):
         if not initial_run:
             self.epoch += 1
 
-        loss = torch.tensor(1e-3, requires_grad=True, device=device)
+        loss = torch.tensor(1e-8, requires_grad=True, device=device)
 
         try:
             self_loss = self.evaluate(
@@ -411,7 +415,7 @@ class CalibratedWeights:
         rotate_holdout_sets: bool = False,
         log_dir: str = None,
         tensorboard_log_dir: str = None,
-        log_frequency: int = 100,
+        log_frequency: int = 15,
         verbose: bool = False,
     ) -> np.ndarray:
         self.verbose = verbose
@@ -545,7 +549,11 @@ class CalibratedWeights:
                 else:
                     validation_log = pd.DataFrame()
                 log_df = pd.concat([log_df, training_log, validation_log])
-                log_df.to_csv(log_dir / "calibration_log.csv", index=False)
+                log_df.to_csv(
+                    log_dir / "calibration_log.csv.gz",
+                    index=False,
+                    compression="gzip",
+                )
 
                 if tensorboard_log_writer is not None:
                     epoch_df = log_df[log_df["epoch"] == epoch]

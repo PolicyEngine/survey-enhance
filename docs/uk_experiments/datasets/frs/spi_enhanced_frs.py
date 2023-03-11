@@ -2,23 +2,38 @@ from survey_enhance.impute import Imputation
 from survey_enhance.dataset import Dataset
 from pathlib import Path
 import numpy as np
+from typing import Type
 
 
-class SPIEnhancedFRS_2022(Dataset):
+class SPIEnhancedFRS(Dataset):
     name = "spi_enhanced_frs"
     label = "SPI-Enhanced FRS"
     file_path = (
-        Path(__file__).parent.parent.parent
-        / "data"
-        / "spi_enhanced_frs_2022.h5"
+        Path(__file__).parent.parent.parent / "data" / "spi_enhanced_frs.h5"
     )
     data_format = Dataset.ARRAYS
+    input_dataset = None
+
+    @staticmethod
+    def from_dataset(
+        dataset: Type[Dataset],
+        new_name: str = "spi_enhanced_frs",
+        new_label: str = "SPI-Enhanced FRS",
+    ):
+        class SPIEnhancedFRSFromDataset(SPIEnhancedFRS):
+            name = new_name
+            label = new_label
+            input_dataset = dataset
+            file_path = (
+                Path(__file__).parent.parent.parent / "data" / f"{new_name}.h5"
+            )
+
+        return SPIEnhancedFRSFromDataset
 
     def generate(self):
-        from datasets.frs import FRS_2022
         from policyengine_uk import Microsimulation
 
-        frs = FRS_2022().load()
+        frs = self.input_dataset().load()
 
         new_values = {}
 
@@ -50,11 +65,11 @@ class SPIEnhancedFRS_2022(Dataset):
         ]
 
         income = Imputation.load(
-            Path(__file__).parent.parent.parent / "data" / "income.pkl"
+            Path(__file__).parent.parent.parent / "imputations" / "income.pkl"
         )
 
         simulation = Microsimulation(
-            dataset=FRS_2022(),
+            dataset=self.input_dataset(),
         )
 
         input_df = simulation.calculate_dataframe(

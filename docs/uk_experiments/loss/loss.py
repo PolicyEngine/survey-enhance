@@ -14,7 +14,7 @@ class Demographics(LossCategory):
 
 
 class Programs(LossCategory):
-    weight = 1
+    weight = 4
     subcategories = country_level_programs
 
 

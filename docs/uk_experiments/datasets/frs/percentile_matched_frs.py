@@ -2,7 +2,6 @@ from survey_enhance.dataset import Dataset
 from pathlib import Path
 import pandas as pd
 from datasets.frs.imputations.income import SPI_TAB_FOLDER, generate_spi_table
-from datasets.frs.frs import FRS_2022
 from survey_enhance.percentile_match import match_percentiles
 from typing import List, Type
 from microdf import MicroSeries
@@ -25,7 +24,6 @@ class PercentileMatchedFRS(Dataset):
     ]
     match_threshold = 0.95
     num_groups = 10
-    input_dataset = FRS_2022
 
     @staticmethod
     def from_dataset(
@@ -33,8 +31,6 @@ class PercentileMatchedFRS(Dataset):
         percentile_matched_variables: List[str] = None,
         threshold: float = 0.95,
         group_count: int = 10,
-        force_generate: bool = False,
-        force_not_generate: bool = False,
     ):
         class PercentileMatchedFRSFromDataset(PercentileMatchedFRS):
             name = f"percentile_matched_{dataset.name}"
@@ -54,10 +50,6 @@ class PercentileMatchedFRS(Dataset):
             )
             data_format = dataset.data_format
             time_period = dataset.time_period
-
-        dataset = PercentileMatchedFRSFromDataset()
-        if not force_not_generate and (force_generate or not dataset.exists):
-            dataset.generate()
 
         return PercentileMatchedFRSFromDataset
 

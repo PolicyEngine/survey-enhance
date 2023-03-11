@@ -229,7 +229,7 @@ class Dataset:
 
     def store_file(self, file_path: str):
         """Moves a file to the dataset's file path.
-        
+
         Args:
             file_path (str): The file path to move.
         """

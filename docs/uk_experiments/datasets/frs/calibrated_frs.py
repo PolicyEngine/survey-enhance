@@ -19,42 +19,38 @@ def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:
 class CalibratedFRS(Dataset):
     input_dataset: Type[Dataset]
     input_dataset_year: int
-    epochs: int = 1_000
-    learning_rate: float = 1e+1
+    epochs: int = 256
+    learning_rate: float = 2e1
     log_dir: str = None
     time_period: str = None
+    log_verbose: bool = False
 
     @staticmethod
     def from_dataset(
         dataset: Type[Dataset],
+        new_name: str = None,
+        new_label: str = None,
         year: int = None,
         out_year: int = 2022,
-        force_generate: bool = False,
-        force_not_generate: bool = False,
         log_folder: str = None,
         verbose: bool = True,
     ):
         class CalibratedFRSFromDataset(CalibratedFRS):
-            name = f"calibrated_{dataset.name}"
-            label = f"Calibrated {dataset.label} {year} {out_year}"
+            name = new_name
+            label = new_label
             input_dataset = dataset
             input_dataset_year = year or dataset.time_period
             time_period = out_year
             log_dir = log_folder
             file_path = (
-                Path(__file__).parent.parent.parent
-                / "data"
-                / f"calibrated_{dataset.name}.h5"
+                Path(__file__).parent.parent.parent / "data" / f"{new_name}.h5"
             )
             data_format = dataset.data_format
-
-        dataset = CalibratedFRSFromDataset()
-        if not force_not_generate and (force_generate or not dataset.exists):
-            dataset.generate(verbose=verbose)
+            log_verbose = verbose
 
         return CalibratedFRSFromDataset
 
-    def generate(self, verbose: bool = False):
+    def generate(self):
         from .frs import OutputDataset
 
         input_dataset = OutputDataset.from_dataset(self.input_dataset)()
@@ -71,7 +67,7 @@ class CalibratedFRS(Dataset):
             "2022-01-01",
             epochs=self.epochs,
             learning_rate=self.learning_rate,
-            verbose=verbose,
+            verbose=self.log_verbose,
             log_dir=self.log_dir,
         )
 

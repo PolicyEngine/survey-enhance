@@ -22,13 +22,28 @@ class RawFRS(Dataset):
     name = "raw_frs"
     label = "Family Resources Survey"
     data_format = Dataset.TABLES
+    tab_folder = None
 
-    def generate(self, tab_folder: Path):
+    @staticmethod
+    def from_folder(folder: str, new_name: str = None, new_label: str = None):
+        class RawFRSFromFolder(RawFRS):
+            tab_folder = folder
+            name = new_name
+            label = new_label
+            file_path = (
+                Path(__file__).parent.parent.parent / "data" / f"{new_name}.h5"
+            )
+
+        return RawFRSFromFolder
+
+    def generate(self):
         """Generate the survey data from the original TAB files.
 
         Args:
             tab_folder (Path): The folder containing the original TAB files.
         """
+
+        tab_folder = self.tab_folder
 
         if isinstance(tab_folder, str):
             tab_folder = Path(tab_folder)
@@ -89,11 +104,3 @@ class RawFRS(Dataset):
 
         # Save the data
         self.save_dataset(tables)
-
-
-class RawFRS_2019_20(RawFRS):
-    name = "raw_frs_2019_20"
-    label = "Family Resources Survey 2019-20 (raw)"
-    file_path = (
-        Path(__file__).parent.parent.parent / "data" / "raw_frs_2019_20.h5"
-    )

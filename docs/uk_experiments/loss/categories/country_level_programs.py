@@ -202,23 +202,24 @@ class CountryLevelProgram(LossCategory):
             },
         )
         budgetary_impact_loss = budgetary_impact_loss_type(**init_kwargs)
+        if "participants" in parameter._children:
+            participant_loss_type = type(
+                f"{self.variable}_participants",
+                (CountryLevelProgramParticipants,),
+                {
+                    "variable": self.variable,
+                    "taxpayer_only": self.taxpayer_only,
+                },
+            )
+            participant_loss = participant_loss_type(**init_kwargs)
 
-        participant_loss_type = type(
-            f"{self.variable}_participants",
-            (CountryLevelProgramParticipants,),
-            {
-                "variable": self.variable,
-                "taxpayer_only": self.taxpayer_only,
-            },
-        )
-        participant_loss = participant_loss_type(**init_kwargs)
+        sublosses = []
+        if "participants" in parameter._children:
+            sublosses += [participant_loss]
+        if "budgetary_impact" in parameter._children:
+            sublosses += [budgetary_impact_loss]
 
-        self.sublosses = torch.nn.ModuleList(
-            [
-                budgetary_impact_loss,
-                participant_loss,
-            ]
-        )
+        self.sublosses = torch.nn.ModuleList(sublosses)
 
 
 class IncomeSupport(CountryLevelProgram):
@@ -251,7 +252,6 @@ class StatePension(CountryLevelProgram):
 
 class TotalNI(CountryLevelProgram):
     variable = "total_NI"
-    taxpayers_only = True
 
 
 class JSAIncome(CountryLevelProgram):

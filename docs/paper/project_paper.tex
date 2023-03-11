@@ -613,7 +613,7 @@ However, even if we can accurately capture the relationship between variables in
 
 Another pitfall of the imputation method is that it might not produce the most efficiently loss-potential-reducing records (from the perspective of the space they take up), or might even fail to produce the specific records that exist in reality but not in either survey. For example, many of the individuals with the highest incomes will not appear even in the SPI. How can we ensure these records are created? One naive approach would be to simply craft them by hand, but this is both not scalable, and also might introduce inaccuracy if the hand-made records have some unseen internal contradiction that would mean they cannot exist in real life. Instead, we can preserve the strength of our random forest models at capturing relationships between variables, and just adjust the distribution they predict.
 
-Random forest regressors use the average of the results of a tree set as their outputs. The outputs from each tree incorporate all the learned information about the output variables conditional on the input variables, making it the optimal interception point to modify the model outputs without sacrificing the model's learned relationships. We can from here change the output from an average over all trees to a given percentile of the tree results. Since heterogeneity is still important, this percentile (per household observation) can be sampled randomly from a distribution (evenly and centered at 50\% by default). Parametrising this distribution as a Beta distribution allows us to control its skew by a set parameter.\footnote{The Beta distrubion is parametrised by two parameters, but it is trivial to express this as one.} Adjusting this skew parameter now enables us to adjust the distribution of predicted values upwards or downwards as needed.
+Random forest regressors use the average of the results of a tree set as their outputs. The outputs from each tree incorporate all the learned information about the output variables conditional on the input variables, making it the optimal interception point to modify the model outputs without sacrificing the model's learned relationships. We can from here change the output from an average over all trees to a given percentile of the tree results. Since heterogeneity is still important, this percentile (per household observation) can be sampled randomly from a distribution (evenly and centered at 50\% by default). Parametrising this distribution as a Beta distribution allows us to control its skew by a set parameter.\footnote{The Beta distribution is parametrised by two parameters, but it is trivial to express this as one.} Adjusting this skew parameter now enables us to adjust the distribution of predicted values upwards or downwards as needed.
 
 \subsubsection{Multivariate prediction}
 
@@ -632,7 +632,7 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
     Adjustment & Loss change \\
     \hline
     Percentile matching (all) &      +3.92\% \\
-    Percentile matching (pensioner/non-pensioner split) &      +0.90\% \\
+    Percentile matching (pensioner split) &      +0.90\% \\
     None &       0.00\% \\
     Percentile matching (dividends only) &      -0.13\% \\
     Gradient descent-based reweighting &     -59.13\% \\
@@ -640,8 +640,6 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
   \hline\hline
   \end{tabular}
 \end{table}
-
-% Figure from rel_error_training.png showing the distribution of error rates by epoch
 
 \begin{figure}[!ht]
   \centering
