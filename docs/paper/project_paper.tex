@@ -619,6 +619,34 @@ Random forest regressors use the average of the results of a tree set as their o
 
 Multivariate prediction might need to make use of separate distribution parameters for individual variables (e.g. if dividend income is more likely to be under-represented by sampling bias than employment income). To allow for this while still retaining consistency between predicted variables, we can train individual variable predictive models on the sequential predictor variables. For example, if we are to predict employment income and dividend income from age, we would train one model predicting employment income given age, and another predicting dividend income given age and (previously predicted) employment income. This is a straightforward extension of the univariate case, and can be implemented in the same way.
 
+\subsection{Data ageing}
+
+The existence of \emph{data lag}, in which a household survey data belongs to a previous year (often 2-3 years before the current), presents a problem for its accuracy in many household surveys and this project. If we have a survey with taxes and benefits from 2019, are are optimising weights to fit statistics from 2022, the optimiser might struggle to perform well (because we are essentially asking it to sample a realistic set of 2022-like households as best it can from a set of 2019-like households). This problem is made worse the more tax and benefit policy changes between the survey year and the target year (and there have been substantial changes in tax-benefit policy, in particular over the pandemic years).
+
+To fix this, we can use a microsimulation tax-benefit model to correct policy-influenced data in the survey. Such a model is a predictor of a set of tax and benefit-related variables (e.g. Income Tax, Universal Credit, etc.) from a set of input variables (e.g. employment incomes, household structure, etc.). Therefore, we can apply this process to each household in the survey data, and correct the relevant variables with those simulated by the microsimulation model, according to 2022 policy.
+
+There are multiple microsimulation models capable of this for UK policy, though only one is both publicly available and open-source: PolicyEngine-UK\cite{policyengine_uk}, which is therefore used in this project.
+
+\subsection{Data pooling}
+
+The FRS has a sample size of around 20,000 households. This can reasonably expected to be enough for the optimiser to be able to obtain good performance, but there are specific reasons why it might not. The largest likely problem is Universal Credit (UC), the UK's central means-tested benefit. Universal Credit is currently being phased-in across the UK, as a replacement for six previous `legacy' benefits, the bulk of which happened between 2019 and 2022. This means that the 2019-20 FRS has a significantly lower share of households claiming Universal Credit (but instead claiming legacy benefits) than would be realistic for 2022. The problem becomes clear if we consider the case of optimising weights to a year in which Universal Credit is fully rolled-out: all the 2019 households with legacy benefits would be essentially worthless, because they would have to be zero-rated in order to not produce erroneous aggregates.
+
+This issue can't fully be solved by data ageing: since there is still some mix of Universal Credit and legacy benefits, the microsimulation model must decide which to simulate based on which benefit the households report already receiving. We could in theory override the households' UC-legacy status to match the rollout percentage, but this might introduce inaccuracy in the household records.
+
+Instead, a cleaner solution is simply to pool multiple years of the survey (before data ageing), in order to increase robustness against this issue of small sample sizes. For this project, we can combine the 2018-19, 2019-20 and 2020-21\footnote{This data release exists, but we do not use it in the default case due to concerns about reliability given lower participation and telephone interviewing (due to the pandemic). Using it here, only given weight at the whim of the optimiser avoids this issue.} datasets (with only the 2019-20 dataset given its initial weights and the others zero).
+
+\subsection{Overall method}
+
+The final, combined pipeline is as follows:
+
+\begin{enumerate}
+  \item Combine the three consecutive FRS years into a single dataset.
+  \item Duplicate the dataset and replace-impute income variables from the SPI in the second half of households.\footnote{At this point in the process, the resultant dataset contains six version of the FRS, and only the second (the 2019-20 FRS) has nonzero weights.}
+  \item Optimise weights to minimise survey loss using gradient descent.
+\end{enumerate}
+
+In order to measure the success of the process, we can record the loss value from the 2019-20 FRS, and compare against the loss for the optimised-pooled-imputed FRS, as well as any alternate versions of the FRS for comparison. 
+
 \section{Results}
 
 Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
@@ -651,8 +679,15 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
 \section{Evaluation}
 This section should be between 1 to 2 pages in length.
 
+Measuring the resultant accuracy against the actual data and models used by the established research groups inside and outside government is largely impossible, because all but one of the groups who carry out research using microsimulation do not publish standard model outputs or any validation against external statistics (this includes modelling groups inside and outside government)\footnote{The microsimulation models of note which cannot be used for comparison due to this are: the IFS' TAXBEN, `the IPPR model' at PERU, Manchester Metropolitan University, the DWP's PSM, HMRC's IGOTM.}. Only one model publish validation statistics: UKMOD, managed by ISER at the University of Essex.
+
+UKMOD publishes a comprehensive set of statistics regularly, detailing how the model's tax-benefit aggregate statistics compare to external aggregates.\cite{ukmod_country_report} A comparison of these results against the equivalent outputs from PolicyEngine-UK with the data enhancement methodology in this project shows the optimised FRS in this project outperforming UKMOD. Most aggregates in UKMOD's validation set have a relative error in the region of 10 to 30 percent against administrative truth; compared to 0 to 5 percent under the optimised datasets here.
+
 \section{Conclusion}
-This section summarises the main points of this paper. Do not replicate the abstract as the conclusion. A conclusion might elaborate on the importance of the work or suggest applications and extensions. This section should be no more than 1 page in length.
+
+The methods outlined in this project are independent of country profile or policy, requiring only a survey of reasonable accuracy and a set of target statistics of higher accuracy than the survey. The evaluation focussed on the UK, but the very same approaches could be applied to e.g. the United States or other jurisdictions, which often suffer from similar issues around under-reporting and sampling bias.
+
+The positive results achieved in the UK context suggest a strong improvement in the accuracy of the FRS, and by extension the microsimulation model that uses the data- and improving the accuracy of microsimulation modelling brings potentially sizeable improvements in the abilities of policymakers to understand the likely impacts of reforms to tax-benefit policy, and ultimately improve the effectiveness of such reforms in achieving their stated aims.
 
 
 
