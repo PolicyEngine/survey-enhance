@@ -641,8 +641,12 @@ The final, combined pipeline is as follows:
 
 \begin{enumerate}
   \item Combine the three consecutive FRS years into a single dataset.
-  \item Duplicate the dataset and replace-impute income variables from the SPI in the second half of households.\footnote{At this point in the process, the resultant dataset contains six version of the FRS, and only the second (the 2019-20 FRS) has nonzero weights.}
-  \item Optimise weights to minimise survey loss using gradient descent.
+  \item Duplicate the dataset.
+  \item Train the random forest models on income data from the SPI.
+  \item Solve for the distribution parameters for each variable s.t. SPI aggregates are reproduced in the model's weighted FRS predictions.
+  \item Impute on the FRS and replace-impute income variables from the SPI in the second half of households.\footnote{At this point in the process, the resultant dataset contains six version of the FRS, and only the second (the 2019-20 FRS) has nonzero weights.}
+  \item Step through the gradient descent algorithm to minimise survey loss w.r.t. the household weights of the resultant dataset.
+  \item Measure the relative change in survey loss from the original dataset.
 \end{enumerate}
 
 In order to measure the success of the process, we can record the loss value from the 2019-20 FRS, and compare against the loss for the optimised-pooled-imputed FRS, as well as any alternate versions of the FRS for comparison. 
@@ -677,7 +681,6 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
 \end{figure}
 
 \section{Evaluation}
-This section should be between 1 to 2 pages in length.
 
 Measuring the resultant accuracy against the actual data and models used by the established research groups inside and outside government is largely impossible, because all but one of the groups who carry out research using microsimulation do not publish standard model outputs or any validation against external statistics (this includes modelling groups inside and outside government)\footnote{The microsimulation models of note which cannot be used for comparison due to this are: the IFS' TAXBEN, `the IPPR model' at PERU, Manchester Metropolitan University, the DWP's PSM, HMRC's IGOTM.}. Only one model publish validation statistics: UKMOD, managed by ISER at the University of Essex.
 

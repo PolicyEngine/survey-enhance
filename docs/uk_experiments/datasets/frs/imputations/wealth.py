@@ -89,6 +89,7 @@ def generate_was_table(was: pd.DataFrame):
         "DVHseValR7_sum": "other_residential_property_value",
         "DVBlDValR7_sum": "non_residential_property_value",
         "DVTotinc_bhcR7": "household_net_income",
+        "DVSaValR7_aggr": "savings",
     }
 
     RENAMES = {x.lower(): y for x, y in RENAMES.items()}
