@@ -5,7 +5,7 @@ import numpy as np
 from policyengine_core.parameters import ParameterNode, Parameter
 from typing import Iterable, Tuple, List
 from ..utils import sum_by_household
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 
 COUNTRY_WEIGHTS = {
     "ENGLAND": 0.84,

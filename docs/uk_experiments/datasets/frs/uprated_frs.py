@@ -1,4 +1,4 @@
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 from typing import Type
 from pathlib import Path
 

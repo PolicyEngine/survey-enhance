@@ -5,7 +5,7 @@ from typing import List, Type, Tuple, Dict
 import numpy as np
 from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 import warnings
 
 try:
@@ -523,11 +523,12 @@ class CalibratedWeights:
             device=device,
         )
         optimizer = torch.optim.Adam([weight_adjustment], lr=learning_rate)
+        relu = torch.nn.ReLU()
 
         for epoch in range(epochs):
             optimizer.zero_grad()
             loss = training_loss_fn(
-                household_weights + weight_adjustment, self.dataset
+                relu(household_weights + weight_adjustment), self.dataset
             )
             loss.backward()
             optimizer.step()
@@ -586,4 +587,4 @@ class CalibratedWeights:
                                     epoch,
                                 )
 
-        return (household_weights + weight_adjustment).detach().cpu().numpy()
+        return relu(household_weights + weight_adjustment).detach().cpu().numpy()

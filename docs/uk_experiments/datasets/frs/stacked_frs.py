@@ -1,4 +1,4 @@
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 import numpy as np
 from pathlib import Path
 

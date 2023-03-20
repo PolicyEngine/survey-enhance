@@ -1,5 +1,5 @@
 from survey_enhance.reweight import LossCategory
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 from ..utils import sum_by_household
 import torch
 from typing import List, Tuple

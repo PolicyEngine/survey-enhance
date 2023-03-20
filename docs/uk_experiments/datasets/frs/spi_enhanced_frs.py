@@ -1,5 +1,5 @@
 from survey_enhance.impute import Imputation
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 from pathlib import Path
 import numpy as np
 from typing import Type

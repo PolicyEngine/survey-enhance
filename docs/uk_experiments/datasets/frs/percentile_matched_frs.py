@@ -1,4 +1,4 @@
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 from pathlib import Path
 import pandas as pd
 from datasets.frs.imputations.income import SPI_TAB_FOLDER, generate_spi_table

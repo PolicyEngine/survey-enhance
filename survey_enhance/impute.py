@@ -3,6 +3,7 @@ from typing import List, Dict
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from tqdm import tqdm
+from pathlib import Path
 
 
 def to_array(values) -> np.ndarray:
@@ -78,7 +79,7 @@ class Imputation:
             self.models.append(model)
 
     def predict(
-        self, X: pd.DataFrame, mean_quantile: float = 0.5
+        self, X: pd.DataFrame, mean_quantile: float = 0.5, verbose: bool = False
     ) -> pd.DataFrame:
         """
         Predict the output variables for the input dataset.
@@ -93,12 +94,16 @@ class Imputation:
 
         if isinstance(X, list):
             X = pd.DataFrame(X, columns=self.X_columns)
+        
+        X = pd.DataFrame(X, columns=self.X_columns)
 
         if self.random_generator is None:
             self.random_generator = np.random.default_rng()
         X = to_array(self.encode_categories(X))
         Y = np.zeros((X.shape[0], len(self.models)))
         for i, model in enumerate(self.models):
+            if verbose:
+                print(f"Imputing {self.Y_columns[i]}...")
             if isinstance(mean_quantile, list):
                 quantile = mean_quantile[i]
             else:
@@ -117,6 +122,9 @@ class Imputation:
         """
 
         import pickle
+
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(path, "wb") as f:
             # Store the models only in a dictionary.

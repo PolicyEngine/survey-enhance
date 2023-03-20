@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 
 
 def sum_by_household(values: pd.Series, dataset: Dataset) -> np.ndarray:

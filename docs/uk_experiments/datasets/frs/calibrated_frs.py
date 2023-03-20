@@ -1,4 +1,4 @@
-from survey_enhance.dataset import Dataset
+from policyengine_core.data import Dataset
 from survey_enhance.reweight import CalibratedWeights
 from loss.loss import Loss, calibration_parameters
 import numpy as np
