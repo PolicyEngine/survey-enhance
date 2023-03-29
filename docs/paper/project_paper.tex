@@ -395,23 +395,40 @@ Machine learning, household surveys, microsimulation, survey error, survey weigh
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{G}{overnments} allocate trillions of dollars every year through mechanisms, such as tax and benefit benefit policy. Decision-making around the design of policies capturing and directing these resources is largely informed by simulated experiments (\emph{microsimulation}) that predict the impact of these policies, or their counterfactuals, on the general population by emulating tax and benefit legislation for respondents in large household surveys.
+\IEEEPARstart{G}{overnments} across the world redistribute trillions of dollars every year through tax and benefit programs. On average, countries collect around a third of their gross domestic product in taxes, and distribute around a third of tax revenues as cash benefits. These programs are ultimately incident on households, either directly or indirectly. Direct taxes and benefits impact households by direct transfers between households and government entities, and indirect taxes or benefits (subsidies) levied on private suppliers manifest themselves in the altered transactions between households and non-government entities. But whether by indirect or direct means, tax-benefit policy represents perhaps the largest single contributor to the state of household finances for billions of people. 
 
-\subsection{Household surveys}
+The complex rules defining the behaviour of these programs are set in tax-benefit legislation, and are amended or reformed constantly over decades. While legislators may have different overall goals for tax-benefit policy outcomes, engineering the tax-benefit system to achieve specific intended outcomes requires being able to predict the impact of individual policy reforms on metrics like the budget, the poverty rate, or the distribution of income. Therefore, the accuracy with which researchers can predict the impact of policy reforms is critical.
 
-Statistics agencies around the world collect data on the characteristics of the population through household surveys. As well as serving as an input to government policy evaluation, these data provide detailed insights into the current properties of the UK household sector, informing government publications on poverty, the disposable income distribution and inequality. However, there is evidence to suggest that these surveys are at least partially inaccurate, and this inaccuracy may be more consequential for certain uses of the survey data.
+Researchers largely achieve this through \emph{microsimulation}, a technique which involves simulating the application of tax-benefit program rules on a representative sample of households, using collected data on demographics, household structures, income sources and other features. This technique has been used extensively across both developed and developing countries, and is the dominant method for analysing and predicting the impact of government policy.
 
-In the United Kingdom, the most comprehensive household survey is the Family Resources Survey (FRS). This survey is collected annually by the Department for Work and Pensions, and includes approximately 20,000 households in a given year. Estimates for population-level features (such as the median income) can be derived using individual weights for household records which indicate how many UK households each respondent is representative of. 
+Microsimulation models' accuracy is completely dependent on the accuracy of the survey data on which it operates. However, there is evidence to suggest that the surveys which are used in microsimulation models today are at least partially inaccurate, and this inaccuracy may be worse for specific use-cases.
 
-However, despite a weight generation procedure that aims to ensure accurate representation of the UK household sector, prior research has found that the survey does not accurately predict household statistics well at the very-low or very-high ends of the income distribution: benefit aggregates derived from the FRS are around 20\% lower than the in administrative benefit databases, and top income percentiles are lower than than in HMRC's administrative tax database.
+Machine learning has emerged as a powerful tool for data transformation tasks, including synthetic data generation, across many social science subfields. However, the field of tax-benefit microsimulation has been largely untouched by it in the decades that it has been the standard. This paper aims to address this gap by proposing a novel approach to improving the accuracy of survey data by using machine learning to counter both sampling error (by gradient descent-based reweighting) and measurement error (by random forest model-based synthetic data generation). I evaluate this approach on the UK's Family Resources Survey in combination with other datasets, and benchmark its performance against other state-of-the-art methods including percentile adjustment. I find that the proposed approach is able to substantially improve the accuracy of the survey data as a predictor of more trustworthy statistics from administrative sources (which are not granular enough to be used for microsimulation).
+
+\subsection{Microsimulation}
+
+\emph{Tax-benefit policy microsimulation} has emerged over recent decades as the dominant method for analysing and predicting the impact of government policy. This technique involves simulating the application of tax-benefit program rules on a representative sample of households, using collected data on demographics, household structures, income sources and other features.
+
+In the United Kingdom, the most comprehensive household survey is the Family Resources Survey (FRS). This survey is collected annually by the Department for Work and Pensions, and includes approximately 20,000 households in a given year. Estimates for population-level features (such as the median income) can be derived using individual weights for household records which indicate how many UK households each respondent is representative of. However, despite a weight generation procedure that aims to ensure accurate representation of the UK household sector, prior research has found that the survey does not accurately predict household statistics well at the very-low or very-high ends of the income distribution: benefit aggregates derived from the FRS are around 20\% lower than the in administrative benefit databases, and top income percentiles are lower than than in HMRC's administrative tax database.
 
 There are two ways that a survey can diverge from the reality of the target population: sampling error and measurement error. In the microdata, measurement error arises where the values of individual observations are incorrect (not necessarily through deliberate deceit from survey respondents- question design and integrity checks can influence the accuracy of responses). Sampling error arises where the sample of respondents is not representative of the target population, primarily manifesting as an incorrect weighting of the household records. Both of these sources of error interact with each other: correcting for a missing household subsector can either be achieved by increasing the weight of an existing record or by transforming the values of another record.
 
-Inaccuracy in survey data has real-world impacts: by negatively affecting the accuracy of tax-benefit policy microsimulation, survey inaccuracy can distort the conclusions of policy evaluations, leading to suboptimal government policy design. Where surveys consistently under-represent particular subsectors of the household sector, this can lead to a systematic bias in the policy evaluation process and distort public understanding of the impact of government policy.
+Inaccuracy in survey data has real-world impacts: by negatively affecting the accuracy of tax-benefit policy microsimulation, survey inaccuracy can distort the conclusions of policy evaluations, leading to suboptimal government policy design. Where surveys consistently under-represent particular subsectors of the household sector, this can lead to a systematic bias in the policy evaluation process and distort public understanding of the impact of government policy. Many existing methods for mitigating these types of inaccuracy make heavy use of arbitrary assumptions about the distribution of survey data variables. For example, in correcting for the under-representation of high incomes, a common approach is to match the top income percentiles of a household survey to percentiles from administrative tax datasets. This can achieve exact parity between the two datasets on this very specific target metric, but this introduces significant risk of overfitting: of all the questions that we could ask of the survey data, income percentiles are a small fraction, and other targets could plausibly be thrown off by this adjustment.
 
-Many existing methods for mitigating these types of inaccuracy make heavy use of arbitrary assumptions about the distribution of survey data variables. For example, in correcting for the under-representation of high incomes, a common approach is to match the top income percentiles of a household survey to percentiles from administrative tax datasets. This can achieve exact parity between the two datasets on this very specific target metric, but this introduces significant risk of overfitting: of all the questions that we could ask of the survey data, income percentiles are a small fraction, and other targets could plausibly be thrown off by this adjustment.
+\subsection{Objectives}
 
 This project aims to evaluate a novel use of a combination of machine learning-based techniques to correct for household survey inaccuracy from both sampling and measurement error, and to compare its performance against other state-of-the-art methods. This approach involves using random forest model inference to synthesise new records, and then using gradient descent to minimise a constructed loss function that measures the deviation of the household survey from a large set of official statistics.
+
+To assess the value-add of the resulting pipeline, I will compare the performance of its application on the UK's Family Resources Survey, against several different state-of-the-art alternatives:
+
+\begin{itemize}
+  \item The original, un-modified FRS
+  \item The FRS modified with percentile adjustment (a common method for correcting for under-representation of high incomes)
+\end{itemize}
+
+Since the pipeline in this project is a composite of several different (optional) stages, I will also compare different configurations (for example, removing the synthetic data extension element) of the pipeline in order to estimate the value of each individual stage.
+
+If the pipeline is found to be effective, it could be used to improve the accuracy of tax-benefit microsimulation models, and therefore improve the accuracy of policy evaluations. This could lead to more accurate policy design, and more accurate public understanding of the impact of government policy.
 
 \section{Related Work}
 This section presents a survey of existing work on the problems that this project addresses. It should be between 2 to 3 pages in length. The rest of this section shows the formats of subsections as well as some general formatting information for tables, figures, references and equations.
@@ -492,6 +509,8 @@ There are several reasons why random forest models might outperform neural netwo
 
 \section{Methodology}
 
+
+
 \subsection{Loss}
 
 \subsubsection{Concept}
@@ -505,10 +524,12 @@ The loss function is the function that is minimised by the optimisation algorith
 where $L_c(S)$ is the loss function for a particular aggregate statistic $c$, $C$ is the set of all aggregate statistics and $S$ represents a given household survey (a collection of relational databases). The loss function for a particular aggregate statistic $c$ is defined as:
 
 \begin{equation}
-  L_c(S) = w * (\frac{\sum_i^{N} X_i \cdot W_i}{y} - 1) ^ 2
+  L_c(S) = w * (\frac{\sum_i^{N} X_i \cdot max(W_i, 0)}{y} - 1) ^ 2
 \end{equation}
 
 where $X_i$ is the value (of a particular variable) of the $i$th household record, $W_i$ is the weight of the $i$th household record, $y$ is the official aggregate statistic for $c$, and $w$ is a weighting factor for the loss function. The weighting factor $w$ is used to prioritise certain aggregate statistics over others (for example, budgetary impact size is used to comparatively weight different financial aggregate statistics). The loss function is also hierarchical, in that each loss category contains a weighted sum of other (normalised) loss functions. For example, the loss function for demographic performance might contain subcategories measuring performance over household population targets as well as individual population targets.
+
+Note that the weight $W_i$ is constrained to be non-negative, since negative weights do not have a meaningful interpretation in the context of survey imputation.
 
 \subsubsection{Normalisation} There remains an issue in how to constrain the relative sizes of different loss values. For example, we might have many more detailed statistics over which we can evaluate the survey in its representation of Income Tax (revenues by income band, taxpayer counts) than we do for Child Benefit (only aggregate revenue and total claimants). Naively summing the relative error comparisons for each category would give Income Tax targeting a much higher weight in the optimisation process purely because of our access to statistics (which is no indication of a program's importance). Simply dividing by the number of comparisons would be inaccurate too, given some of those comparisons might be more important than others. Therefore instead, a more neutral assumption is to normalise each loss category by dividing by its initial value:
 
@@ -651,9 +672,28 @@ The final, combined pipeline is as follows:
 
 In order to measure the success of the process, we can record the loss value from the 2019-20 FRS, and compare against the loss for the optimised-pooled-imputed FRS, as well as any alternate versions of the FRS for comparison. 
 
+\subsection{Implementation details}
+
+The implementation\footnote{Full model code, documentation and results is available at https://github.com/nikhilwoodruff/survey-enhance.} for this pipeline is in Python, using the Pytorch library for the gradient descent routine and the Scikit-learn library for the synthetic data generation. For the gradient descent optimisation, I trained the weights for 256 epochs with a learning rate of 1 (given the weights are un-normalised by design, and in the order of 1,000). Random forest models were trained with 100 trees and a maximum depth of 10. For training, I used the default Google Colab environment for reproducibility.
+
 \section{Results}
 
-Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
+The implementation of the survey enhancement routine is publicly available as a Python package (\texttt{survey-enhance}), and with public documentation.\footnote{Documentation available at https://nikhilwoodruff.github.io/survey-enhance}. The package is available on PyPI and can be installed with \texttt{pip install survey-enhance}. This package contains the main survey enhancement routines for reweighting and synthetic data generation, and includes an example application in the UK context.
+
+\subsection{Comparison against other methods}
+
+To validate the performance of the pipeline (and its components), we need a unified metric for survey accuracy (a mapping of household surveys to $R$-space). For this, we can use the original loss definition described in the method (for overfitting concerns, see the experiments in REF that validate against this). We can then compare the loss values for each of the following datasets:
+
+\begin{itemize}
+  \item Original 2019-20 FRS: the original dataset, with no changes.
+  \item Percentile-matched (all) FRS: the FRS with percentiles for all major income sources matched to the SPI.
+  \item Percentile-matched (dividends only) FRS: the FRS with percentiles for dividend income only matched to the SPI.
+  \item Percentile-matched (pensioner split) 2019-20 FRS: the FRS with percentiles for all major income sources matched to the SPI, but with separate distributions for pensioners and non-pensioners.
+  \item Gradient descent-based reweighting: the FRS with weights optimised using the gradient descent algorithm.
+  \item Imputed and reweighted FRS: the FRS with zero-weighted, FRS-structured, SPI-sampled synthetic records added, and weights optimised using the gradient descent algorithm.
+\end{itemize}
+
+The same hyperparameters for all machine-learning-based models were used between training runs in these comparisons. Table \ref{tab:loss_reduction} shows the change in total normalised survey loss under each survey improvement method.
 
 \begin{table}[!ht]
   \caption{Loss reductions under different survey improvement methods}
@@ -673,6 +713,14 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
   \end{tabular}
 \end{table}
 
+The results show that the gradient descent-based reweighting method is the most effective, reducing the loss by 59.13\%. The imputation and reweighting method is the second most effective, reducing the loss by 88.00\%. 
+
+The percentile matching methods are less effective, with the pensioner split method being the most effective, reducing the loss by 0.90\%. The percentile matching method with all income sources is the least effective, reducing the loss by 3.92\%. The percentile matching method with dividends only is the least effective, reducing the loss by 0.13\%. There is selection bias with the choice of parameters for the percentile matching methods: I tried many different configurations of the algorithm, in order to find at least one example which reduced survey loss. The likely cause of the inaccuracy is that employment income aggregate is already very close to the SPI aggregate, and so if the method only changes the percentiles in the top 5 percent, then it will overestimate the aggregate by doing so (when instead, we should be reducing the percentiles in the bottom 95 percent to compensate). This issue is absent when only adjusting dividend income, because dividends are so poorly captured in the baseline FRS (under-reported by 80\%).
+
+\subsection{Validation on specific metrics}
+
+Although a single real-valued loss result is useful for ranking survey improvement methods, it doesn't tell us much about the accuracy of the survey across all the different targets involved in the loss function. Figure \ref{fig:rel_error_training} shows the distribution parameters (the 10th, 50th and 90th percentiles) of the relative errors against the (unweighted) set of statistical targets involved in the loss function, by training epoch. This shows that the optimisation process was broadly effective at reducing errors jointly across a diverse set of targets (and does not simply rely on hitting a particularly high-weighted target, like the employment income aggregate, at the expense of others).
+
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.45\textwidth]{rel_error_training.png}
@@ -680,19 +728,95 @@ Table \ref{tab:loss_reduction} shows the change in total normalised survey loss 
   \label{fig:rel_error_training}
 \end{figure}
 
+Fitting the entire set of statistical targets is challenging because it includes targets that are in conflict with each other, as well as in harmony. For example, employment income and Income Tax aggregates are correlated (and therefore if the survey moving further towards accurately reproducing one likely moves towards the other as well), but high-income-specific Income Tax aggregates are in conflict with the population of London (if the algorithm tries to hit the high-income-specific Income Tax aggregate by increasing the weights of high-income taxpayers, who are usually resident in London, it might quickly find that it has severely overestimated the regional population). This is a possible explanation for which the error rates in Figure \ref{fig:rel_error_training} are wave-like: the algorithm is in a constant state of trying to hit one target, but then finding that it has hit another target instead, and then trying to hit the first target again, and so on.
+
+\subsection{Reform analysis comparison}
+
+Baseline-only inference (how well a microsimulation model can describe the current household sector) is important, but the primary purpose of microsimulation models is to estimate the impact of a hypothetical \emph{reform} to policy rules. In order to validate not just the accuracy of the survey improvement method on the current baseline, but in reforms, we can measure how the optimised FRS compares to a source of `truth' for reform impacts. For example, the Dividend Allowance is a tax relief that exempts the first £2,000 of dividend income from Income Tax. Table \ref{tab:reform_comparison} compares microsimulation findings for the net cost of the tax relief\footnote{Defined as the difference in tax revenues compared to a scenario where it did not exist.} using the the original and enhanced FRS datasets against the estimates against HM Treasury's internal modelling (which uses the Survey of Personal Incomes, HMRC's administrative dataset).
+
+\begin{table}[!ht]
+  \caption{Comparison of reform impact estimates}
+  \label{tab:reform_comparison}
+  \centering
+  \begin{tabular}{cc}
+    \hline\hline
+    Source & Estimate \\
+    \hline
+    HM Treasury (internal) & £720m \\
+    Original FRS & £411m \\
+    Enhanced FRS & £680m \\
+  \hline\hline
+  \end{tabular}
+\end{table}
+
+While there is no definite `source of truth' for hypothetical reforms, the SPI dataset is as close as we can get. This indicates the strength of the enhanced FRS dataset: suggesting that on this reform, it has combined the budgetary accuracy of the SPI (which is incapable of household microsimulation) with the applicability of the FRS.
+
 \section{Evaluation}
 
 Measuring the resultant accuracy against the actual data and models used by the established research groups inside and outside government is largely impossible, because all but one of the groups who carry out research using microsimulation do not publish standard model outputs or any validation against external statistics (this includes modelling groups inside and outside government)\footnote{The microsimulation models of note which cannot be used for comparison due to this are: the IFS' TAXBEN, `the IPPR model' at PERU, Manchester Metropolitan University, the DWP's PSM, HMRC's IGOTM.}. Only one model publish validation statistics: UKMOD, managed by ISER at the University of Essex.
 
 UKMOD publishes a comprehensive set of statistics regularly, detailing how the model's tax-benefit aggregate statistics compare to external aggregates.\cite{ukmod_country_report} A comparison of these results against the equivalent outputs from PolicyEngine-UK with the data enhancement methodology in this project shows the optimised FRS in this project outperforming UKMOD. Most aggregates in UKMOD's validation set have a relative error in the region of 10 to 30 percent against administrative truth; compared to 0 to 5 percent under the optimised datasets here.
 
+\subsection{Non-negativity constraints on weights}
+
+The optimisation process is constrained to non-negative weights, which is a reasonable assumption for a survey. However, experimentation with the optimisation process shows, as expected, that the optimiser can achieve a lower survey loss with this constraint removed. This raises an interesting and unorthodox question: do negative weights have a meaningful interpretation in the context of a survey? We might conclude that the intuitive meaning of the survey weight is not that a household record represents a negative number of households (which does not seem reasonable), but instead that the optimiser is trying to exploit the negativity to \emph{construct a new household record}: from the linear combination of the negative-weight household and some other positive-weighted household in the survey. Without the ability to alter individual household records, reweighting is the only way it can achieve this. Future research exploring this idea, as well as testing if this explanation can be intuitively demonstrated in the data (e.g. does this manifest as a simple household acting as a 'missing half', or is the actual function less intuitive?) could substantially increase the performance of the optimised weights and the survey as a whole.
+
+\subsection{Other synthetic data generation methods}
+
+Other methods exist for generating synthetic data. For example generative adversarial networks (GANs) have been shown to be highly effective at capturing and reproducing patterns arising from complex compositions of low-level data features. However, this approach (in this case, using conditional GANs) would likely have been less effective, for two reasons. Primarily, random forest models are inherently more robust to particular distributional features such as `bunching' (recall the capital gains example: tax policies often cause spikes at exact values of income amounts). Neural networks might approximate this, but with less precision than a decision tree. Secondly, modifiability: the random forest model architecture enables the distribution parameter adjustment `trick', but no such ability exists for GANs without significant modification, or retraining (which is costly).
+
+Explainability is also key for microsimulation modelling. Given that outputs from the model are the result of aggregating tens of thousands of individual household outcomes, being able to interrogate characteristics of individual household records, \emph{and understand why they are a given value}, is essential for the model's results (which can often be counterintuitive) to retain legitimacy. With the random forest model distribution output, it is relatively straightforward to evaluate particular synthetics households. Figure \ref{fig:rf_interrogation} shows an interactive application developed for this purpose in this project, which allows the user to select input values for a given household, and simulate the random forest model's distribution outputs for the relevant income variables (reflecting the SPI income imputation stage of the enhancement process).
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.45\textwidth]{rf_interrogation.jpeg}
+  \caption{The synthetic data explorer}
+  \label{fig:rf_interrogation}
+\end{figure}
+
+
+\subsection{Overfitting to statistical targets}
+
+When directly targeting a set of statistical targets, there is a risk of overfitting to just those targets. For example, if we only fit the weights to tax statistics without also targeting demographic totals, we might find that the household population is significantly overestimated. This specific issue is solved by adding demographic targets to the loss function, but there will always be out-of-sample statistical targets: cross-tabulations by ethnicity, regional program statistics, etc. To test the severity of this issue, we can exclude a random percentage of the targets from the training loss function, and test how performance on those targets differs from the training targets. Cross-validation can also increase the robustness of this analysis, by rotating the selection used for validation to ensure no individual sample is under-represented in the validation set. Table \ref{tab:cross_validation} shows the results of this analysis, using 5-fold cross-validation.
+
+\begin{table}[!ht]
+  \caption{Cross-validation results}
+  \label{tab:cross_validation}
+  \centering
+  \begin{tabular}{cc}
+    \hline\hline
+    Target & Final loss relative to original FRS \\
+    \hline
+    Training targets & -85\% \\
+    Validation targets & -42\% \\
+    Combined targets & -76\% \\
+  \hline\hline
+  \end{tabular}
+\end{table}
+
+This is also significantly better performance than the original FRS, which overfits to demographic targets \emph{by design}: FRS weights being optimised to hit population totals alone causes them to underfit financial targets in the way that they do.
+
+One finding when carrying out this research was of the importance of not segmenting co-dependent targets between training and validation. For example, it was found that if the population targets for all regions except one (e.g. the South West) were in the training set and the remaining one was in the validation set, then the model was able to effectively exploit this by treating the population of the South West as a `spare household region' whose population did not matter and whose inhabitants could be used to plug any gaps in other targets as required.
+
 \section{Conclusion}
 
 The methods outlined in this project are independent of country profile or policy, requiring only a survey of reasonable accuracy and a set of target statistics of higher accuracy than the survey. The evaluation focussed on the UK, but the very same approaches could be applied to e.g. the United States or other jurisdictions, which often suffer from similar issues around under-reporting and sampling bias.
 
-The positive results achieved in the UK context suggest a strong improvement in the accuracy of the FRS, and by extension the microsimulation model that uses the data- and improving the accuracy of microsimulation modelling brings potentially sizeable improvements in the abilities of policymakers to understand the likely impacts of reforms to tax-benefit policy, and ultimately improve the effectiveness of such reforms in achieving their stated aims.
+\subsection{Future research}
+
+While the code to reproduce this enhanced FRS is publicly available, the actual dataset is limited to UK academic researchers and nonprofit organisations due to UK data licensing conditions. This limits the value that it can provide, increasing barriers to entry for potential new research and application. Countries like the United States do not impose this limitation (for example, the Current Population Survey, an analogue to the UK's FRS, is publicly available). This project used synthetic data techniques to \emph{extend}, rather than generate from scratch: future research investigating the possibility to create a new, calibrated FRS dataset with all the properties of the enhanced FRS would be a highly valuable contribution to the field, by enabling the resultant dataset to be made completely public.
+
+Generating synthetic household data for this project is a complex task, primarily due to the fact that the FRS is a relational dataset: households can have variable numbers of members, and members have unique relationships with each other. Graph neural networks might be a promising approach to this problem, as they are able to model complex relationships between data points. However, the current state of the art in this area has not yet reached the same level of maturity as more established methods like regular ANNs, GANs, or random forests as in this implementation.
 
 
+
+\subsection{Impact}
+
+The positive results achieved in the UK context suggest a strong improvement in the accuracy of the FRS, and by extension the microsimulation model that uses the data. By combining the `best of both worlds` in granularity (from the FRS) and accuracy (from the SPI and other data sources), the pipeline effectively enables much more accurate (and consistent) microsimulation modelling of the UK tax-benefit system. Improving the accuracy of microsimulation modelling brings potentially sizeable improvements in the abilities of policymakers to understand the likely impacts of reforms to tax-benefit policy, and ultimately improve the effectiveness of such reforms in achieving their stated aims.
+
+\section*{Acknowledgements}
+
+I would like to thank: my supervisor, Prof. Iain Stewart, for his guidance and support throughout this project; the many individuals and organisations who provided feedback and thoughts on the methodology, including the HM Treasury distributional analysis team; the Joseph Rowntree Foundation modelling team; Matteo Richardi at ISER and the IPPR model maintainers, as well as Max Ghenis at PolicyEngine for his extensive feedback on the project.
 
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
@@ -713,13 +837,13 @@ The positive results achieved in the UK context suggest a strong improvement in 
 % argument is your BibTeX string definitions and bibliography database(s)
 %\bibliography{IEEEabrv,../bib/paper}
 %
-% <OR> manually copy in the resultant .bbl file
+% <OR> manually copy in the result`ant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 
 \newpage
 
-\bibliography{../references.bib}
+\bibliography{IEEEabrv,../references}
 \bibliographystyle{ieeetran}
 
 % that's all folks

@@ -3,7 +3,7 @@ import streamlit as st
 from survey_enhance.impute import Imputation
 import pandas as pd
 
-model = Imputation.load("data/vat.pkl")
+model = Imputation.load("imputations/vat.pkl")
 
 st.title("Imputing VAT data from the ETB")
 

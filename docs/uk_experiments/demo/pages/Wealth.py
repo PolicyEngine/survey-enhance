@@ -3,7 +3,7 @@ import streamlit as st
 from survey_enhance.impute import Imputation
 import pandas as pd
 
-model = Imputation.load("data/wealth.pkl")
+model = Imputation.load("imputations/wealth.pkl")
 
 st.title("Imputing wealth from the WAS")
 

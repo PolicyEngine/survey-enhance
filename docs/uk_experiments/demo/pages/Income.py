@@ -3,7 +3,7 @@ import streamlit as st
 from survey_enhance.impute import Imputation
 import pandas as pd
 
-model = Imputation.load("data/income.pkl")
+model = Imputation.load("imputations/income.pkl")
 
 st.title("Imputing high incomes from the SPI")
 
