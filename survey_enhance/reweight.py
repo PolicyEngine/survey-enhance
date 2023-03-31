@@ -209,7 +209,7 @@ class LossCategory(torch.nn.Module):
             y_pred = torch.sum(household_weights * y_pred_array)
             BUFFER = 1e4
             loss_addition = (
-                (y_pred + BUFFER) / (y_true + BUFFER) - 1
+                (((y_pred + BUFFER) / (y_true + BUFFER) - 1))
             ) ** 2 * weight
             if torch.isnan(loss_addition):
                 raise ValueError(
@@ -514,22 +514,15 @@ class CalibratedWeights:
     ) -> np.ndarray:
         household_weights = torch.tensor(
             self.initial_weights.astype(np.float32),
-            requires_grad=False,
-            device=device,
-        )
-        weight_adjustment = torch.tensor(
-            np.ones(len(self.initial_weights)).astype(np.float32),
             requires_grad=True,
             device=device,
         )
-        optimizer = torch.optim.Adam([weight_adjustment], lr=learning_rate)
+        optimizer = torch.optim.Adam([household_weights], lr=learning_rate)
         relu = torch.nn.ReLU()
 
         for epoch in range(epochs):
             optimizer.zero_grad()
-            loss = training_loss_fn(
-                relu(household_weights + weight_adjustment), self.dataset
-            )
+            loss = training_loss_fn(relu(household_weights), self.dataset)
             loss.backward()
             optimizer.step()
             if self.verbose:
@@ -587,4 +580,4 @@ class CalibratedWeights:
                                     epoch,
                                 )
 
-        return relu(household_weights + weight_adjustment).detach().cpu().numpy()
+        return relu(household_weights).detach().cpu().numpy()

@@ -79,7 +79,10 @@ class Imputation:
             self.models.append(model)
 
     def predict(
-        self, X: pd.DataFrame, mean_quantile: float = 0.5, verbose: bool = False
+        self,
+        X: pd.DataFrame,
+        mean_quantile: float = 0.5,
+        verbose: bool = False,
     ) -> pd.DataFrame:
         """
         Predict the output variables for the input dataset.
@@ -94,7 +97,7 @@ class Imputation:
 
         if isinstance(X, list):
             X = pd.DataFrame(X, columns=self.X_columns)
-        
+
         X = pd.DataFrame(X, columns=self.X_columns)
 
         if self.random_generator is None:
