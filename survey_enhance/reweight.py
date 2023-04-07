@@ -409,6 +409,7 @@ class CalibratedWeights:
         self,
         time_instant: str,
         epochs: int = 1_000,
+        min_loss: float = None,
         learning_rate: float = 1e-1,
         validation_split: float = 0.0,
         validation_blacklist: List[str] = None,
@@ -481,6 +482,7 @@ class CalibratedWeights:
                     writer,
                     log_frequency,
                     i,
+                    min_loss=min_loss,
                 )
         else:
             weights = self._train(
@@ -492,6 +494,7 @@ class CalibratedWeights:
                 log_dir,
                 writer,
                 log_frequency,
+                min_loss=min_loss,
             )
 
         if log_dir is not None:
@@ -511,6 +514,7 @@ class CalibratedWeights:
         tensorboard_log_writer: SummaryWriter = None,
         log_every: int = 1e6,
         holdout_set_index: int = None,
+        min_loss: float = None,
     ) -> np.ndarray:
         household_weights = torch.tensor(
             self.initial_weights.astype(np.float32),
@@ -519,12 +523,16 @@ class CalibratedWeights:
         )
         optimizer = torch.optim.Adam([household_weights], lr=learning_rate)
         relu = torch.nn.ReLU()
-
+        if min_loss is not None:
+            epochs = int(1e6)
         for epoch in range(epochs):
             optimizer.zero_grad()
             loss = training_loss_fn(relu(household_weights), self.dataset)
             loss.backward()
             optimizer.step()
+            if min_loss is not None:
+                if loss.item() < min_loss:
+                    break
             if self.verbose:
                 print(f"Epoch {epoch}: {loss.item()}")
 
