@@ -1,0 +1,144 @@
+\begin{thebibliography}{}
+
+\bibitem[Baldi, 1995]{gradient_descent}
+Baldi, P. (1995).
+\newblock Gradient descent learning algorithm overview: a general dynamical
+  systems perspective.
+\newblock {\em IEEE Transactions on Neural Networks}, 6(1):182--195.
+
+\bibitem[Breiman, 2001]{random_forests}
+Breiman, L. (2001).
+\newblock Random forests.
+\newblock {\em Machine Learning}, 45(1):5--32.
+
+\bibitem[Brewer et~al., 2017]{brewer_low_income_coverage}
+Brewer, M., Etheridge, B., and O'Dea, C. (2017).
+\newblock Why are households that report the lowest incomes so well-off?
+\newblock {\em The Economic Journal}, 127(605):F24--F49.
+
+\bibitem[Burkhauser et~al., 2018]{ifs_survey_under_coverage}
+Burkhauser, R.~V., H{\'e}rault, N., Jenkins, S.~P., and Wilkins, R. (2018).
+\newblock Survey under-coverage of top incomes and estimation of inequality:
+  What is the role of the uk's spi adjustment?
+\newblock {\em Fiscal Studies}, 39(2):213--240.
+
+\bibitem[Center, 2022]{tpc_microsim_docs}
+Center, T.~P. (2022).
+\newblock Tax model documentation.
+\newblock {\em TPC}.
+
+\bibitem[Collado et~al., 2022]{ukmod_country_report}
+Collado, D., Popova, D., and Eshraghi, M. (2022).
+\newblock Ukmod country report 2019-2025.
+\newblock {\em CeMPA Working Paper Series}, (CEMPA2/22).
+
+\bibitem[Dowd and McClelland, 2019]{cg_bunching}
+Dowd, T. and McClelland, R. (2019).
+\newblock The bunching of capital gains realizations.
+\newblock {\em National Tax Journal}, 72(2):323--358.
+
+\bibitem[Duchi et~al., 2011]{adagrad}
+Duchi, J., Hazan, E., and Singer, Y. (2011).
+\newblock Adaptive subgradient methods for online learning and stochastic
+  optimization.
+\newblock {\em Journal of Machine Learning Research}, 12(61):2121--2159.
+
+\bibitem[DWP, 1992]{hbai}
+DWP (1992).
+\newblock Households below average income (hbai) statistics.
+\newblock {\em GOV.UK}.
+
+\bibitem[Ghenis, 2018]{ghenis_quantile_regression}
+Ghenis, M. (2018).
+\newblock Quantile regression, from linear models to trees to deep learning.
+
+\bibitem[Jarmulska, 2020]{ecb}
+Jarmulska, B. (2020).
+\newblock Random forest versus logit models: which offers better early warning
+  of fiscal stress?
+\newblock {\em European Central Bank Working Papers}.
+
+\bibitem[Khirirat et~al., 2017]{mini_batch}
+Khirirat, S., Feyzmahdavian, H.~R., and Johansson, M. (2017).
+\newblock Mini-batch gradient descent: Faster convergence under data sparsity.
+\newblock In {\em 2017 IEEE 56th Annual Conference on Decision and Control
+  (CDC)}, pages 2880--2887.
+
+\bibitem[Kingma and Ba, 2015]{adam}
+Kingma, D.~P. and Ba, J. (2015).
+\newblock Adam: {A} method for stochastic optimization.
+\newblock In Bengio, Y. and LeCun, Y., editors, {\em 3rd International
+  Conference on Learning Representations, {ICLR} 2015, San Diego, CA, USA, May
+  7-9, 2015, Conference Track Proceedings}.
+
+\bibitem[Library, 2020]{taxdata_github}
+Library, P.~S. (2020).
+\newblock Tax-data model documentation.
+\newblock {\em GitHub}.
+
+\bibitem[Lound and Broad, 2013]{frs_weighting_review}
+Lound, C. and Broad, P. (2013).
+\newblock Initial review of the family resources survey weighting scheme.
+\newblock {\em Office for National Statistics}.
+
+\bibitem[Lu, 2007]{image_classification_survey}
+Lu, D. (2007).
+\newblock A survey of image classification methods and techniques for improving
+  classification performance.
+\newblock {\em International Journal of Remote Sensing}, 28:823 -- 870.
+
+\bibitem[McKay, ]{dwp_110}
+McKay, S.
+\newblock Evaluating approaches to {Family} {Resources} {Survey} data linking.
+
+\bibitem[Ooms, 2021]{frs_capital_income}
+Ooms, T.~C. (2021).
+\newblock Correcting the underestimation of capital incomes in inequality
+  indicators: with an application to the uk, 1997--2016.
+\newblock {\em Social Indicators Research}, 157(3):929--953.
+
+\bibitem[Paszke et~al., 2019]{pytorch}
+Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen,
+  T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Kopf, A., Yang, E.,
+  DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L.,
+  Bai, J., and Chintala, S. (2019).
+\newblock Pytorch: An imperative style, high-performance deep learning library.
+\newblock In {\em Advances in Neural Information Processing Systems 32}, pages
+  8024--8035. Curran Associates, Inc.
+
+\bibitem[Schöllhorn and Jäger, 2006]{anns}
+Schöllhorn, W. and Jäger, J. (2006).
+\newblock A survey on various applications of artificial neural networks in
+  selected fields of healthcare.
+\newblock {\em Neural Networks in Healthcare: Potential and Challenges}, pages
+  20--58.
+
+\bibitem[Tonkin et~al., 2020]{ons_spi_version_2}
+Tonkin, R., Webber, D., Beha, O., Shine, M., and Clark, C. (2020).
+\newblock Top income adjustment in effects of taxes and benefits data:
+  methodology.
+\newblock {\em ONS}.
+
+\bibitem[Vaswani et~al., 2017]{transformers}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.~N.,
+  Kaiser, L.~u., and Polosukhin, I. (2017).
+\newblock Attention is all you need.
+\newblock In Guyon, I., Luxburg, U.~V., Bengio, S., Wallach, H., Fergus, R.,
+  Vishwanathan, S., and Garnett, R., editors, {\em Advances in Neural
+  Information Processing Systems}, volume~30. Curran Associates, Inc.
+
+\bibitem[Wen et~al., 2020]{sgd}
+Wen, Y., Luk, K., Gazeau, M., Zhang, G., Chan, H., and Ba, J. (2020).
+\newblock An empirical study of stochastic gradient descent with structured
+  covariance noise.
+\newblock In Chiappa, S. and Calandra, R., editors, {\em Proceedings of the
+  Twenty Third International Conference on Artificial Intelligence and
+  Statistics}, volume 108 of {\em Proceedings of Machine Learning Research},
+  pages 3621--3631. PMLR.
+
+\bibitem[Woodruff, 2020]{policyengine_uk}
+Woodruff, N. (2020).
+\newblock Policyengine-uk microsimulation model.
+\newblock {\em GitHub}.
+
+\end{thebibliography}
