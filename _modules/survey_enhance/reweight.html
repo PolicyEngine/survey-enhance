@@ -249,7 +249,9 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
-        <span class="n">calibration_parameters</span><span class="p">:</span> <span class="n">ParameterNodeAtInstant</span><span class="p">,</span>
+        <span class="n">calibration_parameters_at_instant</span><span class="p">:</span> <span class="n">ParameterNodeAtInstant</span><span class="p">,</span>
+        <span class="n">instant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">calibration_parameters</span><span class="p">:</span> <span class="n">ParameterNode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ancestor</span><span class="p">:</span> <span class="s2">&quot;LossCategory&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">static_dataset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -270,7 +272,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">diagnostic</span> <span class="o">=</span> <span class="n">diagnostic</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibration_parameters_at_instant</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">calibration_parameters_at_instant</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calibration_parameters</span> <span class="o">=</span> <span class="n">calibration_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instant</span> <span class="o">=</span> <span class="n">instant</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comparison_log</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initial_loss_value</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -298,7 +304,7 @@
             <span class="p">[</span>
                 <span class="n">subcategory</span><span class="p">(</span>
                     <span class="n">dataset</span><span class="p">,</span>
-                    <span class="n">calibration_parameters</span><span class="p">,</span>
+                    <span class="n">calibration_parameters_at_instant</span><span class="o">=</span><span class="n">calibration_parameters_at_instant</span><span class="p">,</span>
                     <span class="n">ancestor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestor</span><span class="p">,</span>
                     <span class="n">static_dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">static_dataset</span><span class="p">,</span>
                     <span class="n">comparison_white_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comparison_white_list</span><span class="p">,</span>
@@ -635,8 +641,10 @@
         <span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
-            <span class="n">calibration_parameters_at_instant</span><span class="p">,</span>
+            <span class="n">calibration_parameters_at_instant</span><span class="o">=</span><span class="n">calibration_parameters_at_instant</span><span class="p">,</span>
             <span class="n">static_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">instant</span><span class="o">=</span><span class="n">time_instant</span><span class="p">,</span>
+            <span class="n">calibration_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration_parameters</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tensorboard_log_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -693,6 +701,7 @@
                     <span class="n">log_frequency</span><span class="p">,</span>
                     <span class="n">i</span><span class="p">,</span>
                     <span class="n">min_loss</span><span class="o">=</span><span class="n">min_loss</span><span class="p">,</span>
+                    <span class="n">time_period</span><span class="o">=</span><span class="n">time_instant</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train</span><span class="p">(</span>
@@ -705,10 +714,12 @@
                 <span class="n">writer</span><span class="p">,</span>
                 <span class="n">log_frequency</span><span class="p">,</span>
                 <span class="n">min_loss</span><span class="o">=</span><span class="n">min_loss</span><span class="p">,</span>
+                <span class="n">time_period</span><span class="o">=</span><span class="n">time_instant</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">log_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log_df</span> <span class="o">=</span> <span class="n">train_loss_fn</span><span class="o">.</span><span class="n">collect_comparison_log</span><span class="p">()</span>
+            <span class="n">log_df</span><span class="p">[</span><span class="s2">&quot;time_period&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_instant</span>
             <span class="n">log_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">log_dir</span> <span class="o">/</span> <span class="s2">&quot;log.csv.gz&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">weights</span></div>
@@ -725,6 +736,7 @@
         <span class="n">log_every</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e6</span><span class="p">,</span>
         <span class="n">holdout_set_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">min_loss</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_period</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">household_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initial_weights</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
@@ -761,6 +773,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">validation_log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
                 <span class="n">log_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">log_df</span><span class="p">,</span> <span class="n">training_log</span><span class="p">,</span> <span class="n">validation_log</span><span class="p">])</span>
+                <span class="n">log_df</span><span class="p">[</span><span class="s2">&quot;time_period&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_period</span>
                 <span class="n">log_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
                     <span class="n">log_dir</span> <span class="o">/</span> <span class="s2">&quot;calibration_log.csv.gz&quot;</span><span class="p">,</span>
                     <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
