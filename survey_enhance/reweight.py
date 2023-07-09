@@ -39,7 +39,9 @@ class LossCategory(torch.nn.Module):
     def __init__(
         self,
         dataset: Dataset,
-        calibration_parameters: ParameterNodeAtInstant,
+        calibration_parameters_at_instant: ParameterNodeAtInstant,
+        instant: str = None,
+        calibration_parameters: ParameterNode = None,
         weight: float = None,
         ancestor: "LossCategory" = None,
         static_dataset: bool = None,
@@ -60,7 +62,11 @@ class LossCategory(torch.nn.Module):
             self.diagnostic = diagnostic
 
         self.dataset = dataset
+        self.calibration_parameters_at_instant = (
+            calibration_parameters_at_instant
+        )
         self.calibration_parameters = calibration_parameters
+        self.instant = instant
         self.comparison_log = []
         self.initial_loss_value = None
 
@@ -88,7 +94,7 @@ class LossCategory(torch.nn.Module):
             [
                 subcategory(
                     dataset,
-                    calibration_parameters,
+                    calibration_parameters_at_instant=calibration_parameters_at_instant,
                     ancestor=self.ancestor,
                     static_dataset=self.static_dataset,
                     comparison_white_list=self.comparison_white_list,
@@ -425,8 +431,10 @@ class CalibratedWeights:
         )
         loss = self.loss_type(
             self.dataset,
-            calibration_parameters_at_instant,
+            calibration_parameters_at_instant=calibration_parameters_at_instant,
             static_dataset=True,
+            instant=time_instant,
+            calibration_parameters=self.calibration_parameters,
         )
 
         if tensorboard_log_dir is not None:
@@ -483,6 +491,7 @@ class CalibratedWeights:
                     log_frequency,
                     i,
                     min_loss=min_loss,
+                    time_period=time_instant,
                 )
         else:
             weights = self._train(
@@ -495,10 +504,12 @@ class CalibratedWeights:
                 writer,
                 log_frequency,
                 min_loss=min_loss,
+                time_period=time_instant,
             )
 
         if log_dir is not None:
             log_df = train_loss_fn.collect_comparison_log()
+            log_df["time_period"] = time_instant
             log_df.to_csv(log_dir / "log.csv.gz", compression="gzip")
 
         return weights
@@ -515,6 +526,7 @@ class CalibratedWeights:
         log_every: int = 1e6,
         holdout_set_index: int = None,
         min_loss: float = None,
+        time_period: str = None,
     ) -> np.ndarray:
         household_weights = torch.tensor(
             self.initial_weights.astype(np.float32),
@@ -551,6 +563,7 @@ class CalibratedWeights:
                 else:
                     validation_log = pd.DataFrame()
                 log_df = pd.concat([log_df, training_log, validation_log])
+                log_df["time_period"] = time_period
                 log_df.to_csv(
                     log_dir / "calibration_log.csv.gz",
                     index=False,
