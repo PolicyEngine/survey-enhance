@@ -83,6 +83,7 @@ class Imputation:
         X: pd.DataFrame,
         mean_quantile: float = 0.5,
         verbose: bool = False,
+        fixed_quantile: float = None,
     ) -> pd.DataFrame:
         """
         Predict the output variables for the input dataset.
@@ -107,13 +108,18 @@ class Imputation:
         for i, model in enumerate(self.models):
             if verbose:
                 print(f"Imputing {self.Y_columns[i]}...")
+            if mean_quantile is None and fixed_quantile is not None:
+                m_quantile = None
+                f_quantile = fixed_quantile
             if isinstance(mean_quantile, list):
-                quantile = mean_quantile[i]
+                m_quantile = mean_quantile[i]
+                f_quantile = None
             else:
-                quantile = mean_quantile
+                m_quantile = mean_quantile
+                f_quantile = None
             X_ = np.concatenate([X, Y[:, :i]], axis=1)
             model.encode_categories = self.encode_categories
-            Y[:, i] = model.predict(X_, quantile, self.random_generator)
+            Y[:, i] = model.predict(X_, mean_quantile=m_quantile, random_generator=self.random_generator, fixed_quantile=f_quantile)
         return pd.DataFrame(Y, columns=self.Y_columns)
 
     def save(self, path: str):
@@ -220,6 +226,7 @@ class ManyToOneImputation:
         X: pd.DataFrame,
         mean_quantile: float = 0.5,
         random_generator: np.random.Generator = None,
+        fixed_quantile: float = None,
     ) -> pd.DataFrame:
         """
         Predict the output variable for the input dataset.
@@ -241,14 +248,19 @@ class ManyToOneImputation:
 
         # Get the percentiles of the predictions.
         tree_predictions = np.array(tree_predictions).transpose()
-        if mean_quantile is None:
-            mean_quantile = 0.5
-        a = mean_quantile / (1 - mean_quantile)
-        if random_generator is None:
-            random_generator = np.random.default_rng()
-        input_quantiles = random_generator.beta(
-            a, 1, size=tree_predictions.shape[0]
-        )
+        if mean_quantile is None and fixed_quantile is not None:
+            input_quantiles = np.full(
+                tree_predictions.shape[0], fixed_quantile
+            )
+        else:
+            if mean_quantile is None:
+                mean_quantile = 0.5
+            a = mean_quantile / (1 - mean_quantile)
+            if random_generator is None:
+                random_generator = np.random.default_rng()
+            input_quantiles = random_generator.beta(
+                a, 1, size=tree_predictions.shape[0]
+            )
         x = np.apply_along_axis(
             lambda x: np.percentile(x[1:], x[0]),
             1,
