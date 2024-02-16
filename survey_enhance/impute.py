@@ -45,15 +45,22 @@ class Imputation:
         for i, column in enumerate(X.columns):
             if self.X_category_mappings.get(i) is not None:
                 X[column] = X[column].map(self.X_category_mappings[i])
+                # If we got NaNs, raise an exception with the offending values.
+                if X[column].isna().any():
+                    raise ValueError(
+                        f"Column {column} has NaNs after encoding categories. Unknown values: {X[column][X[column].isnull()].unique()}"
+                    )
         return X
 
-    def train(self, X: pd.DataFrame, Y: pd.DataFrame, num_trees: int = 100):
+    def train(self, X: pd.DataFrame, Y: pd.DataFrame, num_trees: int = 100, verbose: bool = False, sample_weight: pd.Series = None):
         """
         Train a random forest model to predict the output variables from the input variables.
 
         Args:
             X (pd.DataFrame): The dataset containing the input variables.
             Y (pd.DataFrame): The dataset containing the output variables.
+            num_trees (int): The number of trees to use in the random forest.
+            verbose (bool): Whether to print progress.
         """
 
         self.X_columns = X.columns
@@ -66,7 +73,11 @@ class Imputation:
         # 1. Predict height from income and age.
         # 2. Predict weight from income, age and (predicted) height.
 
-        for i in tqdm(range(len(Y.columns)), desc="Training models"):
+        if verbose:
+            iterator = tqdm(range(len(Y.columns)), desc="Training models")
+        else:
+            iterator = range(len(Y.columns))
+        for i in iterator:
             Y_columns = Y.columns[:i]
             if i == 0:
                 X_ = to_array(X)
@@ -75,7 +86,7 @@ class Imputation:
             y_ = to_array(Y[Y.columns[i]])
             model = ManyToOneImputation()
             model.encode_categories = self.encode_categories
-            model.train(X_, y_, num_trees=num_trees)
+            model.train(X_, y_, num_trees=num_trees, sample_weight=sample_weight)
             self.models.append(model)
 
     def predict(
@@ -83,7 +94,6 @@ class Imputation:
         X: pd.DataFrame,
         mean_quantile: float = 0.5,
         verbose: bool = False,
-        fixed_quantile: float = None,
     ) -> pd.DataFrame:
         """
         Predict the output variables for the input dataset.
@@ -105,21 +115,18 @@ class Imputation:
             self.random_generator = np.random.default_rng()
         X = to_array(self.encode_categories(X))
         Y = np.zeros((X.shape[0], len(self.models)))
-        for i, model in enumerate(self.models):
-            if verbose:
-                print(f"Imputing {self.Y_columns[i]}...")
-            if mean_quantile is None and fixed_quantile is not None:
-                m_quantile = None
-                f_quantile = fixed_quantile
+        if verbose:
+            iterator = tqdm(enumerate(self.models), desc="Predicting")
+        else:
+            iterator = enumerate(self.models)
+        for i, model in iterator:
             if isinstance(mean_quantile, list):
-                m_quantile = mean_quantile[i]
-                f_quantile = None
+                quantile = mean_quantile[i]
             else:
-                m_quantile = mean_quantile
-                f_quantile = None
+                quantile = mean_quantile
             X_ = np.concatenate([X, Y[:, :i]], axis=1)
             model.encode_categories = self.encode_categories
-            Y[:, i] = model.predict(X_, mean_quantile=m_quantile, random_generator=self.random_generator, fixed_quantile=f_quantile)
+            Y[:, i] = model.predict(X_, quantile, self.random_generator)
         return pd.DataFrame(Y, columns=self.Y_columns)
 
     def save(self, path: str):
@@ -172,17 +179,19 @@ class Imputation:
         return imputation
 
     def solve_for_mean_quantiles(
-        self, targets: list, input_data: pd.DataFrame, weights: pd.Series
+        self, targets: list, input_data: pd.DataFrame, weights: pd.Series, max_iterations: int = 10
     ):
         mean_quantiles = []
         input_data = input_data.copy()
         for i, model in enumerate(self.models):
+            print(f"Imputing {self.Y_columns[i]}...")
             mean_quantiles.append(
                 model.solve_for_mean_quantile(
                     target=targets[i],
                     input_df=input_data,
                     weights=weights,
                     verbose=True,
+                    max_iterations=max_iterations,
                 )
             )
             predicted_column = model.predict(input_data, mean_quantiles[-1])
@@ -197,6 +206,9 @@ class ManyToOneImputation:
 
     model: RandomForestRegressor
     """The random forest model."""
+
+    is_integer_coded: bool = False
+    """Whether the output variable is integer coded."""
 
     def train(
         self,
@@ -219,6 +231,10 @@ class ManyToOneImputation:
         self.model = RandomForestRegressor(
             n_estimators=num_trees, bootstrap=True, max_samples=0.01
         )
+        try:
+            self.is_integer_coded = isinstance(y[0], str) or (y - y.round()).mean() < 1e-3
+        except Exception as e:
+            pass
         self.model.fit(X, y, sample_weight=sample_weight)
 
     def predict(
@@ -226,7 +242,6 @@ class ManyToOneImputation:
         X: pd.DataFrame,
         mean_quantile: float = 0.5,
         random_generator: np.random.Generator = None,
-        fixed_quantile: float = None,
     ) -> pd.DataFrame:
         """
         Predict the output variable for the input dataset.
@@ -248,21 +263,16 @@ class ManyToOneImputation:
 
         # Get the percentiles of the predictions.
         tree_predictions = np.array(tree_predictions).transpose()
-        if mean_quantile is None and fixed_quantile is not None:
-            input_quantiles = np.full(
-                tree_predictions.shape[0], fixed_quantile
-            )
-        else:
-            if mean_quantile is None:
-                mean_quantile = 0.5
-            a = mean_quantile / (1 - mean_quantile)
-            if random_generator is None:
-                random_generator = np.random.default_rng()
-            input_quantiles = random_generator.beta(
-                a, 1, size=tree_predictions.shape[0]
-            )
+        if mean_quantile is None:
+            mean_quantile = 0.5
+        a = mean_quantile / (1 - mean_quantile)
+        if random_generator is None:
+            random_generator = np.random.default_rng()
+        input_quantiles = random_generator.beta(
+            a, 1, size=tree_predictions.shape[0]
+        )
         x = np.apply_along_axis(
-            lambda x: np.percentile(x[1:], x[0]),
+            lambda x: np.percentile(x[1:], x[0], interpolation="nearest"), #Privacy??
             1,
             np.concatenate(
                 [
@@ -272,6 +282,10 @@ class ManyToOneImputation:
                 axis=1,
             ),
         )
+
+        if self.is_integer_coded:
+            x = np.round(x).astype(int)
+
         return x
 
     def solve_for_mean_quantile(
