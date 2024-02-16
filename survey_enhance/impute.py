@@ -36,9 +36,11 @@ class Imputation:
     def encode_categories(self, X: pd.DataFrame) -> pd.DataFrame:
         if self.X_category_mappings is None:
             self.X_category_mappings = {
-                i: get_category_mapping(X[column])
-                if X[column].dtype == "object"
-                else None
+                i: (
+                    get_category_mapping(X[column])
+                    if X[column].dtype == "object"
+                    else None
+                )
                 for i, column in enumerate(X.columns)
             }
         X = X.copy()
@@ -52,7 +54,14 @@ class Imputation:
                     )
         return X
 
-    def train(self, X: pd.DataFrame, Y: pd.DataFrame, num_trees: int = 100, verbose: bool = False, sample_weight: pd.Series = None):
+    def train(
+        self,
+        X: pd.DataFrame,
+        Y: pd.DataFrame,
+        num_trees: int = 100,
+        verbose: bool = False,
+        sample_weight: pd.Series = None,
+    ):
         """
         Train a random forest model to predict the output variables from the input variables.
 
@@ -86,7 +95,9 @@ class Imputation:
             y_ = to_array(Y[Y.columns[i]])
             model = ManyToOneImputation()
             model.encode_categories = self.encode_categories
-            model.train(X_, y_, num_trees=num_trees, sample_weight=sample_weight)
+            model.train(
+                X_, y_, num_trees=num_trees, sample_weight=sample_weight
+            )
             self.models.append(model)
 
     def predict(
@@ -179,7 +190,11 @@ class Imputation:
         return imputation
 
     def solve_for_mean_quantiles(
-        self, targets: list, input_data: pd.DataFrame, weights: pd.Series, max_iterations: int = 10
+        self,
+        targets: list,
+        input_data: pd.DataFrame,
+        weights: pd.Series,
+        max_iterations: int = 10,
     ):
         mean_quantiles = []
         input_data = input_data.copy()
@@ -232,7 +247,9 @@ class ManyToOneImputation:
             n_estimators=num_trees, bootstrap=True, max_samples=0.01
         )
         try:
-            self.is_integer_coded = isinstance(y[0], str) or (y - y.round()).mean() < 1e-3
+            self.is_integer_coded = (
+                isinstance(y[0], str) or (y - y.round()).mean() < 1e-3
+            )
         except Exception as e:
             pass
         self.model.fit(X, y, sample_weight=sample_weight)
@@ -272,7 +289,9 @@ class ManyToOneImputation:
             a, 1, size=tree_predictions.shape[0]
         )
         x = np.apply_along_axis(
-            lambda x: np.percentile(x[1:], x[0], interpolation="nearest"), #Privacy??
+            lambda x: np.percentile(
+                x[1:], x[0], interpolation="nearest"
+            ),  # Privacy??
             1,
             np.concatenate(
                 [
